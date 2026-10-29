@@ -22,7 +22,7 @@
 <meta name="theme-color" content="#fdfdfc" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#14140f" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="{{ get_url(path='favicon.svg') }}" type="image/svg+xml">
-<link rel="stylesheet" href="{{ get_url(path='css/style.css') }}">
+<link rel="stylesheet" href="{{ get_url(path='css/style.css', cachebust=true) }}">
 <link rel="canonical" href="{{ current_url | default(value=config.base_url) }}">
 <link rel="alternate" hreflang="{{ alt_lang }}" href="{{ alt_url }}">
 <link rel="alternate" type="application/atom+xml" title="{{ config.title }}" href="{{ config.base_url }}/{% if lang != config.default_language %}{{ lang }}/{% endif %}atom.xml">
