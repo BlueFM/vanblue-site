@@ -27,6 +27,12 @@ date = 2026-10-29
 - **S. Zhang** 等. *Improving Generalization through a Meta Integration-Enhanced
   Mechanism.* 已投稿 IEEE Transactions on Cybernetics，2026（审稿中）。
 
+## 项目
+
+- **vanblue.online** —— 个人学术主页。Zola 静态构建、nginx 分发、软链原子切换发布，在
+  1.7 GiB 的 VPS 上完成 Let's Encrypt 证书配置。
+  [线上站点](https://vanblue.online) · [项目说明](/zh/projects/vanblue-site/)
+
 ## 获奖情况
 
 - 兰州大学 研究生二等奖学金

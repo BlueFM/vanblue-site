@@ -29,6 +29,12 @@ See the [publications page](/papers/).
 - **S. Zhang** et al. *Improving Generalization through a Meta Integration-Enhanced
   Mechanism.* Submitted to IEEE Transactions on Cybernetics, 2026 (under review).
 
+## Projects
+
+- **vanblue.online** — personal academic site. Zola static build, nginx serving,
+  symlink-swapped releases and Let's Encrypt TLS on a 1.7 GiB VPS.
+  [Live](https://vanblue.online) · [Write-up](/projects/vanblue-site/)
+
 ## Awards
 
 - Postgraduate second-class scholarship, Lanzhou University
