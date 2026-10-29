@@ -16,10 +16,10 @@
     </div>
     {% if page.description %}<div class="pub-desc">{{ page.description }}</div>{% endif %}
     <div class="pub-links">
-      {% if page.extra.pdf %}<a href="{{ page.extra.pdf }}">PDF</a>{% endif %}
-      {% if page.extra.doi %}<a href="https://doi.org/{{ page.extra.doi }}">DOI</a>{% endif %}
-      {% if page.extra.code %}<a href="{{ page.extra.code }}">Code</a>{% endif %}
-      {% if page.extra.project %} <a href="{{ page.extra.project }}">Project</a>{% endif %}
+      {% if page.extra.pdf %}<a href="{{ page.extra.pdf }}">{{ trans(key="pdf", lang=lang) }}</a>{% endif %}
+      {% if page.extra.doi %}<a href="https://doi.org/{{ page.extra.doi }}">{{ trans(key="doi", lang=lang) }}</a>{% endif %}
+      {% if page.extra.code %}<a href="{{ page.extra.code }}">{{ trans(key="code", lang=lang) }}</a>{% endif %}
+      {% if page.extra.project %}<a href="{{ page.extra.project }}">{{ trans(key="project", lang=lang) }}</a>{% endif %}
     </div>
   </li>
 {% endfor %}

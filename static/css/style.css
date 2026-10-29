@@ -58,6 +58,17 @@ a:hover { text-decoration: underline; text-underline-offset: 2px; }
 .site-head nav a { color: var(--muted); }
 .site-head nav a:hover { color: var(--accent); }
 
+.site-head nav a.lang-switch {
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 0.05rem 0.45rem;
+  line-height: 1.5;
+}
+.site-head nav a.lang-switch:hover {
+  border-color: var(--accent);
+  text-decoration: none;
+}
+
 main { flex: 1; padding: 2.25rem 0 3rem; }
 
 h1, h2, h3 { line-height: 1.25; font-weight: 600; }

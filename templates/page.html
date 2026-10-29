@@ -11,11 +11,12 @@
     {% if page.date %} · {{ page.date | date(format="%Y") }}{% endif %}
   </p>
   {% endif %}
-  {% if page.extra.pdf or page.extra.doi or page.extra.code %}
+  {% if page.extra.pdf or page.extra.doi or page.extra.code or page.extra.paper %}
   <p class="pub-links">
-    {% if page.extra.pdf %}<a href="{{ page.extra.pdf }}">PDF</a>{% endif %}
-    {% if page.extra.doi %}<a href="https://doi.org/{{ page.extra.doi }}">DOI</a>{% endif %}
-    {% if page.extra.code %}<a href="{{ page.extra.code }}">Code</a>{% endif %}
+    {% if page.extra.pdf %}<a href="{{ page.extra.pdf }}">{{ trans(key="pdf", lang=lang) }}</a>{% endif %}
+    {% if page.extra.doi %}<a href="https://doi.org/{{ page.extra.doi }}">{{ trans(key="doi", lang=lang) }}</a>{% endif %}
+    {% if page.extra.code %}<a href="{{ page.extra.code }}">{{ trans(key="code", lang=lang) }}</a>{% endif %}
+    {% if page.extra.paper %}<a href="{{ page.extra.paper }}">{{ trans(key="paper_link", lang=lang) | default(value="Paper") }}</a>{% endif %}
   </p>
   {% endif %}
   <div class="prose">{{ page.content | safe }}</div>

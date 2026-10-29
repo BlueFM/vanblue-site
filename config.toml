@@ -1,23 +1,88 @@
 base_url = "https://vanblue.online"
-title = "Shunbao Zhang"
-description = "MSc student at Lanzhou University working on the robustness and generalisation of deep networks."
 default_language = "en"
 compile_sass = false
 build_search_index = false
-generate_feeds = true
-feed_filenames = ["atom.xml"]
 hard_link_static = false
 
+# shared across languages
 [extra]
-# shown in the hero and used to bold the site owner inside author lists
 me = "Shunbao Zhang"
-author = "Shunbao Zhang"
-name_zh = "张顺宝"
-affiliation = "Lanzhou University · School of Information Science and Engineering"
 email = "zhangshb2025@lzu.edu.cn"
 # TODO: replace with your real profile URLs
 scholar = "https://scholar.google.com/citations?user=XXXXXXXX"
 github = "https://github.com/yourname"
 orcid = ""
-cv_pdf = "/cv/your-cv.pdf"
+
+[languages.en]
+title = "Shunbao Zhang"
+description = "MSc student at Lanzhou University working on the robustness and generalisation of deep networks."
+generate_feeds = true
+feed_filenames = ["atom.xml"]
+
+[languages.en.translations]
+author = "Shunbao Zhang"
+affiliation = "Lanzhou University · School of Information Science and Engineering"
 tagline = "I work on why deep networks generalise and stay robust. My current focus is neurodynamics-inspired optimisers that reshape the loss landscape toward flat minima."
+nav_papers = "Publications"
+nav_research = "Research"
+nav_cv = "CV"
+switch_label = "中文"
+hero_cv = "Curriculum Vitae"
+hero_scholar = "Google Scholar"
+hero_github = "GitHub"
+hero_orcid = "ORCID"
+selected_pubs = "Selected publications"
+all_pubs = "All publications"
+back_pubs = "All publications"
+anchor_research = "Research"
+bibtex = "BibTeX"
+pdf = "PDF"
+doi = "DOI"
+code = "Code"
+project = "Project"
+project_page = "Project page"
+paper_link = "Paper"
+not_found_title = "Not found"
+not_found_body = "This page does not exist."
+back_home = "Back home"
+footer_email = "Email"
+footer_scholar = "Scholar"
+footer_rss = "RSS"
+
+
+[languages.zh]
+title = "张顺宝"
+description = "兰州大学硕士研究生，研究深度网络的鲁棒性与泛化。"
+generate_feeds = true
+feed_filenames = ["atom.xml"]
+
+[languages.zh.translations]
+author = "张顺宝"
+affiliation = "兰州大学 · 信息科学与工程学院"
+tagline = "研究深度网络的泛化与鲁棒性从何而来。目前专注于受神经动力学启发的优化器，把训练导向损失曲面的平坦极小值。"
+nav_papers = "论文"
+nav_research = "研究"
+nav_cv = "简历"
+switch_label = "EN"
+hero_cv = "个人简历"
+hero_scholar = "谷歌学术"
+hero_github = "GitHub"
+hero_orcid = "ORCID"
+selected_pubs = "代表性论文"
+all_pubs = "全部论文"
+back_pubs = "返回论文列表"
+anchor_research = "研究方向"
+bibtex = "BibTeX 引用"
+pdf = "PDF"
+doi = "DOI"
+code = "代码"
+project = "项目"
+project_page = "项目主页"
+paper_link = "论文"
+not_found_title = "页面不存在"
+not_found_body = "这个页面不存在。"
+back_home = "返回首页"
+footer_email = "邮箱"
+footer_scholar = "学术主页"
+footer_rss = "订阅"
+

@@ -27,18 +27,18 @@
   </p>
   {% if page.extra.details %}<p class="pub-detail">{{ page.extra.details }}</p>{% endif %}
   <p class="pub-links">
-    {% if page.extra.pdf %}<a href="{{ page.extra.pdf }}">PDF</a>{% endif %}
-    {% if page.extra.doi %}<a href="https://doi.org/{{ page.extra.doi }}">DOI</a>{% endif %}
-    {% if page.extra.code %}<a href="{{ page.extra.code }}">Code</a>{% endif %}
-    {% if page.extra.project %}<a href="{{ page.extra.project }}">Project page</a>{% endif %}
+    {% if page.extra.pdf %}<a href="{{ page.extra.pdf }}">{{ trans(key="pdf", lang=lang) }}</a>{% endif %}
+    {% if page.extra.doi %}<a href="https://doi.org/{{ page.extra.doi }}">{{ trans(key="doi", lang=lang) }}</a>{% endif %}
+    {% if page.extra.code %}<a href="{{ page.extra.code }}">{{ trans(key="code", lang=lang) }}</a>{% endif %}
+    {% if page.extra.project %}<a href="{{ page.extra.project }}">{{ trans(key="project_page", lang=lang) }}</a>{% endif %}
   </p>
   <div class="prose">{{ page.content | safe }}</div>
   {% if page.extra.bibtex %}
   <details class="bibtex">
-    <summary>BibTeX</summary>
+    <summary>{{ trans(key="bibtex", lang=lang) }}</summary>
     <pre>{{ page.extra.bibtex }}</pre>
   </details>
   {% endif %}
-  <p class="back"><a href="{{ get_url(path='@/papers/_index.md') }}">← All publications</a></p>
+  <p class="back"><a href="{{ get_url(path='@/papers/_index.md') }}">← {{ trans(key="back_pubs", lang=lang) }}</a></p>
 </article>
 {% endblock content %}

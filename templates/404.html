@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Not found — {{ config.title }}{% endblock title %}
+{% block title %}{{ trans(key="not_found_title", lang=lang) }} — {{ config.title }}{% endblock title %}
 {% block content %}
 <h1 class="page-title">404</h1>
-<p>This page does not exist. <a href="{{ config.base_url }}/">Back home</a>.</p>
+<p>{{ trans(key="not_found_body", lang=lang) }} <a href="{{ get_url(path='@/_index.md') }}">{{ trans(key="back_home", lang=lang) }}</a></p>
 {% endblock content %}

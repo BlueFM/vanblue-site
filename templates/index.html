@@ -2,13 +2,13 @@
 
 {% block content %}
 <section class="hero">
-  <h1>{{ config.extra.author }}</h1>
-  <p class="affil">{{ config.extra.affiliation }}{% if config.extra.name_zh %} · {{ config.extra.name_zh }}{% endif %}</p>
-  <p class="tagline">{{ config.extra.tagline }}</p>
+  <h1>{{ trans(key="author", lang=lang) }}</h1>
+  <p class="affil">{{ trans(key="affiliation", lang=lang) }}</p>
+  <p class="tagline">{{ trans(key="tagline", lang=lang) }}</p>
   <p class="links">
-    <a href="{{ get_url(path='@/cv.md') }}">Curriculum Vitae</a>
+    <a href="{{ get_url(path='@/cv.md') }}">{{ trans(key="hero_cv", lang=lang) }}</a>
     <span class="sep">·</span>
-    <a href="{{ config.extra.scholar }}">Google Scholar</a>
+    <a href="{{ config.extra.scholar }}">{{ trans(key="hero_scholar", lang=lang) }}</a>
     <span class="sep">·</span>
     <a href="{{ config.extra.github }}">GitHub</a>
     {% if config.extra.orcid %}<span class="sep">·</span><a href="{{ config.extra.orcid }}">ORCID</a>{% endif %}
@@ -16,7 +16,7 @@
 </section>
 
 <section>
-  <h2>Selected publications</h2>
+  <h2>{{ trans(key="selected_pubs", lang=lang) }}</h2>
   {% set papers = get_section(path="papers/_index.md") %}
   <ul class="pub-list">
   {% for page in papers.pages %}{% if loop.index <= 4 %}
@@ -26,14 +26,14 @@
     </li>
   {% endif %}{% endfor %}
   </ul>
-  <p class="more"><a href="{{ get_url(path='@/papers/_index.md') }}">All publications →</a></p>
+  <p class="more"><a href="{{ get_url(path='@/papers/_index.md') }}">{{ trans(key="all_pubs", lang=lang) }} →</a></p>
 </section>
 
 <section>
-  <h2>Research</h2>
-  {% set projects = get_section(path="research/_index.md") %}
+  <h2>{{ trans(key="anchor_research", lang=lang) }}</h2>
+  {% set research = get_section(path="research/_index.md") %}
   <ul class="pub-list">
-  {% for page in projects.pages %}
+  {% for page in research.pages %}
     <li>
       <a class="pub-title" href="{{ page.permalink }}">{{ page.title }}</a>
       <div class="pub-meta">{{ page.description }}</div>
