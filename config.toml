@@ -8,8 +8,8 @@ hard_link_static = false
 [extra]
 me = "Shunbao Zhang"
 email = "zhangshb2025@lzu.edu.cn"
-# TODO: replace with your real profile URLs
-scholar = "https://scholar.google.com/citations?user=XXXXXXXX"
+# profile links -- leave a value empty and the link disappears from the site
+scholar = ""
 github = "https://github.com/BlueFM"
 orcid = ""
 photo = "/img/portrait.jpg"
