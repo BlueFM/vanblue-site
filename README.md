@@ -23,8 +23,16 @@ no Node or Ruby toolchain. Built with Zola, served by nginx as flat files.
 
 ## Deploy
 
-    bash deploy/deploy.sh         # build, upload, atomic symlink swap, smoke test
+Two paths, same server-side protocol:
+
+    bash deploy/deploy.sh         # local: build, upload, atomic symlink swap, smoke test
     bash deploy/rollback.sh       # switch to the other release
+
+Pushing to `main` also deploys, via `.github/workflows/deploy.yml`. CI builds with the
+same Zola version and streams the output over SSH; the server side is the forced command
+`/usr/local/bin/vanblue-receive`, so the deploy key can publish a release but cannot open
+a shell. Set the `DEPLOY_SSH_KEY` repository secret to enable it — without the secret the
+workflow builds and skips the deploy step instead of failing.
 
 Releases live in `/var/www/vanblue/releases/<timestamp>`; `current` is a symlink,
 so a deploy or rollback is a single atomic pointer change. The server keeps the

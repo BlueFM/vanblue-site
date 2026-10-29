@@ -66,7 +66,19 @@ releases and finishes by fetching the live URL, failing the run if it does not r
 - **Disabling the Docker service does not stop Docker** while `docker.socket` is
   active — the next client command socket-activates the daemon straight back.
 
+## Continuous deployment
+
+A GitHub Actions workflow builds the site on every push to `main` and streams the output
+through SSH into the same release-and-symlink protocol the local script uses. The deploy key
+is dedicated and pinned to a single forced command on the server: it can publish a release,
+but it cannot open a shell, forward ports or run anything else. Both SSH host keys are
+pinned in the workflow, so a runner will refuse to talk to anything else answering on that
+address.
+
+Two paths stay available on purpose: the local script (fast, works offline, and the build
+never touches the server until the tarball is complete) and the CI path (works from any
+machine, no laptop in the loop).
+
 ## Next
 
-Publish the source, generate per-section feeds that respect the language, and move the
-build into CI so a push republishes the site without a laptop in the loop.
+Per-section feeds that respect the language, and a CV PDF behind the CV page.
