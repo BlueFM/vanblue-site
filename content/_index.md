@@ -2,9 +2,8 @@
 title = "Home"
 [extra]
 is_home = true
+# NOTE: News items: newest first. Keep each to one line.
 +++
-<!-- News items: newest first. Keep each to one line. -->
-
 - **2026.09** — Paper submitted to *IEEE Transactions on Cybernetics*: improving generalization through a meta integration-enhanced mechanism.
 - **2026.02** — Paper accepted at *CAAI Transactions on Intelligence Technology*: cascaded inertia SGD with learned hyperparameters.
 - **2025.09** — Started my MSc in Software Engineering at Lanzhou University.

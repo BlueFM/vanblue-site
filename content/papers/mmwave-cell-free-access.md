@@ -20,8 +20,7 @@ bibtex = """
   doi     = {10.1016/j.comnet.2024.110659}
 }
 """
+# NOTE: Author list, volume and article number verified against Crossref for this DOI.
 +++
-<!-- Author list, volume and article number verified against Crossref for this DOI. -->
-
 Work on access strategies for millimetre-wave cell-free networks, combining matching
 theory and auction mechanisms to decide user association and resource allocation.

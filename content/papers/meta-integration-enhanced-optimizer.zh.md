@@ -7,9 +7,8 @@ authors = ["Shunbao Zhang"]
 [extra]
 venue = "已投稿 IEEE Transactions on Cybernetics"
 status = "审稿中"
+# NOTE: 投稿中的稿件。摘要与结论据 MIE_final_version.pdf 整理；审稿期间不在此列出完整作者信息。
 +++
-<!-- 投稿中的稿件。摘要与结论据 MIE_final_version.pdf 整理；审稿期间不在此列出完整作者信息。 -->
-
 **一句话** —— 指数滑动平均（EMA）动量会快速遗忘历史梯度，因此无法维持"从尖锐极小值里爬出来"所需的持续方向信号。对梯度历史做多阶积分可以让这个推力持续存在，而积分系数可以用超梯度规则在线更新。
 
 ## 问题

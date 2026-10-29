@@ -1,9 +1,8 @@
 +++
 title = "个人简历"
 date = 2026-10-29
+# NOTE: TODO: 把 static/cv/your-cv.pdf 换成真实简历
 +++
-<!-- TODO: 把 static/cv/your-cv.pdf 换成真实简历 -->
-
 **张顺宝**（Shunbao Zhang）—— [zhangshb2025@lzu.edu.cn](mailto:zhangshb2025@lzu.edu.cn)
 
 ## 研究方向

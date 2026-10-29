@@ -1,9 +1,8 @@
 +++
 title = "Curriculum Vitae"
 date = 2026-10-29
+# NOTE: TODO: replace static/cv/your-cv.pdf with your real CV
 +++
-<!-- TODO: replace static/cv/your-cv.pdf with your real CV -->
-
 **Shunbao Zhang** (张顺宝) - [zhangshb2025@lzu.edu.cn](mailto:zhangshb2025@lzu.edu.cn)
 
 ## Research interests

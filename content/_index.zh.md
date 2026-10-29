@@ -2,9 +2,8 @@
 title = "首页"
 [extra]
 is_home = true
+# NOTE: 动态条目：最新的在最上面，每行一条。
 +++
-<!-- 动态条目：最新的在最上面，每行一条。 -->
-
 - **2026.09** — 论文投稿至 *IEEE Transactions on Cybernetics*：基于元积分增强机制的泛化性提升。
 - **2026.02** — 论文被 *CAAI Transactions on Intelligence Technology* 接收：级联惯性 SGD 与系数学习。
 - **2025.09** — 进入兰州大学软件工程专业攻读硕士。

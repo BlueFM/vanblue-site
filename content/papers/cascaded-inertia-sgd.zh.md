@@ -9,9 +9,8 @@ authors = ["Yongji Guan", "Shunbao Zhang", "Longbang Wang", "Erchao Li"]
 venue = "CAAI Transactions on Intelligence Technology"
 details = "第 11 卷第 4 期，1019–1027 页"
 doi = "10.1049/cit2.70111"
+# NOTE: 作者列表、卷期页码与日期已按 DOI 在 Crossref 上核对。
 +++
-<!-- 作者列表、卷期页码与日期已按 DOI 在 Crossref 上核对。 -->
-
 **一句话** —— 在 SGD 里加入二阶积分（级联惯性）项，可以在训练过程中滤除尖锐极小值；控制这一项的几个系数不需要手工调，由一个小网络离线学出来。
 
 ## 问题

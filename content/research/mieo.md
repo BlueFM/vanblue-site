@@ -5,9 +5,8 @@ weight = 2
 
 [extra]
 paper = "/papers/meta-integration-enhanced-optimizer/"
+# NOTE: Under review. Keep numbers off this page until the paper is accepted.
 +++
-<!-- Under review. Keep numbers off this page until the paper is accepted. -->
-
 DIESGD fixes the integral order at two, so it can only filter a limited band of sharp
 minima - a local view of the optimisation problem. The MIE mechanism instead stacks
 **multiple integral orders** over the gradient history, each reshaping the loss at its own

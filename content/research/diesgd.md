@@ -6,9 +6,8 @@ weight = 1
 
 [extra]
 paper = "/papers/cascaded-inertia-sgd/"
+# NOTE: TODO: add a figure (architecture or loss landscape) under static/img/ and reference it here.
 +++
-<!-- TODO: add a figure (architecture or loss landscape) under static/img/ and reference it here. -->
-
 Standard momentum carries first-order history; it does not care whether the model settles
 into a sharp or a flat basin.
 

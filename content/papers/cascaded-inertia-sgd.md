@@ -21,9 +21,8 @@ bibtex = """
   doi     = {10.1049/cit2.70111}
 }
 """
+# NOTE: Author list, volume/pages and date verified against Crossref for this DOI.
 +++
-<!-- Author list, volume/pages and date verified against Crossref for this DOI. -->
-
 **TL;DR** - Adding a second-order integral (cascaded inertia) term to SGD filters out
 sharp minima during training, and the coefficients controlling it can be learned offline
 by a small network rather than tuned by hand.

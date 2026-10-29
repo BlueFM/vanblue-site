@@ -7,10 +7,9 @@ authors = ["Shunbao Zhang"]
 [extra]
 venue = "Submitted to IEEE Transactions on Cybernetics"
 status = "Under review"
+# NOTE: Submitted manuscript. Abstract and results summarised from MIE_final_version.pdf.
+# NOTE: Author list is not reproduced here while the submission is under review.
 +++
-<!-- Submitted manuscript. Abstract and results summarised from MIE_final_version.pdf.
-     Author list is not reproduced here while the submission is under review. -->
-
 **TL;DR** - Exponential-moving-average momentum forgets old gradients, so it cannot sustain
 the directional push needed to climb out of a sharp minimum. Stacking integral orders over
 the gradient history keeps that push alive, and the integration coefficients can be updated
