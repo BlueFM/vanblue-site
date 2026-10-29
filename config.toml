@@ -23,7 +23,7 @@ feed_filenames = ["atom.xml"]
 
 [languages.en.translations]
 author = "Shunbao Zhang"
-affiliation = "Lanzhou University · School of Information Science and Engineering"
+affiliation = "Lanzhou University · School of Artificial Intelligence"
 tagline = "I work on why deep networks generalise and stay robust. My current focus is neurodynamics-inspired optimisers that reshape the loss landscape toward flat minima."
 news_heading = "News"
 nav_papers = "Publications"
@@ -67,7 +67,7 @@ feed_filenames = ["atom.xml"]
 
 [languages.zh.translations]
 author = "张顺宝"
-affiliation = "兰州大学 · 信息科学与工程学院"
+affiliation = "兰州大学 · 人工智能学院"
 tagline = "研究深度网络的泛化与鲁棒性从何而来。目前专注于受神经动力学启发的优化器，把训练导向损失曲面的平坦极小值。"
 news_heading = "动态"
 nav_papers = "论文"

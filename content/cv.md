@@ -13,7 +13,7 @@ loss-landscape shaping; hyperparameter learning.
 ## Education
 
 - **MSc, Software Engineering** (combined MSc-PhD track), Lanzhou University, School of
-  Information Science and Engineering, 2025.09 - present
+  Artificial Intelligence, 2025.09 - present
 - **BSc, Software Engineering**, Northwest Normal University, 2020.09 - 2024.06
 
 ## Publications
