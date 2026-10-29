@@ -17,7 +17,9 @@ echo "==> publishing release $REL"
 
 ssh "$HOST" "mkdir -p /var/www/vanblue/releases/$REL"
 tar czf - -C public . |
-  ssh "$HOST" "tar xzf - -C /var/www/vanblue/releases/$REL && chmod -R a+rX /var/www/vanblue/releases/$REL"
+  ssh "$HOST" "tar xzf - --no-same-permissions -C /var/www/vanblue/releases/$REL \
+  && chown -R deployer:deployer /var/www/vanblue/releases/$REL \
+  && chmod -R a+rX,go-w /var/www/vanblue/releases/$REL"
 
 PRUNE_AFTER=$((KEEP + 1))
 ssh "$HOST" "set -e; ln -sfn /var/www/vanblue/releases/$REL /var/www/vanblue/current; ls -1dt /var/www/vanblue/releases/*/ | tail -n +$PRUNE_AFTER | xargs -r rm -rf"
