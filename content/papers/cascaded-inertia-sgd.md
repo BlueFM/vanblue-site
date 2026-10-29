@@ -9,6 +9,7 @@ authors = ["Yongji Guan", "Shunbao Zhang", "Longbang Wang", "Erchao Li"]
 venue = "CAAI Transactions on Intelligence Technology"
 details = "Vol. 11, No. 4, pp. 1019-1027"
 doi = "10.1049/cit2.70111"
+pdf = "/papers/guan-2026-cascaded-inertia-sgd.pdf"
 bibtex = """
 @article{guan2026enhancing,
   title   = {Enhancing Generalisation via Cascaded Inertia {SGD} With Learnt Hyperparameters},
@@ -46,3 +47,6 @@ four coefficients that govern the update.
 
 Across image-classification and remote-sensing benchmarks the method improves on standard
 baselines without extra per-step cost during training.
+
+*Published open access under a [CC BY 4.0 licence](https://creativecommons.org/licenses/by/4.0/);
+the PDF above is the publisher's version of record.*
