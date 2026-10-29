@@ -7,6 +7,7 @@ weight = 1
 [extra]
 tech = ["Zola", "Tera templates", "nginx", "Let's Encrypt", "bash", "DNS"]
 live = "https://vanblue.online"
+repo = "https://github.com/BlueFM/vanblue-site"
 +++
 
 This is the site you are reading. It exists to answer three questions about me — what I

@@ -7,6 +7,7 @@ weight = 1
 [extra]
 tech = ["Zola", "Tera 模板", "nginx", "Let's Encrypt", "bash", "DNS"]
 live = "https://vanblue.online"
+repo = "https://github.com/BlueFM/vanblue-site"
 +++
 
 这就是你正在看的这个站点。它要回答关于我的三个问题——发表过什么、正在做什么、怎么联系
