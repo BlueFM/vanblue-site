@@ -1,7 +1,7 @@
 +++
 title = "Meta Integration-Enhanced Optimizer"
 description = "Multi-order integral shaping of the loss with hypergradient-driven coefficient updates. Manuscript in preparation."
-date = 2026-09-01
+weight = 3
 authors = ["Shunbao Zhang"]
 
 [extra]

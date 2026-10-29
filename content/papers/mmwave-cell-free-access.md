@@ -2,6 +2,7 @@
 title = "Access strategies in mmWave cell-free network: A matching and auction theory based approach"
 description = "Joint user association and resource allocation in mmWave cell-free networks, solved with matching theory and auction mechanisms."
 date = 2024-10-01
+weight = 2
 authors = ["Zhongyu Ma", "Xueyao Zhang", "Shunbao Zhang", "Jianbing Pu", "Xianghong Lin", "Qun Guo"]
 
 [extra]

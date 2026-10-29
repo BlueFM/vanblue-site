@@ -2,6 +2,7 @@
 title = "Enhancing Generalisation via Cascaded Inertia SGD With Learnt Hyperparameters"
 description = "A second-order inertia term built from neurodynamics drives SGD toward flat minima, with its coefficients learned offline by a lightweight network."
 date = 2026-02-18
+weight = 1
 authors = ["Yongji Guan", "Shunbao Zhang", "Longbang Wang", "Erchao Li"]
 
 [extra]
