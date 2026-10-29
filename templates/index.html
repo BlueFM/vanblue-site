@@ -3,7 +3,7 @@
 {% block content %}
 <section class="hero">
   <h1>{{ config.extra.author }}</h1>
-  <p class="affil">{{ config.extra.affiliation }}</p>
+  <p class="affil">{{ config.extra.affiliation }}{% if config.extra.name_zh %} · {{ config.extra.name_zh }}{% endif %}</p>
   <p class="tagline">{{ config.extra.tagline }}</p>
   <p class="links">
     <a href="{{ get_url(path='@/cv.md') }}">Curriculum Vitae</a>
@@ -30,8 +30,8 @@
 </section>
 
 <section>
-  <h2>Projects</h2>
-  {% set projects = get_section(path="projects/_index.md") %}
+  <h2>Research</h2>
+  {% set projects = get_section(path="research/_index.md") %}
   <ul class="pub-list">
   {% for page in projects.pages %}
     <li>

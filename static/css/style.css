@@ -83,6 +83,7 @@ p { margin: 0 0 0.9rem; }
 .pub-title { font-weight: 600; }
 .pub-meta { color: var(--muted); font-size: 0.88rem; margin-top: 0.2rem; }
 .venue { font-style: italic; }
+.pub-detail { color: var(--muted); font-size: 0.85rem; margin: -0.35rem 0 0.4rem; }
 .pub-desc { font-size: 0.93rem; margin-top: 0.3rem; }
 .pub-links { font-size: 0.85rem; margin-top: 0.35rem; display: flex; gap: 0.85rem; flex-wrap: wrap; }
 .pub-links a { border: 1px solid var(--rule); border-radius: 3px; padding: 0.05rem 0.45rem; }

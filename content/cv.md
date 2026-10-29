@@ -2,29 +2,34 @@
 title = "Curriculum Vitae"
 date = 2026-10-29
 +++
-<!-- TODO: 替换为你的简历内容，并把 PDF 放到 static/cv/your-cv.pdf -->
+<!-- TODO: replace static/cv/your-cv.pdf with your real CV -->
 
-**Your Name** — [you@example.com](mailto:you@example.com)
-
-[Download CV as PDF](/cv/your-cv.pdf)
-
-## Education
-
-- **PhD / MSc / BSc**, Lanzhou University, 20XX – present
-- **BSc**, Some University, 20XX – 20XX
+**Shunbao Zhang** (张顺宝) - [zhangshb2025@lzu.edu.cn](mailto:zhangshb2025@lzu.edu.cn)
 
 ## Research interests
 
-Something specific, something adjacent, something applied.
+Robustness and generalisation of deep networks; neurodynamics-inspired optimisation;
+loss-landscape shaping; hyperparameter learning.
+
+## Education
+
+- **MSc, Software Engineering** (combined MSc-PhD track), Lanzhou University, School of
+  Information Science and Engineering, 2025.09 - present
+- **BSc, Software Engineering**, Northwest Normal University, 2020.09 - 2024.06
 
 ## Publications
 
 See the [publications page](/papers/).
 
-## Experience
+- Y. Guan, **S. Zhang**, L. Wang, E. Li. *Enhancing Generalisation via Cascaded Inertia
+  SGD With Learnt Hyperparameters.* CAAI Transactions on Intelligence Technology,
+  11(4):1019-1027, 2026.
+- Z. Ma, X. Zhang, **S. Zhang**, J. Pu, X. Lin, Q. Guo. *Access strategies in mmWave
+  cell-free network: A matching and auction theory based approach.* Computer Networks,
+  252:110659, 2024.
 
-- **Role**, Organisation, 20XX – 20XX
+## Awards
 
-## Teaching
-
-- Course name, teaching assistant, 20XX
+- Postgraduate second-class scholarship, Lanzhou University
+- Chinese Collegiate Computing Competition: national third prize; Gansu provincial first prize
+- Academic research scholarship and comprehensive scholarship, Northwest Normal University

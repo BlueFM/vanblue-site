@@ -7,7 +7,7 @@ no Node or Ruby toolchain. Built with Zola, served by nginx as flat files.
 
 ## Layout
 
-    content/       Markdown + TOML front matter (papers, projects, CV)
+    content/       Markdown + TOML front matter (papers, research, CV)
     templates/     HTML templates (Zola/Tera)
     static/        css, images, PDFs (copied verbatim)
     deploy/        deploy + rollback scripts, nginx config

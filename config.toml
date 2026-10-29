@@ -1,6 +1,6 @@
 base_url = "https://vanblue.online"
-title = "Your Name"
-description = "Publications, projects and CV"
+title = "Shunbao Zhang"
+description = "MSc student at Lanzhou University working on the robustness and generalisation of deep networks."
 default_language = "en"
 compile_sass = false
 build_search_index = false
@@ -9,11 +9,15 @@ feed_filenames = ["atom.xml"]
 hard_link_static = false
 
 [extra]
-author = "Your Name"
-affiliation = "Lanzhou University"
-email = "you@example.com"
+# shown in the hero and used to bold the site owner inside author lists
+me = "Shunbao Zhang"
+author = "Shunbao Zhang"
+name_zh = "张顺宝"
+affiliation = "Lanzhou University · School of Information Science and Engineering"
+email = "zhangshb2025@lzu.edu.cn"
+# TODO: replace with your real profile URLs
 scholar = "https://scholar.google.com/citations?user=XXXXXXXX"
 github = "https://github.com/yourname"
-orcid = "https://orcid.org/0000-0000-0000-0000"
+orcid = ""
 cv_pdf = "/cv/your-cv.pdf"
-tagline = "Researcher in your field. I write about optimization, learning and systems."
+tagline = "I work on why deep networks generalise and stay robust. My current focus is neurodynamics-inspired optimisers that reshape the loss landscape toward flat minima."

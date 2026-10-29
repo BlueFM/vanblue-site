@@ -6,7 +6,7 @@
   <h1 class="page-title">{{ page.title }}</h1>
   {% if page.date or page.extra.venue %}
   <p class="pub-meta">
-    {% if page.authors %}{{ page.authors | join(sep=", ") }}{% endif %}
+    {% if page.authors %}{% for a in page.authors %}{% if a == config.extra.me %}<strong>{{ a }}</strong>{% else %}{{ a }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}
     {% if page.extra.venue %}<span class="venue"> — {{ page.extra.venue }}</span>{% endif %}
     {% if page.date %} · {{ page.date | date(format="%Y") }}{% endif %}
   </p>
