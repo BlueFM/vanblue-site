@@ -4,6 +4,7 @@
   {% endif %}
   <div class="pub-body">
     <a class="pub-title" href="{{ page.permalink }}">{{ page.title }}</a>
+    {% if page.extra.status %}<span class="pub-status">{{ page.extra.status }}</span>{% endif %}
     <div class="pub-meta">
       {% include "partials/authors.html" %}
       {% if page.extra.venue %}<span class="venue">{{ page.extra.venue }}</span>{% endif %}

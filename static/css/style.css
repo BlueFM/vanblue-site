@@ -169,6 +169,21 @@ p { margin: 0 0 0.9rem; }
 .pub-year { font-variant-numeric: tabular-nums; }
 .pub-year::before { content: "·"; margin-right: 0.45rem; color: var(--rule); }
 .pub-detail { color: var(--muted); font-size: 0.83rem; margin-top: 0.15rem; }
+
+.pub-status {
+  display: inline-block;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 0 0.32rem;
+  margin-left: 0.45rem;
+  vertical-align: 2px;
+  line-height: 1.5;
+}
+p.pub-status { margin: 0 0 0.6rem; }
 .pub-desc { font-size: 0.92rem; margin-top: 0.3rem; }
 
 .pub-links {

@@ -21,6 +21,7 @@
 {% block content %}
 <article>
   <h1 class="page-title">{{ page.title }}</h1>
+  {% if page.extra.status %}<p class="pub-status">{{ page.extra.status }}</p>{% endif %}
   <p class="pub-meta">
     {% include "partials/authors.html" %}
     {% if page.extra.venue %}<span class="venue">{{ page.extra.venue }}</span>{% endif %}

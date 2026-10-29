@@ -25,6 +25,8 @@ date = 2026-10-29
 - Z. Ma, X. Zhang, **S. Zhang**, J. Pu, X. Lin, Q. Guo. *Access strategies in mmWave
   cell-free network: A matching and auction theory based approach.* Computer Networks,
   252:110659, 2024.
+- **S. Zhang** 等. *Improving Generalization through a Meta Integration-Enhanced
+  Mechanism.* 已投稿 IEEE Transactions on Cybernetics，2026（审稿中）。
 
 ## 获奖情况
 

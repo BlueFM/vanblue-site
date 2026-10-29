@@ -27,6 +27,8 @@ See the [publications page](/papers/).
 - Z. Ma, X. Zhang, **S. Zhang**, J. Pu, X. Lin, Q. Guo. *Access strategies in mmWave
   cell-free network: A matching and auction theory based approach.* Computer Networks,
   252:110659, 2024.
+- **S. Zhang** et al. *Improving Generalization through a Meta Integration-Enhanced
+  Mechanism.* Submitted to IEEE Transactions on Cybernetics, 2026 (under review).
 
 ## Awards
 
