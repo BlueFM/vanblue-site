@@ -1,0 +1,19 @@
+base_url = "https://vanblue.online"
+title = "Your Name"
+description = "Publications, projects and CV"
+default_language = "en"
+compile_sass = false
+build_search_index = false
+generate_feeds = true
+feed_filenames = ["atom.xml"]
+hard_link_static = false
+
+[extra]
+author = "Your Name"
+affiliation = "Lanzhou University"
+email = "you@example.com"
+scholar = "https://scholar.google.com/citations?user=XXXXXXXX"
+github = "https://github.com/yourname"
+orcid = "https://orcid.org/0000-0000-0000-0000"
+cv_pdf = "/cv/your-cv.pdf"
+tagline = "Researcher in your field. I write about optimization, learning and systems."

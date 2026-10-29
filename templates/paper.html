@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }} — {{ config.title }}{% endblock title %}
+{% block description %}{{ page.description | default(value=page.title) }}{% endblock description %}
+
+{% block head %}
+<meta name="citation_title" content="{{ page.title }}">
+{% if page.authors %}{% for a in page.authors %}<meta name="citation_author" content="{{ a }}">
+{% endfor %}{% endif %}
+{% if page.extra.venue %}<meta name="citation_conference_title" content="{{ page.extra.venue }}">
+<meta name="citation_journal_title" content="{{ page.extra.venue }}">
+{% endif %}
+{% if page.date %}<meta name="citation_publication_date" content="{{ page.date | date(format='%Y/%m/%d') }}">
+{% endif %}
+{% if page.extra.doi %}<meta name="citation_doi" content="{{ page.extra.doi }}">
+{% endif %}
+{% if page.extra.pdf %}<meta name="citation_pdf_url" content="{{ config.base_url }}{{ page.extra.pdf }}">
+{% endif %}
+{% endblock head %}
+
+{% block content %}
+<article>
+  <h1 class="page-title">{{ page.title }}</h1>
+  <p class="pub-meta">
+    {% if page.authors %}{{ page.authors | join(sep=", ") }}{% endif %}
+    {% if page.extra.venue %}<span class="venue"> — {{ page.extra.venue }}</span>{% endif %}
+    {% if page.date %} · {{ page.date | date(format="%Y") }}{% endif %}
+  </p>
+  <p class="pub-links">
+    {% if page.extra.pdf %}<a href="{{ page.extra.pdf }}">PDF</a>{% endif %}
+    {% if page.extra.doi %}<a href="https://doi.org/{{ page.extra.doi }}">DOI</a>{% endif %}
+    {% if page.extra.code %}<a href="{{ page.extra.code }}">Code</a>{% endif %}
+    {% if page.extra.project %}<a href="{{ page.extra.project }}">Project page</a>{% endif %}
+  </p>
+  <div class="prose">{{ page.content | safe }}</div>
+  {% if page.extra.bibtex %}
+  <details class="bibtex">
+    <summary>BibTeX</summary>
+    <pre>{{ page.extra.bibtex }}</pre>
+  </details>
+  {% endif %}
+  <p class="back"><a href="{{ get_url(path='@/papers/_index.md') }}">← All publications</a></p>
+</article>
+{% endblock content %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ section.title }} — {{ config.title }}{% endblock title %}
+
+{% block content %}
+<h1 class="page-title">{{ section.title }}</h1>
+{% if section.content %}{{ section.content | safe }}{% endif %}
+
+<ul class="pub-list">
+{% for page in section.pages %}
+  <li>
+    <a class="pub-title" href="{{ page.permalink }}">{{ page.title }}</a>
+    <div class="pub-meta">
+      {% if page.authors %}{{ page.authors | join(sep=", ") }}{% endif %}
+      {% if page.extra.venue %}<span class="venue"> — {{ page.extra.venue }}</span>{% endif %}
+      {% if page.date %} · {{ page.date | date(format="%Y") }}{% endif %}
+    </div>
+    {% if page.description %}<div class="pub-desc">{{ page.description }}</div>{% endif %}
+    <div class="pub-links">
+      {% if page.extra.pdf %}<a href="{{ page.extra.pdf }}">PDF</a>{% endif %}
+      {% if page.extra.doi %}<a href="https://doi.org/{{ page.extra.doi }}">DOI</a>{% endif %}
+      {% if page.extra.code %}<a href="{{ page.extra.code }}">Code</a>{% endif %}
+      {% if page.extra.project %} <a href="{{ page.extra.project }}">Project</a>{% endif %}
+    </div>
+  </li>
+{% endfor %}
+</ul>
+{% endblock content %}

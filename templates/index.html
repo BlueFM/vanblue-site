@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <h1>{{ config.extra.author }}</h1>
+  <p class="affil">{{ config.extra.affiliation }}</p>
+  <p class="tagline">{{ config.extra.tagline }}</p>
+  <p class="links">
+    <a href="{{ get_url(path='@/cv.md') }}">Curriculum Vitae</a>
+    <span class="sep">·</span>
+    <a href="{{ config.extra.scholar }}">Google Scholar</a>
+    <span class="sep">·</span>
+    <a href="{{ config.extra.github }}">GitHub</a>
+    {% if config.extra.orcid %}<span class="sep">·</span><a href="{{ config.extra.orcid }}">ORCID</a>{% endif %}
+  </p>
+</section>
+
+<section>
+  <h2>Selected publications</h2>
+  {% set papers = get_section(path="papers/_index.md") %}
+  <ul class="pub-list">
+  {% for page in papers.pages %}{% if loop.index <= 4 %}
+    <li>
+      <a class="pub-title" href="{{ page.permalink }}">{{ page.title }}</a>
+      <div class="pub-meta">{{ page.extra.venue }}{% if page.date %} · {{ page.date | date(format="%Y") }}{% endif %}</div>
+    </li>
+  {% endif %}{% endfor %}
+  </ul>
+  <p class="more"><a href="{{ get_url(path='@/papers/_index.md') }}">All publications →</a></p>
+</section>
+
+<section>
+  <h2>Projects</h2>
+  {% set projects = get_section(path="projects/_index.md") %}
+  <ul class="pub-list">
+  {% for page in projects.pages %}
+    <li>
+      <a class="pub-title" href="{{ page.permalink }}">{{ page.title }}</a>
+      <div class="pub-meta">{{ page.description }}</div>
+    </li>
+  {% endfor %}
+  </ul>
+</section>
+{% endblock content %}

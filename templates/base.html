@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="{{ config.default_language | default(value='en') }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ config.title }}{% endblock title %}</title>
+<meta name="description" content="{% block description %}{{ config.description }}{% endblock description %}">
+<link rel="stylesheet" href="{{ get_url(path='css/style.css') }}">
+<link rel="alternate" type="application/atom+xml" title="{{ config.title }}" href="{{ get_url(path='atom.xml') }}">
+{% block head %}{% endblock head %}
+</head>
+<body>
+<div class="wrap">
+  <header class="site-head">
+    <a class="brand" href="{{ config.base_url }}/">{{ config.extra.author }}</a>
+    <nav>
+      <a href="{{ get_url(path='@/papers/_index.md') }}">Publications</a>
+      <a href="{{ get_url(path='@/projects/_index.md') }}">Projects</a>
+      <a href="{{ get_url(path='@/cv.md') }}">CV</a>
+    </nav>
+  </header>
+  <main>
+  {% block content %}{% endblock content %}
+  </main>
+  <footer class="site-foot">
+    <span>&copy; {{ now() | date(format="%Y") }} {{ config.extra.author }}</span>
+    <span class="sep">·</span>
+    <a href="mailto:{{ config.extra.email }}">Email</a>
+    <span class="sep">·</span>
+    <a href="{{ config.extra.scholar }}">Scholar</a>
+    <span class="sep">·</span>
+    <a href="{{ config.extra.github }}">GitHub</a>
+    <span class="sep">·</span>
+    <a href="{{ get_url(path='atom.xml') }}">RSS</a>
+  </footer>
+</div>
+</body>
+</html>

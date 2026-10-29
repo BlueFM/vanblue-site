@@ -1,0 +1,125 @@
+:root {
+  --fg: #1a1a1a;
+  --muted: #6b6b6b;
+  --bg: #fdfdfc;
+  --rule: #e4e2dd;
+  --accent: #14508c;
+  --code-bg: #f4f3f0;
+  --measure: 44rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fg: #e6e4df;
+    --muted: #a1a09b;
+    --bg: #14140f;
+    --rule: #2e2d28;
+    --accent: #7db2e8;
+    --code-bg: #1d1d18;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.65 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Songti SC", serif;
+  padding: 0 1.25rem;
+}
+
+.wrap {
+  max-width: var(--measure);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+.site-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  padding: 1.75rem 0 1.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.brand { font-size: 1.05rem; font-weight: 600; color: var(--fg); letter-spacing: 0.01em; }
+
+.site-head nav { display: flex; gap: 1.25rem; font-size: 0.9rem; }
+.site-head nav a { color: var(--muted); }
+.site-head nav a:hover { color: var(--accent); }
+
+main { flex: 1; padding: 2.25rem 0 3rem; }
+
+h1, h2, h3 { line-height: 1.25; font-weight: 600; }
+h1 { font-size: 1.65rem; margin: 0 0 0.5rem; }
+h2 { font-size: 1.1rem; margin: 2.25rem 0 0.75rem; letter-spacing: 0.02em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+h3 { font-size: 1rem; margin: 1.5rem 0 0.5rem; }
+
+p { margin: 0 0 0.9rem; }
+
+.hero { padding-bottom: 0.5rem; }
+.hero h1 { font-size: 2rem; margin-bottom: 0.15rem; }
+.affil { color: var(--muted); margin-bottom: 0.75rem; }
+.tagline { font-size: 1.05rem; }
+.links { font-size: 0.92rem; color: var(--muted); }
+.sep { color: var(--rule); margin: 0 0.35rem; }
+
+.page-title { margin-bottom: 1.25rem; }
+
+.pub-list { list-style: none; padding: 0; margin: 0; }
+.pub-list li { padding: 0.8rem 0; border-bottom: 1px solid var(--rule); }
+.pub-list li:first-child { border-top: 1px solid var(--rule); }
+
+.pub-title { font-weight: 600; }
+.pub-meta { color: var(--muted); font-size: 0.88rem; margin-top: 0.2rem; }
+.venue { font-style: italic; }
+.pub-desc { font-size: 0.93rem; margin-top: 0.3rem; }
+.pub-links { font-size: 0.85rem; margin-top: 0.35rem; display: flex; gap: 0.85rem; flex-wrap: wrap; }
+.pub-links a { border: 1px solid var(--rule); border-radius: 3px; padding: 0.05rem 0.45rem; }
+
+.more { margin-top: 0.9rem; font-size: 0.9rem; }
+
+.prose { margin-top: 1.5rem; }
+.prose h2 { text-transform: none; letter-spacing: 0; color: var(--fg); font-size: 1.05rem; margin-top: 1.9rem; }
+.prose ul, .prose ol { padding-left: 1.25rem; }
+.prose li { margin: 0.25rem 0; }
+.prose img { max-width: 100%; height: auto; }
+
+code, pre {
+  font-family: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+  font-size: 0.88em;
+}
+code { background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 3px; }
+pre { background: var(--code-bg); padding: 0.9rem 1rem; overflow-x: auto; border-radius: 4px; line-height: 1.5; }
+pre code { background: none; padding: 0; }
+
+blockquote { margin: 1.2rem 0; padding-left: 1rem; border-left: 3px solid var(--rule); color: var(--muted); }
+
+.bibtex { margin-top: 2rem; }
+.bibtex summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
+.back { margin-top: 2.5rem; font-size: 0.9rem; }
+
+.site-foot {
+  border-top: 1px solid var(--rule);
+  padding: 1.25rem 0 2rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+@media (max-width: 34rem) {
+  .site-head { flex-direction: column; align-items: flex-start; }
+  .hero h1 { font-size: 1.65rem; }
+}
