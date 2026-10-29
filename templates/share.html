@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ section.title }} — {{ config.title }}{% endblock title %}
+
+{% block content %}
+<h1 class="page-title">{{ section.title }}</h1>
+{% if section.content %}<div class="prose page-intro">{{ section.content | safe }}</div>{% endif %}
+
+<ul class="pub-list">
+{% for page in section.pages %}
+  {% include "partials/share_item.html" %}
+{% endfor %}
+</ul>
+{% endblock content %}

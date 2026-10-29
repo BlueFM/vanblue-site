@@ -1,0 +1,16 @@
+<li class="project-item">
+  <div class="project-head">
+    <a class="pub-title" href="{{ page.permalink }}">{{ page.title }}</a>
+    {% if page.date %}<span class="pub-year">{{ page.date | date(format="%Y") }}</span>{% endif %}
+  </div>
+  {% if page.description %}<div class="pub-desc">{{ page.description }}</div>{% endif %}
+  {% if page.extra.tags %}
+  <div class="project-tech">
+    {% for t in page.extra.tags %}<span class="tech">{{ t }}</span>{% endfor %}
+  </div>
+  {% endif %}
+  <div class="pub-links">
+    {% if page.extra.url %}<a href="{{ page.extra.url }}" rel="noopener">{{ trans(key="visit_site", lang=lang) }}</a>{% endif %}
+    <a href="{{ page.permalink }}">{{ trans(key="share_note", lang=lang) }}</a>
+  </div>
+</li>
