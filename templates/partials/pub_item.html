@@ -1,0 +1,22 @@
+<li class="pub-item{% if page.extra.preview %} has-thumb{% endif %}">
+  {% if page.extra.preview %}
+  <a class="pub-thumb" href="{{ page.permalink }}" tabindex="-1"><img src="{{ page.extra.preview }}" alt="" loading="lazy" width="320" height="200"></a>
+  {% endif %}
+  <div class="pub-body">
+    <a class="pub-title" href="{{ page.permalink }}">{{ page.title }}</a>
+    <div class="pub-meta">
+      {% include "partials/authors.html" %}
+      {% if page.extra.venue %}<span class="venue">{{ page.extra.venue }}</span>{% endif %}
+      {% if page.date %}<span class="pub-year">{{ page.date | date(format="%Y") }}</span>{% endif %}
+    </div>
+    {% if page.extra.details %}<div class="pub-detail">{{ page.extra.details }}</div>{% endif %}
+    {% if page.description %}<div class="pub-desc">{{ page.description }}</div>{% endif %}
+    <div class="pub-links">
+      {% if page.extra.pdf %}<a href="{{ page.extra.pdf }}">{{ trans(key="pdf", lang=lang) }}</a>{% endif %}
+      {% if page.extra.doi %}<a href="https://doi.org/{{ page.extra.doi }}">{{ trans(key="doi", lang=lang) }}</a>{% endif %}
+      {% if page.extra.code %}<a href="{{ page.extra.code }}">{{ trans(key="code", lang=lang) }}</a>{% endif %}
+      {% if page.extra.paper %}<a href="{{ page.extra.paper }}">{{ trans(key="paper_link", lang=lang) }}</a>{% endif %}
+      {% if page.extra.project %}<a href="{{ page.extra.project }}">{{ trans(key="project", lang=lang) }}</a>{% endif %}
+    </div>
+  </div>
+</li>

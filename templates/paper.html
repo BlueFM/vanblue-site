@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ page.title }} — {{ config.title }}{% endblock title %}
 {% block description %}{{ page.description | default(value=page.title) }}{% endblock description %}
+{% block og_description %}{{ page.description | default(value=page.title) }}{% endblock og_description %}
 
 {% block head %}
 <meta name="citation_title" content="{{ page.title }}">
@@ -21,9 +22,9 @@
 <article>
   <h1 class="page-title">{{ page.title }}</h1>
   <p class="pub-meta">
-    {% if page.authors %}{% for a in page.authors %}{% if a == config.extra.me %}<strong>{{ a }}</strong>{% else %}{{ a }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}
-    {% if page.extra.venue %}<span class="venue"> — {{ page.extra.venue }}</span>{% endif %}
-    {% if page.date %} · {{ page.date | date(format="%Y") }}{% endif %}
+    {% include "partials/authors.html" %}
+    {% if page.extra.venue %}<span class="venue">{{ page.extra.venue }}</span>{% endif %}
+    {% if page.date %}<span class="pub-year">{{ page.date | date(format="%Y") }}</span>{% endif %}
   </p>
   {% if page.extra.details %}<p class="pub-detail">{{ page.extra.details }}</p>{% endif %}
   <p class="pub-links">
@@ -32,6 +33,9 @@
     {% if page.extra.code %}<a href="{{ page.extra.code }}">{{ trans(key="code", lang=lang) }}</a>{% endif %}
     {% if page.extra.project %}<a href="{{ page.extra.project }}">{{ trans(key="project_page", lang=lang) }}</a>{% endif %}
   </p>
+  {% if page.extra.preview %}
+  <figure class="teaser"><img src="{{ page.extra.preview }}" alt="" loading="lazy"></figure>
+  {% endif %}
   <div class="prose">{{ page.content | safe }}</div>
   {% if page.extra.bibtex %}
   <details class="bibtex">

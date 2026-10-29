@@ -3,25 +3,11 @@
 
 {% block content %}
 <h1 class="page-title">{{ section.title }}</h1>
-{% if section.content %}{{ section.content | safe }}{% endif %}
+{% if section.content %}<div class="prose page-intro">{{ section.content | safe }}</div>{% endif %}
 
 <ul class="pub-list">
 {% for page in section.pages %}
-  <li>
-    <a class="pub-title" href="{{ page.permalink }}">{{ page.title }}</a>
-    <div class="pub-meta">
-      {% if page.authors %}{% for a in page.authors %}{% if a == config.extra.me %}<strong>{{ a }}</strong>{% else %}{{ a }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}
-      {% if page.extra.venue %}<span class="venue"> — {{ page.extra.venue }}</span>{% endif %}
-      {% if page.date %} · {{ page.date | date(format="%Y") }}{% endif %}
-    </div>
-    {% if page.description %}<div class="pub-desc">{{ page.description }}</div>{% endif %}
-    <div class="pub-links">
-      {% if page.extra.pdf %}<a href="{{ page.extra.pdf }}">{{ trans(key="pdf", lang=lang) }}</a>{% endif %}
-      {% if page.extra.doi %}<a href="https://doi.org/{{ page.extra.doi }}">{{ trans(key="doi", lang=lang) }}</a>{% endif %}
-      {% if page.extra.code %}<a href="{{ page.extra.code }}">{{ trans(key="code", lang=lang) }}</a>{% endif %}
-      {% if page.extra.project %}<a href="{{ page.extra.project }}">{{ trans(key="project", lang=lang) }}</a>{% endif %}
-    </div>
-  </li>
+  {% include "partials/pub_item.html" %}
 {% endfor %}
 </ul>
 {% endblock content %}

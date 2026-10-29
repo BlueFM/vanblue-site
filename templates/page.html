@@ -6,9 +6,9 @@
   <h1 class="page-title">{{ page.title }}</h1>
   {% if page.date or page.extra.venue %}
   <p class="pub-meta">
-    {% if page.authors %}{% for a in page.authors %}{% if a == config.extra.me %}<strong>{{ a }}</strong>{% else %}{{ a }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}
-    {% if page.extra.venue %}<span class="venue"> — {{ page.extra.venue }}</span>{% endif %}
-    {% if page.date %} · {{ page.date | date(format="%Y") }}{% endif %}
+    {% include "partials/authors.html" %}
+    {% if page.extra.venue %}<span class="venue">{{ page.extra.venue }}</span>{% endif %}
+    {% if page.date %}<span class="pub-year">{{ page.date | date(format="%Y") }}</span>{% endif %}
   </p>
   {% endif %}
   {% if page.extra.pdf or page.extra.doi or page.extra.code or page.extra.paper %}
@@ -16,8 +16,11 @@
     {% if page.extra.pdf %}<a href="{{ page.extra.pdf }}">{{ trans(key="pdf", lang=lang) }}</a>{% endif %}
     {% if page.extra.doi %}<a href="https://doi.org/{{ page.extra.doi }}">{{ trans(key="doi", lang=lang) }}</a>{% endif %}
     {% if page.extra.code %}<a href="{{ page.extra.code }}">{{ trans(key="code", lang=lang) }}</a>{% endif %}
-    {% if page.extra.paper %}<a href="{{ page.extra.paper }}">{{ trans(key="paper_link", lang=lang) | default(value="Paper") }}</a>{% endif %}
+    {% if page.extra.paper %}<a href="{{ page.extra.paper }}">{{ trans(key="paper_link", lang=lang) }}</a>{% endif %}
   </p>
+  {% endif %}
+  {% if page.extra.preview %}
+  <figure class="teaser"><img src="{{ page.extra.preview }}" alt="" loading="lazy"></figure>
   {% endif %}
   <div class="prose">{{ page.content | safe }}</div>
 </article>

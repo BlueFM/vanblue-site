@@ -1,0 +1,1 @@
+{% if page.authors %}{% for a in page.authors %}{% if a == config.extra.me %}<strong>{{ a }}</strong>{% else %}{{ a }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}

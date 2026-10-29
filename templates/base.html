@@ -5,9 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {% set_global alt_url = "" %}
 {% set_global alt_lang = "" %}
+{% set_global doc_title = config.title %}
 {% if page is defined and page %}
+  {% set_global doc_title = page.title %}
   {% for t in page.translations | default(value=[]) %}{% if t.lang != lang %}{% set_global alt_url = t.permalink %}{% set_global alt_lang = t.lang %}{% endif %}{% endfor %}
 {% elif section is defined and section %}
+  {% if section.extra.is_home | default(value=false) %}{% set_global doc_title = trans(key="author", lang=lang) %}{% else %}{% set_global doc_title = section.title %}{% endif %}
   {% for t in section.translations | default(value=[]) %}{% if t.lang != lang %}{% set_global alt_url = t.permalink %}{% set_global alt_lang = t.lang %}{% endif %}{% endfor %}
 {% endif %}
 {% if not alt_url %}
@@ -15,9 +18,38 @@
 {% endif %}
 <title>{% block title %}{{ config.title }}{% endblock title %}</title>
 <meta name="description" content="{% block description %}{{ config.description }}{% endblock description %}">
+<meta name="author" content="{{ trans(key='author', lang=lang) }}">
+<meta name="theme-color" content="#fdfdfc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14140f" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="{{ get_url(path='favicon.svg') }}" type="image/svg+xml">
 <link rel="stylesheet" href="{{ get_url(path='css/style.css') }}">
+<link rel="canonical" href="{{ current_url | default(value=config.base_url) }}">
 <link rel="alternate" hreflang="{{ alt_lang }}" href="{{ alt_url }}">
 <link rel="alternate" type="application/atom+xml" title="{{ config.title }}" href="{{ config.base_url }}/{% if lang != config.default_language %}{{ lang }}/{% endif %}atom.xml">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ config.title }}">
+<meta property="og:locale" content="{% if lang == 'zh' %}zh_CN{% else %}en_US{% endif %}">
+<meta property="og:title" content="{{ doc_title }}">
+<meta property="og:description" content="{% block og_description %}{{ config.description }}{% endblock og_description %}">
+<meta property="og:url" content="{{ current_url | default(value=config.base_url) }}">
+<meta property="og:image" content="{{ config.base_url }}{{ config.extra.og_image }}">
+<meta name="twitter:card" content="summary_large_image">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Shunbao Zhang",
+  "alternateName": "张顺宝",
+  "url": "{{ config.base_url }}/",
+  "image": "{{ config.base_url }}{{ config.extra.photo }}",
+  "description": "{{ config.description }}",
+  "affiliation": { "@type": "CollegeOrUniversity", "name": "Lanzhou University" },
+  "knowsAbout": ["Deep learning", "Optimisation", "Generalisation", "Robustness"],
+  "sameAs": ["{{ config.extra.scholar }}"{% if config.extra.github != "" %}, "{{ config.extra.github }}"{% endif %}]
+}
+</script>
 {% block head %}{% endblock head %}
 </head>
 <body>
