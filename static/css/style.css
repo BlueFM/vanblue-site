@@ -201,6 +201,38 @@ p.pub-status { margin: 0 0 0.6rem; }
 }
 .pub-links a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
 
+/* ---------- projects ---------- */
+
+.project-item {
+  padding: 0.95rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.project-item:first-child { border-top: 1px solid var(--rule); }
+
+.project-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.project-head .pub-year::before { content: none; }
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+.project-tech .tech {
+  font-size: 0.71rem;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 0.02rem 0.5rem;
+  line-height: 1.6;
+}
+
 .more { margin-top: 0.9rem; font-size: 0.9rem; }
 
 /* ---------- article ---------- */

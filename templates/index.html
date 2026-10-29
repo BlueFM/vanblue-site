@@ -41,6 +41,16 @@
 </section>
 
 <section>
+  <h2>{{ trans(key="nav_projects", lang=lang) }}</h2>
+  {% set projects = get_section(path="projects/_index.md") %}
+  <ul class="pub-list">
+  {% for page in projects.pages %}{% if loop.index <= 3 %}
+    {% include "partials/project_item.html" %}
+  {% endif %}{% endfor %}
+  </ul>
+</section>
+
+<section>
   <h2>{{ trans(key="anchor_research", lang=lang) }}</h2>
   {% set research = get_section(path="research/_index.md") %}
   <ul class="pub-list">
