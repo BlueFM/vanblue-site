@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }} — {{ config.title }}{% endblock title %}
+
+{% block content %}
+<article class="post">
+  <h1 class="page-title">{{ page.title }}</h1>
+  <p class="post-meta">
+    {% if page.date %}{{ page.date | date(format="%Y-%m-%d") }}{% endif %}
+    {% for tag in page.taxonomies.tags | default(value=[]) %}<span class="tech">{{ tag }}</span>{% endfor %}
+    {% if page.extra.reading_time %}<span class="post-time">{{ page.extra.reading_time }}</span>{% endif %}
+  </p>
+  <div class="prose">{{ page.content | safe }}</div>
+  <p class="post-back"><a href="{{ get_url(path='@/blog/_index.md') }}">← {{ trans(key="nav_blog", lang=lang) }}</a></p>
+</article>
+{% endblock content %}
