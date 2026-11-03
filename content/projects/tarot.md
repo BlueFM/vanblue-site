@@ -85,5 +85,6 @@ are metered per sender, so a whole group does not share the server's single IP a
 - **One draw per day**: asking for a single card twice on the same day returns the same card.
   The card stays put and the reading can be re-read — the draw is a ritual, not a refresh button.
 
-Next: bring the follow-ups and the image into the chat group (both need separate bot work), and
-give the records a retention policy.
+The image has already reached the chat group: the bot draws the same card with Pillow inside its
+own container and sends it after the text, fetching each card face once. What is left is follow-ups
+inside the bot, and a retention policy for the records.
