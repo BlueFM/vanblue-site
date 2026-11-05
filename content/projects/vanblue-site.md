@@ -5,7 +5,7 @@ date = 2026-10-29
 weight = 1
 
 [extra]
-tech = ["Zola", "Tera templates", "nginx", "Let's Encrypt", "bash", "DNS"]
+tech = ["Zola", "Tera templates", "nginx", "systemd timer", "canvas", "Let's Encrypt", "bash", "DNS"]
 live = "https://vanblue.online"
 repo = "https://github.com/BlueFM/vanblue-site"
 +++
@@ -78,6 +78,17 @@ address.
 Two paths stay available on purpose: the local script (fast, works offline, and the build
 never touches the server until the tarball is complete) and the CI path (works from any
 machine, no laptop in the loop).
+
+## A creature in the corner
+
+Because the site is flat files, the pixel spirit in the bottom corner cannot ask a server
+how things are going. A systemd timer writes one small JSON file every minute — load
+average, today's unique visitors, and how long ago the release symlink was swapped — and
+nginx serves it like any other static asset. The canvas reads that file every 60 seconds
+and picks a mood: idle, asleep between 1am and 7am, smoking when the box is busy, and
+carrying a box for two minutes after a deploy. Outside `releases/` on purpose, so a deploy
+never replaces the file it is about. With JavaScript off, or before the timer is installed,
+it falls back to the visitor's clock and keeps blinking.
 
 ## Next
 

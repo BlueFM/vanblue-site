@@ -5,7 +5,7 @@ date = 2026-10-29
 weight = 1
 
 [extra]
-tech = ["Zola", "Tera 模板", "nginx", "Let's Encrypt", "bash", "DNS"]
+tech = ["Zola", "Tera 模板", "nginx", "systemd timer", "canvas", "Let's Encrypt", "bash", "DNS"]
 live = "https://vanblue.online"
 repo = "https://github.com/BlueFM/vanblue-site"
 +++
@@ -68,6 +68,15 @@ workflow 里，runner 不会和任何别的东西握手。
 
 两条路径都故意保留：本地脚本（快、离线可用，且 tar 包完整生成前不碰服务器）和 CI 路径
 （任何机器上都能发布，不需要有笔记本在线）。
+
+## 角落里的小家伙
+
+站点是纯静态文件，所以右下角那只像素小生物没法问服务器「你还好吗」。一个 systemd timer
+每分钟写一个小 JSON——负载、当日独立访客数、`current` 软链是什么时候换的——nginx 像发其它
+静态资源一样把它发出去。canvas 每 60 秒读一次，据此选一种状态：发呆、凌晨一点到七点睡觉、
+机器忙时冒烟、部署后两分钟里搬箱子。这个文件特意放在 `releases/` 外面，部署永远不会把它自己
+正在描述的东西换掉。关掉 JavaScript，或者还没装 timer 时，它会退回按访客本地时间判断，照样
+会眨眼。
 
 ## 下一步
 

@@ -81,5 +81,7 @@
     <a href="{{ config.base_url }}/{% if lang != config.default_language %}{{ lang }}/{% endif %}atom.xml">{{ trans(key="footer_rss", lang=lang) }}</a>
   </footer>
 </div>
+{% include "partials/guardian.html" %}
+<script src="{{ get_url(path='js/guardian.js', cachebust=true) }}" defer></script>
 </body>
 </html>

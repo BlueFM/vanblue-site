@@ -38,6 +38,26 @@ Releases live in `/var/www/vanblue/releases/<timestamp>`; `current` is a symlink
 so a deploy or rollback is a single atomic pointer change. The server keeps the
 last 5 releases (`KEEP=5`).
 
+## Site guardian
+
+A pixel creature sits in the bottom-right corner of every page. It is pure
+canvas, no dependencies; mood comes from `/guardian/status.json`, a static file
+rewritten once a minute by `guardian-status.timer` on the server:
+
+| JSON `mood` | what the script sees                                      |
+|-------------|-----------------------------------------------------------|
+| `idle`      | default                                                   |
+| `sleep`     | 01:00–07:00 server time                                   |
+| `busy`      | load per core ≥ 0.7, or ≥ 20 visitors today                |
+| `deploy`    | less than 120 s since `current` was swapped               |
+
+If the file is missing — local preview, fresh clone — the creature falls back to
+the visitor's clock and still animates. Click it for today's numbers.
+
+Install and tuning live in `deploy/guardian/README.md`. The snapshot deliberately
+lives in `/var/www/vanblue/guardian/`, outside `releases/`, so deploys never
+replace it; nginx serves it through an exact-match location.
+
 ## Server
 
 - nginx 1.29, config in `/etc/nginx/conf.d/vanblue.conf` (copy: `deploy/nginx-vanblue.conf`)

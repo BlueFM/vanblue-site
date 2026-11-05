@@ -351,3 +351,67 @@ blockquote { margin: 1.2rem 0; padding-left: 1rem; border-left: 3px solid var(--
   color: var(--muted);
   font-size: 0.92rem;
 }
+
+/* ---------- site guardian ---------- */
+
+.guardian {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 20;
+  opacity: 0.95;
+  transition: opacity 0.2s ease;
+}
+
+.guardian:hover,
+.guardian:focus-within { opacity: 1; }
+
+.guardian-btn {
+  display: block;
+  width: 72px;
+  height: 80px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.guardian-btn:focus-visible {
+  outline: 1px dashed var(--muted);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.guardian-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.guardian-bubble {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  width: max-content;
+  max-width: min(16rem, 60vw);
+  white-space: pre-line;
+  text-align: right;
+  font: 0.72rem/1.55 ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 0.3rem 0.5rem;
+  pointer-events: none;
+}
+
+@media (max-width: 34rem) {
+  .guardian { right: 0.5rem; bottom: 0.5rem; }
+  .guardian-btn { width: 54px; height: 60px; }
+}
+
+@media print {
+  .guardian { display: none; }
+}

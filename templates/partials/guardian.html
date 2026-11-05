@@ -1,0 +1,13 @@
+<div class="guardian" data-guardian hidden
+     data-label="{{ trans(key='guardian_label', lang=lang) }}"
+     data-stats="{{ trans(key='guardian_stats', lang=lang) }}"
+     data-load="{{ trans(key='guardian_load', lang=lang) }}"
+     data-mood-idle="{{ trans(key='guardian_mood_idle', lang=lang) }}"
+     data-mood-sleep="{{ trans(key='guardian_mood_sleep', lang=lang) }}"
+     data-mood-busy="{{ trans(key='guardian_mood_busy', lang=lang) }}"
+     data-mood-deploy="{{ trans(key='guardian_mood_deploy', lang=lang) }}">
+  <button class="guardian-btn" type="button" aria-label="{{ trans(key='guardian_label', lang=lang) }}">
+    <canvas class="guardian-canvas" width="18" height="20" aria-hidden="true"></canvas>
+  </button>
+  <span class="guardian-bubble" role="status" aria-live="polite" hidden></span>
+</div>
