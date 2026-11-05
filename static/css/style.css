@@ -356,11 +356,12 @@ blockquote { margin: 1.2rem 0; padding-left: 1rem; border-left: 3px solid var(--
 
 .guardian {
   position: fixed;
-  right: 1rem;
-  bottom: 1rem;
+  left: 0;
+  bottom: 0.75rem;
   z-index: 20;
   opacity: 0.95;
   transition: opacity 0.2s ease;
+  will-change: transform;
 }
 
 .guardian:hover,
@@ -392,7 +393,8 @@ blockquote { margin: 1.2rem 0; padding-left: 1rem; border-left: 3px solid var(--
 
 .guardian-bubble {
   position: absolute;
-  right: 0;
+  left: 0;
+  right: auto;
   bottom: calc(100% + 6px);
   width: max-content;
   max-width: min(16rem, 60vw);
@@ -407,8 +409,10 @@ blockquote { margin: 1.2rem 0; padding-left: 1rem; border-left: 3px solid var(--
   pointer-events: none;
 }
 
+.guardian.is-right .guardian-bubble { left: auto; right: 0; }
+
 @media (max-width: 34rem) {
-  .guardian { right: 0.5rem; bottom: 0.5rem; }
+  .guardian { bottom: 0.5rem; }
   .guardian-btn { width: 54px; height: 60px; }
 }
 

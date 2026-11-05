@@ -60,6 +60,12 @@
     yawn: withRows(BODY_OPEN, { 11: '..#aaaammaaaa#..' })
   };
 
+  // Two-step shuffle: the feet swap places while the body bobs one pixel.
+  var BODY_WALK = [
+    withRows(BODY_OPEN, { 14: '....aa...aa.....' }),
+    withRows(BODY_OPEN, { 14: '.....aa...aa....' })
+  ];
+
   // 6x4 cardboard box, held in front of the body while a release lands.
   var BOX = [
     'xxxxxx',
@@ -141,7 +147,9 @@
 
   /* ---------------------------------------------------------------- drawing */
 
-  function drawSprite(ctx, rows, x, y, pal) {
+  function drawSprite(ctx, rows, x, y, pal, pupilDx) {
+    var shift = pupilDx || 0;
+    var pupils = [];
     for (var r = 0; r < rows.length; r++) {
       var row = rows[r];
       for (var c = 0; c < row.length; c++) {
@@ -149,9 +157,19 @@
         if (ch === '.') continue;
         var color = pal[ch];
         if (!color) continue;
+        // Pupils shift with the gaze, so they land on the eye whites. They
+        // have to go on top, or the rest of the eye paints over them.
+        if (ch === 'p') {
+          pupils.push([x + c + shift, y + r]);
+          continue;
+        }
         ctx.fillStyle = color;
         ctx.fillRect(x + c, y + r, 1, 1);
       }
+    }
+    ctx.fillStyle = pal.p;
+    for (var i = 0; i < pupils.length; i++) {
+      ctx.fillRect(pupils[i][0], pupils[i][1], 1, 1);
     }
   }
 
@@ -203,15 +221,20 @@
   }
 
   function paint(ctx, t, mood, pal, state) {
+    state = state || {};
     ctx.clearRect(0, 0, W, H);
 
+    var walking = !!state.walking && (mood === 'idle' || mood === 'deploy');
+    var step = state.step | 0;
     var bob = 0;
+
     if (mood === 'sleep') bob = (Math.floor(t / 900) % 2) ? 0 : 1;
     else if (mood === 'busy') bob = Math.floor(t / 140) % 2;
+    else if (walking) bob = step % 2 ? -1 : 0;
     else if (mood === 'deploy') bob = (Math.floor(t / 220) % 2) ? -1 : 0;
     else bob = (Math.floor(t / 520) % 2) ? -1 : 0;
 
-    if (state && state.hopAt > 0 && t - state.hopAt < 480) bob -= 2;
+    if (state.hopAt > 0 && t - state.hopAt < 480) bob -= 2;
 
     var top = BODY_Y + bob;
 
@@ -220,12 +243,13 @@
 
     var rows;
     if (mood === 'sleep') rows = BODY.sleep;
-    else if (mood === 'busy' || mood === 'deploy') rows = BODY.open;
+    else if (mood === 'busy') rows = BODY.open;
+    else if (walking) rows = BODY_WALK[step % 2];
     else if ((t % 17000) > 16200) rows = BODY.yawn;
     else if ((t % 4300) < 130) rows = BODY.blink;
     else rows = BODY.open;
 
-    drawSprite(ctx, rows, BODY_X, top, pal);
+    drawSprite(ctx, rows, BODY_X, top, pal, state.eyeDx || 0);
 
     if (mood === 'deploy') drawBox(ctx, pal, BODY_X, top);
     if (mood === 'busy') drawSweat(ctx, pal, t, BODY_X, top);
@@ -282,13 +306,117 @@
     var status = opts.status || null;
     var mood = opts.mood || attr('mood', '') ||
       (status ? moodFromStatus(status, Date.now() / 1000) : 'idle');
-    var state = { hopAt: -1, status: status };
+    var state = {
+      hopAt: -1,
+      status: status,
+      walking: false,
+      step: 0,
+      eyeDx: 0
+    };
     var lastT = 0;
+    var anchoredRight = null;
 
     var pal = palette();
     var bubble = el.querySelector('.guardian-bubble');
     var btn = el.querySelector('.guardian-btn');
     var hideTimer = 0;
+
+    /* --- roaming -------------------------------------------------------- */
+
+    var EDGE = 8;        // px kept clear at either side of the viewport
+    var SPEED = 24;      // px per second
+    var clock = 0;       // ms of animated time, advanced by the frame loop
+    var nextLook = 0;
+    var creatureW = (btn && btn.offsetWidth) || 72;
+
+    var walk = {
+      x: 0,
+      target: 0,
+      dir: -1,
+      moving: false,
+      pauseUntil: 1400
+    };
+
+    function homeX() {
+      var vw = global.innerWidth || 1024;
+      return Math.max(EDGE, vw - creatureW - EDGE);
+    }
+
+    function applyPosition() {
+      if (el.style) {
+        el.style.transform = 'translate3d(' + Math.round(walk.x) + 'px,0,0)';
+      }
+      // Keep the speech bubble on the inside of the viewport.
+      if (el.classList) {
+        var right = walk.x > homeX() / 2;
+        if (right !== anchoredRight) {
+          anchoredRight = right;
+          el.classList.toggle('is-right', right);
+        }
+      }
+    }
+
+    function lookAround() {
+      if (clock < nextLook) return;
+      state.eyeDx = [-1, 0, 0, 1][Math.floor(Math.random() * 4)];
+      nextLook = clock + 2200 + Math.random() * 3200;
+    }
+
+    function pickTarget() {
+      var far = homeX();
+      var t = EDGE + Math.random() * Math.max(1, far - EDGE);
+      if (Math.abs(t - walk.x) < 140) t = walk.x > (far + EDGE) / 2 ? EDGE : far;
+      walk.target = Math.round(t);
+    }
+
+    function advance(dt) {
+      clock += dt;
+      var far = homeX();
+      if (walk.x > far) {
+        walk.x = far;
+        applyPosition();
+      }
+
+      state.walking = false;
+
+      // Asleep or busy: stay put. Only wandering moods move.
+      if (mood !== 'idle' && mood !== 'deploy') {
+        walk.moving = false;
+        state.step = 0;
+        return;
+      }
+
+      if (!walk.moving) {
+        lookAround();
+        if (clock >= walk.pauseUntil) {
+          pickTarget();
+          walk.moving = true;
+        }
+        return;
+      }
+
+      var delta = walk.target - walk.x;
+      var stride = SPEED * dt / 1000;
+
+      if (Math.abs(delta) <= stride) {
+        walk.x = walk.target;
+        walk.moving = false;
+        walk.pauseUntil = clock + 2000 + Math.random() * 5000;
+        state.step = 0;
+        applyPosition();
+        return;
+      }
+
+      walk.dir = delta > 0 ? 1 : -1;
+      walk.x += walk.dir * stride;
+      state.eyeDx = walk.dir;
+      state.step = Math.floor(clock / 150) % 2;
+      state.walking = true;
+      applyPosition();
+    }
+
+    walk.x = homeX();
+    applyPosition();
 
     function bubbleText() {
       var lines = [txt.moods[mood] || txt.moods.idle];
@@ -344,6 +472,7 @@
     var reduce = !!(global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches);
     var raf = 0;
     var start = 0;
+    var lastTs = 0;
 
     function draw() {
       paint(ctx, lastT, mood, pal, state);
@@ -351,8 +480,13 @@
 
     function frame(ts) {
       if (opts.freeze != null) { lastT = opts.freeze; draw(); return; }
-      if (!start) start = ts;
+      if (!start) { start = ts; lastTs = ts; }
+      var dt = ts - lastTs;
+      lastTs = ts;
+      if (dt < 0) dt = 0;
+      if (dt > 80) dt = 80;          // the tab was hidden; do not teleport
       lastT = ts - start;
+      advance(dt);
       paint(ctx, lastT, mood, pal, state);
       raf = global.requestAnimationFrame(frame);
     }
@@ -375,7 +509,18 @@
       btn.setAttribute('aria-label', txt.label);
       btn.addEventListener('click', function () {
         state.hopAt = lastT;
+        walk.moving = false;
+        walk.pauseUntil = clock + 3200;
         toggleBubble();
+      });
+    }
+
+    if (global.addEventListener) {
+      global.addEventListener('resize', function () {
+        creatureW = (btn && btn.offsetWidth) || 72;
+        var far = homeX();
+        if (walk.x > far) walk.x = far;
+        applyPosition();
       });
     }
 

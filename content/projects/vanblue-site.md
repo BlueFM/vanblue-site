@@ -86,7 +86,9 @@ how things are going. A systemd timer writes one small JSON file every minute �
 average, today's unique visitors, and how long ago the release symlink was swapped — and
 nginx serves it like any other static asset. The canvas reads that file every 60 seconds
 and picks a mood: idle, asleep between 1am and 7am, smoking when the box is busy, and
-carrying a box for two minutes after a deploy. Outside `releases/` on purpose, so a deploy
+carrying a box for two minutes after a deploy. Mood only changes the face — the spirit
+walks the bottom of the viewport when it is idle or hauling a box, and stands still when it
+is busy or asleep. Outside `releases/` on purpose, so a deploy
 never replaces the file it is about. With JavaScript off, or before the timer is installed,
 it falls back to the visitor's clock and keeps blinking.
 

@@ -22,6 +22,9 @@ release symlink ─┘        (every 60s)              (nginx, exact location)
 Thresholds are env overrides in the unit: `GUARDIAN_BUSY_RATIO`,
 `GUARDIAN_BUSY_VISITORS`, `GUARDIAN_DEPLOY_WINDOW`.
 
+Mood only changes the face. `idle` and `deploy` also wander along the bottom of
+the viewport; `busy` and `sleep` stand wherever they are.
+
 ## Install
 
 ```sh
