@@ -288,6 +288,9 @@ blockquote { margin: 1.2rem 0; padding-left: 1rem; border-left: 3px solid var(--
   gap: 0.25rem;
 }
 
+.site-foot a.icp { color: var(--muted); font-variant-numeric: tabular-nums; }
+.site-foot a.icp:hover { color: var(--accent); }
+
 /* ---------- small screens ---------- */
 
 @media (max-width: 40rem) {

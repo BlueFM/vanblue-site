@@ -14,6 +14,8 @@ github = "https://github.com/BlueFM"
 orcid = ""
 photo = "/img/portrait.jpg"
 og_image = "/img/og-cover.jpg"
+# ICP filing number; the footer shows it only when this is non-empty
+icp = "陇ICP备2025018043号"
 
 [languages.en]
 title = "Shunbao Zhang"

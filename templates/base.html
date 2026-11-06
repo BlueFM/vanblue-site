@@ -79,6 +79,8 @@
     <a href="{{ config.extra.github }}">GitHub</a>
     <span class="sep">·</span>
     <a href="{{ config.base_url }}/{% if lang != config.default_language %}{{ lang }}/{% endif %}atom.xml">{{ trans(key="footer_rss", lang=lang) }}</a>
+    {% if config.extra.icp %}<span class="sep">·</span>
+    <a class="icp" href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">{{ config.extra.icp }}</a>{% endif %}
   </footer>
 </div>
 {% include "partials/guardian.html" %}
