@@ -147,8 +147,11 @@
 
   /* ---------------------------------------------------------------- drawing */
 
-  function drawSprite(ctx, rows, x, y, pal, pupilDx) {
-    var shift = pupilDx || 0;
+  function drawSprite(ctx, rows, x, y, pal, pupilDx, pupilDy) {
+    var shiftX = pupilDx || 0;
+    var shiftY = pupilDy || 0;
+    if (shiftY > 1) shiftY = 1;
+    if (shiftY < -1) shiftY = -1;
     var pupils = [];
     for (var r = 0; r < rows.length; r++) {
       var row = rows[r];
@@ -160,7 +163,7 @@
         // Pupils shift with the gaze, so they land on the eye whites. They
         // have to go on top, or the rest of the eye paints over them.
         if (ch === 'p') {
-          pupils.push([x + c + shift, y + r]);
+          pupils.push([x + c + shiftX, y + r + shiftY]);
           continue;
         }
         ctx.fillStyle = color;
@@ -249,7 +252,15 @@
     else if ((t % 4300) < 130) rows = BODY.blink;
     else rows = BODY.open;
 
-    drawSprite(ctx, rows, BODY_X, top, pal, state.eyeDx || 0);
+    drawSprite(ctx, rows, BODY_X, top, pal, state.eyeDx || 0, state.eyeDy || 0);
+
+    // Clinging to a wall: two tiny hands on the wall side.
+    if (state.onWall) {
+      ctx.fillStyle = pal.a;
+      var hx = state.onWall === 'left' ? BODY_X : BODY_X + 15;
+      ctx.fillRect(hx, top + 6, 1, 1);
+      ctx.fillRect(hx, top + 9, 1, 1);
+    }
 
     if (mood === 'deploy') drawBox(ctx, pal, BODY_X, top);
     if (mood === 'busy') drawSweat(ctx, pal, t, BODY_X, top);
@@ -311,112 +322,243 @@
       status: status,
       walking: false,
       step: 0,
-      eyeDx: 0
+      eyeDx: 0,
+      eyeDy: 0,
+      onWall: null
     };
     var lastT = 0;
     var anchoredRight = null;
+    var anchoredLow = null;
 
     var pal = palette();
     var bubble = el.querySelector('.guardian-bubble');
     var btn = el.querySelector('.guardian-btn');
     var hideTimer = 0;
 
-    /* --- roaming -------------------------------------------------------- */
+    /* --- roaming, climbing, dragging ------------------------------------ */
 
-    var EDGE = 8;        // px kept clear at either side of the viewport
-    var SPEED = 24;      // px per second
-    var clock = 0;       // ms of animated time, advanced by the frame loop
+    var EDGE = 4;              // px kept clear at the viewport edges
+    var FLOOR_GAP = 12;        // px between the floor and the viewport bottom
+    var WALK_SPEED = 24;       // px per second
+    var CLIMB_SPEED = 40;      // px per second
+    var GRAVITY = 2000;        // px per second squared
+    var clock = 0;             // ms of animated time, advanced by the frame loop
     var nextLook = 0;
     var creatureW = (btn && btn.offsetWidth) || 72;
+    var creatureH = (btn && btn.offsetHeight) || 80;
 
-    var walk = {
-      x: 0,
+    var pos = { x: 0, y: 0 };
+    var fall = { vy: 0, bounce: 0 };
+    var motion = {
+      mode: 'idle',            // idle | walk | climb | fall | drag
+      surface: 'floor',        // floor | left | right
       target: 0,
-      dir: -1,
-      moving: false,
-      pauseUntil: 1400
+      pauseUntil: 1400,
+      nextNudge: 0
     };
+    var pointer = { x: -9999, y: -9999 };
+    var dragging = false;
+    var wasDragged = false;
+    var dragOffset = { x: 0, y: 0 };
 
-    function homeX() {
-      var vw = global.innerWidth || 1024;
-      return Math.max(EDGE, vw - creatureW - EDGE);
+    function viewport() {
+      return { w: global.innerWidth || 1024, h: global.innerHeight || 768 };
     }
 
-    function applyPosition() {
+    function floorY() { return viewport().h - creatureH - FLOOR_GAP; }
+    function wallX(side) { return side === 'left' ? EDGE : viewport().w - creatureW - EDGE; }
+    function rand(min, max) { return min + Math.random() * (max - min); }
+
+    function place() {
       if (el.style) {
-        el.style.transform = 'translate3d(' + Math.round(walk.x) + 'px,0,0)';
+        el.style.transform =
+          'translate3d(' + Math.round(pos.x) + 'px,' + Math.round(pos.y) + 'px,0)';
       }
+      if (!el.classList) return;
       // Keep the speech bubble on the inside of the viewport.
-      if (el.classList) {
-        var right = walk.x > homeX() / 2;
-        if (right !== anchoredRight) {
-          anchoredRight = right;
-          el.classList.toggle('is-right', right);
-        }
+      var right = pos.x + creatureW / 2 > viewport().w / 2;
+      if (right !== anchoredRight) {
+        anchoredRight = right;
+        el.classList.toggle('is-right', right);
+      }
+      // High on a wall, the bubble has to go below instead of above.
+      var low = pos.y < 96;
+      if (low !== anchoredLow) {
+        anchoredLow = low;
+        el.classList.toggle('is-low', low);
       }
     }
 
-    function lookAround() {
-      if (clock < nextLook) return;
-      state.eyeDx = [-1, 0, 0, 1][Math.floor(Math.random() * 4)];
-      nextLook = clock + 2200 + Math.random() * 3200;
+    function hop() { state.hopAt = lastT; }
+
+    // Eyes: follow the pointer when it is close, otherwise look where the
+    // body is heading, otherwise glance around now and then.
+    function eyes() {
+      var cx = pos.x + creatureW / 2;
+      var cy = pos.y + creatureH / 2;
+      var dx = pointer.x - cx;
+      var dy = pointer.y - cy;
+
+      if (mood !== 'sleep' && Math.abs(dx) < 260 && Math.abs(dy) < 260) {
+        state.eyeDx = Math.abs(dx) > 10 ? (dx > 0 ? 1 : -1) : 0;
+        state.eyeDy = Math.abs(dy) > 12 ? (dy > 0 ? 1 : -1) : 0;
+        return;
+      }
+      if (motion.mode === 'walk') {
+        state.eyeDx = motion.target > pos.x ? 1 : -1;
+        state.eyeDy = 0;
+        return;
+      }
+      if (motion.mode === 'climb') {
+        state.eyeDx = 0;
+        state.eyeDy = motion.target > pos.y ? 1 : -1;
+        return;
+      }
+      if (clock > nextLook) {
+        state.eyeDx = [-1, 0, 0, 1][Math.floor(Math.random() * 4)];
+        state.eyeDy = 0;
+        nextLook = clock + 2200 + Math.random() * 3200;
+      }
     }
 
-    function pickTarget() {
-      var far = homeX();
-      var t = EDGE + Math.random() * Math.max(1, far - EDGE);
-      if (Math.abs(t - walk.x) < 140) t = walk.x > (far + EDGE) / 2 ? EDGE : far;
-      walk.target = Math.round(t);
+    // A small hop when the pointer lingers on top of it.
+    function hoverNudge() {
+      if (reduce || mood === 'sleep' || clock < motion.nextNudge) return;
+      var cx = pos.x + creatureW / 2;
+      var cy = pos.y + creatureH / 2;
+      if (Math.abs(pointer.x - cx) < 52 && Math.abs(pointer.y - cy) < 52) {
+        hop();
+        motion.nextNudge = clock + 4500;
+      }
+    }
+
+    function arrive() {
+      motion.mode = 'idle';
+      state.walking = false;
+      state.step = 0;
+      motion.pauseUntil = clock + rand(1800, 5200);
+    }
+
+    function climbToWall(side) {
+      motion.surface = side;
+      pos.x = wallX(side);
+      motion.mode = 'climb';
+      motion.target = Math.round(rand(12, Math.max(20, floorY() - 60)));
+      place();
+    }
+
+    function nextAction() {
+      var vp = viewport();
+
+      if (motion.surface === 'floor') {
+        var atLeft = pos.x <= EDGE + 2;
+        var atRight = pos.x >= vp.w - creatureW - EDGE - 2;
+        var r = Math.random();
+        if (atLeft && r < 0.6) return climbToWall('left');
+        if (atRight && r < 0.6) return climbToWall('right');
+        motion.mode = 'walk';
+        motion.target = Math.round(Math.random() < 0.3
+          ? (Math.random() < 0.5 ? EDGE : vp.w - creatureW - EDGE)
+          : rand(EDGE, vp.w - creatureW - EDGE));
+        return;
+      }
+
+      // On a wall: climb higher or lower, or come back down to the floor.
+      motion.mode = 'climb';
+      motion.target = Math.round(Math.random() < 0.55
+        ? rand(12, Math.max(20, floorY() - 80))
+        : floorY());
     }
 
     function advance(dt) {
       clock += dt;
-      var far = homeX();
-      if (walk.x > far) {
-        walk.x = far;
-        applyPosition();
-      }
+      var vp = viewport();
+      state.onWall = motion.surface === 'floor' ? null : motion.surface;
 
-      state.walking = false;
-
-      // Asleep or busy: stay put. Only wandering moods move.
-      if (mood !== 'idle' && mood !== 'deploy') {
-        walk.moving = false;
-        state.step = 0;
+      if (motion.mode === 'drag') {
+        eyes();
         return;
       }
 
-      if (!walk.moving) {
-        lookAround();
-        if (clock >= walk.pauseUntil) {
-          pickTarget();
-          walk.moving = true;
+      if (pos.x > vp.w - creatureW) pos.x = Math.max(0, vp.w - creatureW);
+
+      if (motion.mode === 'fall') {
+        fall.vy += GRAVITY * dt / 1000;
+        pos.y += fall.vy * dt / 1000;
+        var ground = floorY();
+        if (pos.y >= ground) {
+          pos.y = ground;
+          if (fall.vy > 320 && fall.bounce < 2) {
+            fall.vy = -fall.vy * 0.26;
+            fall.bounce++;
+          } else {
+            fall.vy = 0;
+            fall.bounce = 0;
+            motion.mode = 'idle';
+            motion.surface = 'floor';
+            motion.pauseUntil = clock + 900;
+          }
         }
+        eyes();
+        place();
         return;
       }
 
-      var delta = walk.target - walk.x;
-      var stride = SPEED * dt / 1000;
+      var canRoam = mood === 'idle' || mood === 'deploy';
+      if (!canRoam && (motion.mode === 'walk' || motion.mode === 'climb')) {
+        motion.mode = 'idle';
+        motion.pauseUntil = clock + 1500;
+      }
 
-      if (Math.abs(delta) <= stride) {
-        walk.x = walk.target;
-        walk.moving = false;
-        walk.pauseUntil = clock + 2000 + Math.random() * 5000;
-        state.step = 0;
-        applyPosition();
+      if (motion.mode === 'walk') {
+        var dx = motion.target - pos.x;
+        var stride = WALK_SPEED * dt / 1000;
+        if (Math.abs(dx) <= stride) {
+          pos.x = motion.target;
+          arrive();
+        } else {
+          pos.x += dx > 0 ? stride : -stride;
+          state.walking = true;
+          state.step = Math.floor(clock / 150) % 2;
+        }
+        eyes();
+        place();
         return;
       }
 
-      walk.dir = delta > 0 ? 1 : -1;
-      walk.x += walk.dir * stride;
-      state.eyeDx = walk.dir;
-      state.step = Math.floor(clock / 150) % 2;
-      state.walking = true;
-      applyPosition();
+      if (motion.mode === 'climb') {
+        var dy = motion.target - pos.y;
+        var climb = CLIMB_SPEED * dt / 1000;
+        if (Math.abs(dy) <= climb) {
+          pos.y = motion.target;
+          if (motion.surface !== 'floor' && pos.y >= floorY() - 0.5) {
+            motion.surface = 'floor';
+            pos.y = floorY();
+          }
+          arrive();
+        } else {
+          pos.y += dy > 0 ? climb : -climb;
+          state.walking = true;
+          state.step = Math.floor(clock / 120) % 2;
+        }
+        eyes();
+        place();
+        return;
+      }
+
+      // idle
+      state.walking = false;
+      state.step = 0;
+      if (motion.surface === 'floor') pos.y = floorY();
+      eyes();
+      hoverNudge();
+      if (canRoam && clock >= motion.pauseUntil) nextAction();
+      place();
     }
 
-    walk.x = homeX();
-    applyPosition();
+    pos.x = viewport().w - creatureW - EDGE;
+    pos.y = floorY();
+    place();
 
     function bubbleText() {
       var lines = [txt.moods[mood] || txt.moods.idle];
@@ -505,23 +647,102 @@
       raf = global.requestAnimationFrame(frame);
     }
 
+    function onDown(ev) {
+      if (ev && ev.button != null && ev.button !== 0) return;
+      dragging = true;
+      wasDragged = false;
+      dragOffset.x = (ev && ev.clientX != null ? ev.clientX : 0) - pos.x;
+      dragOffset.y = (ev && ev.clientY != null ? ev.clientY : 0) - pos.y;
+      motion.mode = 'drag';
+      if (el.classList) el.classList.add('is-dragging');
+      // Keep receiving moves if the pointer leaves the element. No
+      // preventDefault: it can swallow the click that opens the bubble.
+      if (btn.setPointerCapture && ev && ev.pointerId != null) {
+        try { btn.setPointerCapture(ev.pointerId); } catch (err) { /* ignore */ }
+      }
+    }
+
+    function onMove(ev) {
+      if (!ev) return;
+      if (ev.clientX != null) {
+        pointer.x = ev.clientX;
+        pointer.y = ev.clientY;
+      }
+      if (!dragging) return;
+      var vp = viewport();
+      var nx = pointer.x - dragOffset.x;
+      var ny = pointer.y - dragOffset.y;
+      nx = Math.max(0, Math.min(vp.w - creatureW, nx));
+      ny = Math.max(0, Math.min(vp.h - creatureH, ny));
+      if (Math.abs(nx - pos.x) + Math.abs(ny - pos.y) > 3) wasDragged = true;
+      pos.x = nx;
+      pos.y = ny;
+      place();
+    }
+
+    function onUp() {
+      if (!dragging) return;
+      dragging = false;
+      if (el.classList) el.classList.remove('is-dragging');
+      var vp = viewport();
+      if (pos.x < EDGE + 40) {
+        motion.surface = 'left';
+        pos.x = EDGE;
+        pos.y = Math.min(pos.y, floorY());
+        motion.mode = 'idle';
+        motion.pauseUntil = clock + 1200;
+      } else if (pos.x + creatureW > vp.w - EDGE - 40) {
+        motion.surface = 'right';
+        pos.x = vp.w - creatureW - EDGE;
+        pos.y = Math.min(pos.y, floorY());
+        motion.mode = 'idle';
+        motion.pauseUntil = clock + 1200;
+      } else if (reduce) {
+        motion.surface = 'floor';
+        pos.y = floorY();
+        motion.mode = 'idle';
+      } else {
+        // Let go in mid-air and it drops to the floor.
+        motion.surface = 'floor';
+        motion.mode = 'fall';
+        fall.vy = 0;
+        fall.bounce = 0;
+      }
+      state.onWall = motion.surface === 'floor' ? null : motion.surface;
+      place();
+    }
+
+    function onResize() {
+      creatureW = (btn && btn.offsetWidth) || 72;
+      creatureH = (btn && btn.offsetHeight) || 80;
+      var vp = viewport();
+      if (pos.x > vp.w - creatureW) pos.x = Math.max(0, vp.w - creatureW);
+      if (motion.surface === 'left') pos.x = wallX('left');
+      else if (motion.surface === 'right') pos.x = wallX('right');
+      if (pos.y > floorY()) pos.y = floorY();
+      if (motion.surface === 'floor') pos.y = floorY();
+      place();
+    }
+
     if (btn) {
       btn.setAttribute('aria-label', txt.label);
+      btn.addEventListener('pointerdown', onDown);
       btn.addEventListener('click', function () {
-        state.hopAt = lastT;
-        walk.moving = false;
-        walk.pauseUntil = clock + 3200;
+        if (wasDragged) { wasDragged = false; return; }
+        hop();
+        if (motion.mode === 'walk' || motion.mode === 'climb') {
+          motion.mode = 'idle';
+          motion.pauseUntil = clock + 2400;
+        }
         toggleBubble();
       });
     }
 
     if (global.addEventListener) {
-      global.addEventListener('resize', function () {
-        creatureW = (btn && btn.offsetWidth) || 72;
-        var far = homeX();
-        if (walk.x > far) walk.x = far;
-        applyPosition();
-      });
+      global.addEventListener('pointermove', onMove, { passive: true });
+      global.addEventListener('pointerup', onUp);
+      global.addEventListener('pointercancel', onUp);
+      global.addEventListener('resize', onResize);
     }
 
     document.addEventListener('keydown', function (ev) {
@@ -550,7 +771,7 @@
       if (!document.hidden) loadStatus();
     }, POLL_MS);
 
-    return { setStatus: applyStatus, paint: draw };
+    return { setStatus: applyStatus, paint: draw, state: state, pos: pos, motion: motion };
   }
 
   function autoMount() {

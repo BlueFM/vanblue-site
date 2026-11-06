@@ -22,8 +22,10 @@ release symlink ─┘        (every 60s)              (nginx, exact location)
 Thresholds are env overrides in the unit: `GUARDIAN_BUSY_RATIO`,
 `GUARDIAN_BUSY_VISITORS`, `GUARDIAN_DEPLOY_WINDOW`.
 
-Mood only changes the face. `idle` and `deploy` also wander along the bottom of
-the viewport; `busy` and `sleep` stand wherever they are.
+Mood only changes the face. `idle` and `deploy` also wander the floor and climb
+the walls; `busy` and `sleep` stand still. Dragging, the drop physics and the
+pointer-following eyes are all client-side (`static/js/guardian.js`) — nothing
+on this side knows about the mouse.
 
 ## Install
 

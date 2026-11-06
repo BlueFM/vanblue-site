@@ -357,12 +357,14 @@ blockquote { margin: 1.2rem 0; padding-left: 1rem; border-left: 3px solid var(--
 .guardian {
   position: fixed;
   left: 0;
-  bottom: 0.75rem;
+  top: 0;
   z-index: 20;
   opacity: 0.95;
   transition: opacity 0.2s ease;
   will-change: transform;
 }
+
+.guardian.is-dragging { opacity: 1; }
 
 .guardian:hover,
 .guardian:focus-within { opacity: 1; }
@@ -374,9 +376,14 @@ blockquote { margin: 1.2rem 0; padding-left: 1rem; border-left: 3px solid var(--
   padding: 0;
   border: 0;
   background: none;
-  cursor: pointer;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
+
+.guardian.is-dragging .guardian-btn { cursor: grabbing; }
 
 .guardian-btn:focus-visible {
   outline: 1px dashed var(--muted);
@@ -411,8 +418,10 @@ blockquote { margin: 1.2rem 0; padding-left: 1rem; border-left: 3px solid var(--
 
 .guardian.is-right .guardian-bubble { left: auto; right: 0; }
 
+/* High on a wall: the bubble goes below instead of above. */
+.guardian.is-low .guardian-bubble { bottom: auto; top: calc(100% + 6px); }
+
 @media (max-width: 34rem) {
-  .guardian { bottom: 0.5rem; }
   .guardian-btn { width: 54px; height: 60px; }
 }
 

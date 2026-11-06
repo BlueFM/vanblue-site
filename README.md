@@ -54,10 +54,13 @@ rewritten once a minute by `guardian-status.timer` on the server:
 If the file is missing — local preview, fresh clone — the creature falls back to
 the visitor's clock and still animates. Click it for today's numbers.
 
-Moods decide the face, not the legs: in `idle` and `deploy` it roams the bottom
-of the viewport (walk 24 px/s, look where it is going, pause for a few seconds,
-pick another spot). `busy` and `sleep` stand still. `prefers-reduced-motion`
-keeps it parked in the corner with no walk cycle at all.
+Moods decide the face, not the legs: in `idle` and `deploy` it roams — walking
+the floor at 24 px/s, climbing either wall at 40 px/s, pausing for a few seconds
+between trips. `busy` and `sleep` stand still. Drag it and it follows the
+pointer; let go in mid-air and it falls, or drop it against a wall and it clings
+there, hands on the wall. Its eyes track the cursor when it comes close, and it
+hops if you hover on it. `prefers-reduced-motion` keeps it parked in the corner
+with no walk cycle at all.
 
 Install and tuning live in `deploy/guardian/README.md`. The snapshot deliberately
 lives in `/var/www/vanblue/guardian/`, outside `releases/`, so deploys never
