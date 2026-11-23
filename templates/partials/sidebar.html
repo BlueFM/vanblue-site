@@ -1,0 +1,61 @@
+<aside class="sidebar">
+  <div class="author__avatar">
+    <a href="{{ get_url(path='@/_index.md') }}" tabindex="-1">
+      <img src="{{ config.extra.photo }}" alt="{{ trans(key='author', lang=lang) }}" width="175" height="175">
+    </a>
+  </div>
+
+  <h2 class="author__name">
+    <a href="{{ get_url(path='@/_index.md') }}">{{ trans(key="author", lang=lang) }}</a>
+  </h2>
+
+  <p class="author__bio">
+    {{ trans(key="role", lang=lang) }}<br>
+    <span class="muted">{{ trans(key="affiliation", lang=lang) }}</span>
+  </p>
+
+  <ul class="author__urls">
+    <li>
+      <span>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-10.2a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z"/><circle cx="12" cy="10.6" r="2.4"/></svg>
+        {{ trans(key="location", lang=lang) }}
+      </span>
+    </li>
+    <li>
+      <a href="{{ get_url(path='@/cv.md') }}">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M8.5 13h7M8.5 16.5h5"/></svg>
+        {{ trans(key="hero_cv", lang=lang) }}
+      </a>
+    </li>
+    <li>
+      <a href="mailto:{{ config.extra.email }}">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg>
+        {{ trans(key="footer_email", lang=lang) }}
+      </a>
+    </li>
+    {% if config.extra.github %}
+    <li>
+      <a href="{{ config.extra.github }}" rel="noopener">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0C17.2 4.1 18.2 4.4 18.2 4.4c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>
+        GitHub
+      </a>
+    </li>
+    {% endif %}
+    {% if config.extra.scholar %}
+    <li>
+      <a href="{{ config.extra.scholar }}" rel="noopener">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 9.8 12 5 2 9.8l10 4.8z"/><path d="M6 12.2V17c0 1.6 2.7 2.9 6 2.9s6-1.3 6-2.9v-4.8"/><path d="M22 9.8v4.4"/></svg>
+        {{ trans(key="hero_scholar", lang=lang) }}
+      </a>
+    </li>
+    {% endif %}
+    {% if config.extra.orcid %}
+    <li>
+      <a href="{{ config.extra.orcid }}" rel="noopener">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.2 8.4v7.2"/><path d="M13 9.2h1.9a2.6 2.6 0 0 1 0 5.2H13z"/></svg>
+        ORCID
+      </a>
+    </li>
+    {% endif %}
+  </ul>
+</aside>

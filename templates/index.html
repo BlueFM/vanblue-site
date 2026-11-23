@@ -1,62 +1,124 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="hero">
-  {% if config.extra.photo %}
-  <img class="portrait" src="{{ config.extra.photo }}" alt="{{ trans(key='author', lang=lang) }}" width="168" height="168">
-  {% endif %}
-  <div class="hero-text">
-    <h1>{{ trans(key="author", lang=lang) }}</h1>
-    <p class="affil">{{ trans(key="affiliation", lang=lang) }}</p>
-    <p class="tagline">{{ trans(key="tagline", lang=lang) }}</p>
-    <p class="links">
-      <a href="{{ get_url(path='@/cv.md') }}">{{ trans(key="hero_cv", lang=lang) }}</a>
-      <span class="sep">·</span>
-      {% if config.extra.scholar %}<a href="{{ config.extra.scholar }}">{{ trans(key="hero_scholar", lang=lang) }}</a>
-      <span class="sep">·</span>{% endif %}
-      <a href="{{ config.extra.github }}">GitHub</a>
-      {% if config.extra.orcid %}<span class="sep">·</span><a href="{{ config.extra.orcid }}">ORCID</a>{% endif %}
-      <span class="sep">·</span>
-      <a href="mailto:{{ config.extra.email }}">{{ trans(key="footer_email", lang=lang) }}</a>
-    </p>
-  </div>
-</section>
+<h1 class="page__title">{{ trans(key="author", lang=lang) }}</h1>
 
-{% if section.content %}
-<section class="news">
-  <h2>{{ trans(key="news_heading", lang=lang) }}</h2>
-  <div class="news-body">{{ section.content | safe }}</div>
-</section>
+{% if section.extra.bio %}
+<div class="page__lead">{{ section.extra.bio | markdown | safe }}</div>
 {% endif %}
 
-<section>
-  <h2>{{ trans(key="selected_pubs", lang=lang) }}</h2>
-  {% set papers = get_section(path="papers/_index.md") %}
-  <ul class="pub-list">
-  {% for page in papers.pages %}{% if loop.index <= 3 %}
-    {% include "partials/pub_item.html" %}
-  {% endif %}{% endfor %}
+{% if section.extra.interests %}
+<div class="interests">
+  <span class="interests__label">{{ trans(key="interests_heading", lang=lang) }}</span>
+  <ul class="chips">
+    {% for item in section.extra.interests %}<li class="chip">{{ item }}</li>{% endfor %}
   </ul>
+</div>
+{% endif %}
+
+<section id="news">
+  <h2>{{ trans(key="news_heading", lang=lang) }}</h2>
+  <div class="news">{{ section.content | safe }}</div>
+</section>
+
+{% set papers = get_section(path="papers/_index.md") %}
+<section id="selected-work">
+  <h2>{{ trans(key="selected_work", lang=lang) }}</h2>
+  <div class="selected-work-grid">
+    {% for paper in papers.pages %}{% if loop.index <= 4 %}
+    <article class="selected-work-item">
+      <div class="selected-work-meta">{% if paper.extra.venue %}{{ paper.extra.venue }}{% endif %}{% if paper.date %} · {{ paper.date | date(format="%Y") }}{% endif %}</div>
+      <h3><a href="{{ paper.permalink }}">{{ paper.title }}</a></h3>
+      {% if paper.description %}<p>{{ paper.description }}</p>{% endif %}
+      <div class="selected-work-links">
+        {% if paper.extra.pdf %}<a href="{{ paper.extra.pdf }}">{{ trans(key="pdf", lang=lang) }}</a>{% endif %}
+        {% if paper.extra.doi %}<a href="https://doi.org/{{ paper.extra.doi }}">{{ trans(key="doi", lang=lang) }}</a>{% endif %}
+        {% if paper.extra.code %}<a href="{{ paper.extra.code }}">{{ trans(key="code", lang=lang) }}</a>{% endif %}
+        {% if paper.extra.paper %}<a href="{{ paper.extra.paper }}">{{ trans(key="paper_link", lang=lang) }}</a>{% endif %}
+        <a href="{{ paper.permalink }}">{{ trans(key="read_more", lang=lang) }}</a>
+      </div>
+    </article>
+    {% endif %}{% endfor %}
+  </div>
   <p class="more"><a href="{{ get_url(path='@/papers/_index.md') }}">{{ trans(key="all_pubs", lang=lang) }} →</a></p>
 </section>
 
-<section>
-  <h2>{{ trans(key="nav_projects", lang=lang) }}</h2>
-  {% set projects = get_section(path="projects/_index.md") %}
-  <ul class="pub-list">
-  {% for page in projects.pages %}{% if loop.index <= 3 %}
-    {% include "partials/project_item.html" %}
-  {% endif %}{% endfor %}
+{% set research = get_section(path="research/_index.md") %}
+{% if research.pages | length > 0 %}
+<section id="research-stories">
+  <h2>{{ trans(key="research_stories", lang=lang) }}</h2>
+  {% if section.extra.stories_intro %}<p class="section-intro">{{ section.extra.stories_intro }}</p>{% endif %}
+  {% for story in research.pages %}
+  <details class="research-story">
+    <summary>{{ trans(key="read_story", lang=lang) }}{{ story.title }}</summary>
+    <div class="prose">{{ story.content | safe }}</div>
+    <p class="story-link"><a href="{{ story.permalink }}">{{ story.title }} →</a></p>
+  </details>
+  {% endfor %}
+</section>
+{% endif %}
+
+{% if section.extra.experience %}
+<section id="experience">
+  <h2>{{ trans(key="experience_heading", lang=lang) }}</h2>
+  <ul class="experience">
+    {% for item in section.extra.experience %}
+    <li><em>{{ item.period }}</em> {{ item.text }}</li>
+    {% endfor %}
   </ul>
 </section>
+{% endif %}
 
-<section>
-  <h2>{{ trans(key="anchor_research", lang=lang) }}</h2>
-  {% set research = get_section(path="research/_index.md") %}
-  <ul class="pub-list">
-  {% for page in research.pages %}
-    {% include "partials/pub_item.html" %}
-  {% endfor %}
+{% set projects = get_section(path="projects/_index.md") %}
+{% if projects.pages | length > 0 %}
+<section id="projects">
+  <h2>{{ trans(key="nav_projects", lang=lang) }}</h2>
+  <ul class="link-list">
+    {% for item in projects.pages %}{% if loop.index <= 3 %}
+    <li>
+      <div class="item-head">
+        <a class="item-title" href="{{ item.permalink }}">{{ item.title }}</a>
+        {% if item.date %}<span class="item-year">{{ item.date | date(format="%Y") }}</span>{% endif %}
+      </div>
+      {% if item.description %}<p class="item-desc">{{ item.description }}</p>{% endif %}
+      <div class="item-links">
+        {% if item.extra.live %}<a href="{{ item.extra.live }}" rel="noopener">{{ trans(key="live_site", lang=lang) }}</a>{% endif %}
+        {% if item.extra.repo %}<a href="{{ item.extra.repo }}" rel="noopener">{{ trans(key="repo", lang=lang) }}</a>{% endif %}
+        <a href="{{ item.permalink }}">{{ trans(key="project_page", lang=lang) }}</a>
+      </div>
+    </li>
+    {% endif %}{% endfor %}
   </ul>
+  <p class="more"><a href="{{ get_url(path='@/projects/_index.md') }}">{{ trans(key="all_projects", lang=lang) }} →</a></p>
+</section>
+{% endif %}
+
+{% set share = get_section(path="share/_index.md") %}
+{% if share.pages | length > 0 %}
+<section id="beyond">
+  <h2>{{ trans(key="beyond_research", lang=lang) }}</h2>
+  <ul class="link-list">
+    {% for item in share.pages %}{% if loop.index <= 2 %}
+    <li>
+      <div class="item-head">
+        <a class="item-title" href="{{ item.permalink }}">{{ item.title }}</a>
+        {% if item.date %}<span class="item-year">{{ item.date | date(format="%Y") }}</span>{% endif %}
+      </div>
+      {% if item.description %}<p class="item-desc">{{ item.description }}</p>{% endif %}
+      <div class="item-links">
+        {% if item.extra.url %}<a href="{{ item.extra.url }}" rel="noopener">{{ trans(key="visit_site", lang=lang) }}</a>{% endif %}
+        <a href="{{ item.permalink }}">{{ trans(key="share_note", lang=lang) }}</a>
+      </div>
+    </li>
+    {% endif %}{% endfor %}
+  </ul>
+  <p class="more"><a href="{{ get_url(path='@/share/_index.md') }}">{{ trans(key="all_share", lang=lang) }} →</a></p>
+</section>
+{% endif %}
+
+<section id="contact">
+  <h2>{{ trans(key="contact_heading", lang=lang) }}</h2>
+  <p>{{ trans(key="contact_note", lang=lang) }}</p>
+  <p><a href="mailto:{{ config.extra.email }}">{{ config.extra.email }}</a></p>
 </section>
 {% endblock content %}

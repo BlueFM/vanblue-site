@@ -13,6 +13,26 @@ no Node or Ruby toolchain. Built with Zola, served by nginx as flat files.
     deploy/        deploy + rollback scripts, nginx config
     public/        build output — never edited by hand
 
+## Theme
+
+Narrow profile card on the left, one column of prose on the right, sticky
+masthead above — the AcademicPages look (Trebuchet MS, 15px, `#494e52` on white,
+links `#224b8d`) written as a single plain stylesheet, no Sass or JS build step.
+
+    static/css/style.css             the whole theme, top to bottom in page order
+    templates/partials/sidebar.html  profile card, link list, inline SVG icons
+
+The home page is assembled from content rather than typed by hand:
+
+- `content/_index.md` `[extra]` holds the bio, the research-interest chips, the
+  Research Stories intro and the `[[extra.experience]]` list; the Markdown body
+  stays the news list, one line per item.
+- Selected Work, Research Stories, Projects and Beyond Research are pulled from
+  `content/papers/`, `content/research/`, `content/projects/` and
+  `content/share/` — adding a page there is enough for it to appear.
+- `templates/index.html` fixes the section order; every `<section id>` is an
+  anchor target, and the masthead highlights the section you are in.
+
 ## Local preview
 
     ../.tools/zola.exe serve      # http://127.0.0.1:1111, live reload

@@ -1,23 +1,32 @@
 {% extends "base.html" %}
 {% block title %}{{ page.title }} — {{ config.title }}{% endblock title %}
+{% block description %}{{ page.description | default(value=page.title) }}{% endblock description %}
 
 {% block content %}
 <article>
-  <h1 class="page-title">{{ page.title }}</h1>
+  <h1 class="page__title">{{ page.title }}</h1>
+  {% if page.description %}<p class="page__lead">{{ page.description }}</p>{% endif %}
   {% if page.date or page.extra.venue %}
-  <p class="pub-meta">
-    {% include "partials/authors.html" %}
-    {% if page.extra.venue %}<span class="venue">{{ page.extra.venue }}</span>{% endif %}
-    {% if page.date %}<span class="pub-year">{{ page.date | date(format="%Y") }}</span>{% endif %}
+  <p class="paper-meta">
+    {% if page.authors %}{% include "partials/authors.html" %}{% endif %}{% if page.extra.venue %}{% if page.authors %} — {% endif %}<span class="venue">{{ page.extra.venue }}</span>{% endif %}{% if page.date %}{% if page.authors or page.extra.venue %} · {% endif %}{{ page.date | date(format="%Y-%m-%d") }}{% endif %}
   </p>
   {% endif %}
-  {% if page.extra.pdf or page.extra.doi or page.extra.code or page.extra.paper %}
-  <p class="pub-links">
+  {% if page.extra.pdf or page.extra.doi or page.extra.code or page.extra.paper or page.extra.live or page.extra.repo or page.extra.url %}
+  <div class="pub-links">
     {% if page.extra.pdf %}<a href="{{ page.extra.pdf }}">{{ trans(key="pdf", lang=lang) }}</a>{% endif %}
     {% if page.extra.doi %}<a href="https://doi.org/{{ page.extra.doi }}">{{ trans(key="doi", lang=lang) }}</a>{% endif %}
     {% if page.extra.code %}<a href="{{ page.extra.code }}">{{ trans(key="code", lang=lang) }}</a>{% endif %}
     {% if page.extra.paper %}<a href="{{ page.extra.paper }}">{{ trans(key="paper_link", lang=lang) }}</a>{% endif %}
-  </p>
+    {% if page.extra.live %}<a href="{{ page.extra.live }}" rel="noopener">{{ trans(key="live_site", lang=lang) }}</a>{% endif %}
+    {% if page.extra.repo %}<a href="{{ page.extra.repo }}" rel="noopener">{{ trans(key="repo", lang=lang) }}</a>{% endif %}
+    {% if page.extra.url %}<a href="{{ page.extra.url }}" rel="noopener">{{ trans(key="visit_site", lang=lang) }}</a>{% endif %}
+  </div>
+  {% endif %}
+  {% if page.extra.tech or page.extra.tags %}
+  <div class="tags">
+    {% for t in page.extra.tech | default(value=[]) %}<span class="tag">{{ t }}</span>{% endfor %}
+    {% for t in page.extra.tags | default(value=[]) %}<span class="tag">{{ t }}</span>{% endfor %}
+  </div>
   {% endif %}
   {% if page.extra.preview %}
   <figure class="teaser"><img src="{{ page.extra.preview }}" alt="" loading="lazy"></figure>

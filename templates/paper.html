@@ -20,20 +20,20 @@
 
 {% block content %}
 <article>
-  <h1 class="page-title">{{ page.title }}</h1>
-  {% if page.extra.status %}<p class="pub-status">{{ page.extra.status }}</p>{% endif %}
-  <p class="pub-meta">
-    {% include "partials/authors.html" %}
-    {% if page.extra.venue %}<span class="venue">{{ page.extra.venue }}</span>{% endif %}
-    {% if page.date %}<span class="pub-year">{{ page.date | date(format="%Y") }}</span>{% endif %}
-  </p>
-  {% if page.extra.details %}<p class="pub-detail">{{ page.extra.details }}</p>{% endif %}
-  <p class="pub-links">
-    {% if page.extra.pdf %}<a href="{{ page.extra.pdf }}">{{ trans(key="pdf", lang=lang) }}</a>{% endif %}
-    {% if page.extra.doi %}<a href="https://doi.org/{{ page.extra.doi }}">{{ trans(key="doi", lang=lang) }}</a>{% endif %}
-    {% if page.extra.code %}<a href="{{ page.extra.code }}">{{ trans(key="code", lang=lang) }}</a>{% endif %}
-    {% if page.extra.project %}<a href="{{ page.extra.project }}">{{ trans(key="project_page", lang=lang) }}</a>{% endif %}
-  </p>
+  <div class="paper-header">
+    <h1 class="page__title">{{ page.title }}</h1>
+    <p class="paper-meta">
+      {% include "partials/authors.html" %}{% if page.extra.venue %} — <span class="venue">{{ page.extra.venue }}</span>{% endif %}{% if page.date %} · {{ page.date | date(format="%Y") }}{% endif %}
+    </p>
+    {% if page.extra.status %}<p class="paper-meta"><span class="pub-status">{{ page.extra.status }}</span></p>{% endif %}
+    {% if page.extra.details %}<p class="pub-detail">{{ page.extra.details }}</p>{% endif %}
+    <div class="pub-links">
+      {% if page.extra.pdf %}<a href="{{ page.extra.pdf }}">{{ trans(key="pdf", lang=lang) }}</a>{% endif %}
+      {% if page.extra.doi %}<a href="https://doi.org/{{ page.extra.doi }}">{{ trans(key="doi", lang=lang) }}</a>{% endif %}
+      {% if page.extra.code %}<a href="{{ page.extra.code }}">{{ trans(key="code", lang=lang) }}</a>{% endif %}
+      {% if page.extra.project %}<a href="{{ page.extra.project }}">{{ trans(key="project_page", lang=lang) }}</a>{% endif %}
+    </div>
+  </div>
   {% if page.extra.preview %}
   <figure class="teaser"><img src="{{ page.extra.preview }}" alt="" loading="lazy"></figure>
   {% endif %}

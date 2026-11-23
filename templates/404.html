@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ trans(key="not_found_title", lang=lang) }} — {{ config.title }}{% endblock title %}
 {% block content %}
-<h1 class="page-title">404</h1>
+<h1 class="page__title">404</h1>
 <p>{{ trans(key="not_found_body", lang=lang) }} <a href="{{ get_url(path='@/_index.md') }}">{{ trans(key="back_home", lang=lang) }}</a></p>
 {% endblock content %}
