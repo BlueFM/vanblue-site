@@ -71,12 +71,12 @@
       {% for e in ccf.entries %}{% if e.ts > now_ts and shown < 3 %}
         {% set_global shown = shown + 1 %}
         <li>
-          <a href="{{ get_url(path='@/deadlines.md') }}#{{ e.id }}">{{ e.venue }} {{ e.year }}</a>
+          <a href="{{ get_url(path='@/ccf-deadlines.md') }}#{{ e.id }}">{{ e.venue }} {{ e.year }}</a>
           <span class="ddl-when" data-ts="{{ e.ts }}">{{ e.date_short }}</span>
         </li>
       {% endif %}{% endfor %}
     </ul>
-    <a class="sidebar-card__more" href="{{ get_url(path='@/deadlines.md') }}">{{ trans(key="all_deadlines", lang=lang) }} →</a>
+    <a class="sidebar-card__more" href="{{ get_url(path='@/ccf-deadlines.md') }}">{{ trans(key="all_deadlines", lang=lang) }} →</a>
   </div>
   {% endif %}
 </aside>

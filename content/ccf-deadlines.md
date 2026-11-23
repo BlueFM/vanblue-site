@@ -1,5 +1,5 @@
 +++
-title = "Deadlines"
+title = "CCF Deadlines"
 description = "CCF-ranked AI, computer-vision and NLP conference deadlines, converted to your own timezone."
 template = "deadlines.html"
 +++
