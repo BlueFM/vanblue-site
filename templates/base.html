@@ -3,18 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-{% set_global alt_url = "" %}
-{% set_global alt_lang = "" %}
 {% set_global doc_title = config.title %}
 {% if page is defined and page %}
   {% set_global doc_title = page.title %}
-  {% for t in page.translations | default(value=[]) %}{% if t.lang != lang %}{% set_global alt_url = t.permalink %}{% set_global alt_lang = t.lang %}{% endif %}{% endfor %}
 {% elif section is defined and section %}
   {% if section.extra.is_home | default(value=false) %}{% set_global doc_title = trans(key="author", lang=lang) %}{% else %}{% set_global doc_title = section.title %}{% endif %}
-  {% for t in section.translations | default(value=[]) %}{% if t.lang != lang %}{% set_global alt_url = t.permalink %}{% set_global alt_lang = t.lang %}{% endif %}{% endfor %}
-{% endif %}
-{% if not alt_url %}
-  {% if lang == "en" %}{% set_global alt_url = config.base_url ~ "/zh/" %}{% set_global alt_lang = "zh" %}{% else %}{% set_global alt_url = config.base_url ~ "/" %}{% set_global alt_lang = "en" %}{% endif %}
 {% endif %}
 <title>{% block title %}{{ config.title }}{% endblock title %}</title>
 <meta name="description" content="{% block description %}{{ config.description }}{% endblock description %}">
@@ -23,8 +16,7 @@
 <link rel="icon" href="{{ get_url(path='favicon.svg') }}" type="image/svg+xml">
 <link rel="stylesheet" href="{{ get_url(path='css/style.css', cachebust=true) }}">
 <link rel="canonical" href="{{ current_url | default(value=config.base_url) }}">
-<link rel="alternate" hreflang="{{ alt_lang }}" href="{{ alt_url }}">
-<link rel="alternate" type="application/atom+xml" title="{{ config.title }}" href="{{ config.base_url }}/{% if lang != config.default_language %}{{ lang }}/{% endif %}atom.xml">
+<link rel="alternate" type="application/atom+xml" title="{{ config.title }}" href="{{ config.base_url }}/atom.xml">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="{{ config.title }}">

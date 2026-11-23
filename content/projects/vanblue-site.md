@@ -1,6 +1,6 @@
 +++
 title = "vanblue.online — personal academic site"
-description = "A bilingual academic homepage built as flat files: Zola for the build, nginx for serving, and a deploy script that swaps symlinks atomically."
+description = "An academic homepage built as flat files: Zola for the build, nginx for serving, and a deploy script that swaps symlinks atomically."
 date = 2026-10-29
 weight = 1
 
