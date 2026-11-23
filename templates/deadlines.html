@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }} — {{ config.title }}{% endblock title %}
+{% block description %}{{ page.description }}{% endblock description %}
+{% block og_description %}{{ page.description }}{% endblock og_description %}
+
+{% block head %}
+<script src="{{ get_url(path='js/deadlines.js', cachebust=true) }}" defer></script>
+{% endblock head %}
+
+{% block content %}
+{% set ccf = load_data(path="data/ccf-deadlines.json") %}
+{% set soon = load_data(path="data/ccf-upcoming.json") %}
+{% set now_ts = now(timestamp=true) %}
+
+<h1 class="page__title">{{ page.title }}</h1>
+<div class="prose page-intro">{{ page.content | safe }}</div>
+
+<p class="ddl-meta">{{ ccf.count }} deadlines across {{ ccf.venues }} venues · synced {{ ccf.updated }} · <a href="{{ ccf.source }}">CCFDDL</a> (MIT)</p>
+
+<div class="ddl-app" id="ddl-app" hidden>
+  <div class="ddl-controls">
+    <input id="ddl-q" class="ddl-search" type="search" placeholder="Venue, city, year" aria-label="Search deadlines">
+    <div class="ddl-chips" role="group" aria-label="Filter by CCF rank">
+      <button type="button" class="ddl-chip is-on" data-rank="">All</button>
+      <button type="button" class="ddl-chip" data-rank="A">A</button>
+      <button type="button" class="ddl-chip" data-rank="B">B</button>
+      <button type="button" class="ddl-chip" data-rank="C">C</button>
+    </div>
+    <label class="ddl-past"><input type="checkbox" id="ddl-past"> past deadlines</label>
+  </div>
+
+  <p class="ddl-count" id="ddl-count"></p>
+
+  <table class="ddl-table">
+    <thead>
+      <tr>
+        <th scope="col">When (your time)</th>
+        <th scope="col">Conference</th>
+        <th scope="col">CCF</th>
+        <th scope="col" class="ddl-col-where">Where</th>
+        <th scope="col">Left</th>
+      </tr>
+    </thead>
+    <tbody id="ddl-body"></tbody>
+  </table>
+  <p class="ddl-empty" id="ddl-empty" hidden>No deadlines match those filters.</p>
+</div>
+
+<noscript>
+  <p class="ddl-meta">Next few deadlines, in each venue’s own timezone. Enable JavaScript for your local time, filtering and the full list.</p>
+  <table class="ddl-table">
+    <thead>
+      <tr><th scope="col">When (venue clock)</th><th scope="col">Conference</th><th scope="col">CCF</th><th scope="col">Where</th></tr>
+    </thead>
+    <tbody>
+      {% set_global shown = 0 %}
+      {% for e in soon.entries %}{% if e.ts > now_ts and shown < 10 %}{% set_global shown = shown + 1 %}
+      <tr id="{{ e.id }}">
+        <td class="ddl-when">
+          <span class="ddl-local">{{ e.deadline }}</span>
+          <span class="ddl-src">{{ e.tz }}</span>
+          {% if e.abstract %}<span class="ddl-abs">abstract {{ e.abstract | truncate(length=10, end="") }}</span>{% endif %}
+        </td>
+        <td class="ddl-conf-cell">
+          <a class="ddl-conf" href="{{ e.link }}">{{ e.venue }} {{ e.year }}</a>
+          <span class="ddl-desc">{{ e.desc }}</span>
+        </td>
+        <td class="ddl-rank-cell"><span class="ddl-rank">{{ e.rank }}</span></td>
+        <td class="ddl-place">{{ e.place }}</td>
+      </tr>
+      {% endif %}{% endfor %}
+    </tbody>
+  </table>
+</noscript>
+{% endblock content %}

@@ -40,6 +40,23 @@ The home page is assembled from content rather than typed by hand:
 used by `og:image` on every page. The strings are at the top of that file; it
 needs Pillow and the Trebuchet MS fonts that ship with Windows.
 
+## Deadlines
+
+`/deadlines/` lists CCF-ranked AI, CV and NLP venues plus KDD, WSDM, CIKM and
+ICDM. Everything is vendored — no request leaves the page at build or view time:
+
+    python tools/sync-ccf.py      # refresh static/data/*.json from upstream
+
+- `static/data/ccf-deadlines.json` — every deadline, loaded by `js/deadlines.js`
+  for the filtering/sorting table on `/deadlines/`.
+- `static/data/ccf-upcoming.json` — the next few, read at build time by the
+  sidebar card in `templates/partials/sidebar.html`; `js/ddl-when.js` turns the
+  printed dates into countdowns.
+- `static/data/CCFDDL-LICENSE.txt` — the upstream MIT notice (keep it).
+
+Upstream is <https://github.com/ccfddl/ccf-deadlines> (MIT). Re-run the sync
+before a release if deadlines have moved; the page prints the sync date.
+
 ## Local preview
 
     ../.tools/zola.exe serve      # http://127.0.0.1:1111, live reload
