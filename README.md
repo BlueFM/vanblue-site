@@ -25,13 +25,20 @@ links `#224b8d`) written as a single plain stylesheet, no Sass or JS build step.
 The home page is assembled from content rather than typed by hand:
 
 - `content/_index.md` `[extra]` holds the bio, the research-interest chips, the
-  Research Stories intro and the `[[extra.experience]]` list; the Markdown body
-  stays the news list, one line per item.
-- Selected Work, Research Stories, Projects and Beyond Research are pulled from
+  Research Stories intro and the `[[extra.experience]]` list. The Markdown body is
+  the News list and is empty on purpose; put a list back there and the section
+  returns.
+- Selected Work, Research Stories, Projects and Recommendations are pulled from
   `content/papers/`, `content/research/`, `content/projects/` and
   `content/share/` — adding a page there is enough for it to appear.
 - `templates/index.html` fixes the section order; every `<section id>` is an
   anchor target, and the masthead highlights the section you are in.
+
+## Share card
+
+`python tools/make-og.py` redraws `static/img/og-cover.jpg`, the 1200×630 image
+used by `og:image` on every page. The strings are at the top of that file; it
+needs Pillow and the Trebuchet MS fonts that ship with Windows.
 
 ## Local preview
 
