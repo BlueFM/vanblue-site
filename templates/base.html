@@ -47,7 +47,7 @@
 <body>
 <header class="masthead">
   <div class="masthead__inner">
-    <a class="masthead__brand" href="{{ get_url(path='@/_index.md') }}">{{ trans(key="author", lang=lang) }}</a>
+    <a class="masthead__brand" href="{{ get_url(path='@/_index.md') }}">{{ trans(key="site_brand", lang=lang) }}</a>
     {% set_global top = "" %}
     {% if page is defined and page %}
       {% set_global top = page.components | first | default(value="") %}

@@ -342,14 +342,6 @@ td { padding: 0.5em; border-bottom: 1px solid var(--light); }
   color: var(--muted);
 }
 
-.more {
-  margin: 0.9rem 0 0;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.more a { text-decoration: none; }
-
 /* prose blocks ---------------------------------------------------------- */
 
 .prose { margin-top: 0.4rem; }
@@ -529,12 +521,6 @@ details.research-story > summary:hover { color: var(--link-hover); }
 details.research-story[open] > summary { margin-bottom: 1.1rem; }
 
 details.research-story .prose { margin-top: 0; }
-
-.story-link {
-  margin: 1rem 0 0;
-  font-size: 0.88rem;
-  font-weight: 700;
-}
 
 /* ---------- experience ------------------------------------------------- */
 
@@ -939,8 +925,8 @@ details.research-story .prose { margin-top: 0; }
 
   .masthead__nav { margin-left: 0; }
 
-  .masthead__menu a { padding: 0.4rem 0.55rem; font-size: 0.86em; }
-  .masthead__menu a::after { right: 0.55rem; left: 0.55rem; }
+  .masthead__menu a { padding: 0.4rem 0.35rem; font-size: 0.8em; }
+  .masthead__menu a::after { right: 0.35rem; left: 0.35rem; }
 
   #main { padding-left: 1rem; padding-right: 1rem; }
 
