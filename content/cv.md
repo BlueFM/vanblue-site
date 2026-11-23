@@ -37,6 +37,7 @@ See the [publications page](/papers/).
 
 ## Awards
 
+- Postgraduate special-prize scholarship, Lanzhou University, 2026
 - Postgraduate second-class scholarship, Lanzhou University
 - Chinese Collegiate Computing Competition: national third prize; Gansu provincial first prize
 - Academic research scholarship and comprehensive scholarship, Northwest Normal University

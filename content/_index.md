@@ -18,6 +18,7 @@ text = "MSc in Software Engineering, Lanzhou University"
 period = "2020–2024,"
 text = "BSc in Software Engineering, Northwest Normal University"
 
-# NOTE: News is paused — the last four entries all repeated Selected Work or
-# Experience. Put a Markdown list back in the body and the section returns.
+# NOTE: News lives in the body as a Markdown list, newest first. Only add items
+# that Selected Work, Research Stories or Experience do not already say.
 +++
+- **2026.11** — Awarded the Lanzhou University Special Prize Scholarship for postgraduate study.
