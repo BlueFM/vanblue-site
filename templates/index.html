@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="page__title">{{ trans(key="author", lang=lang) }}</h1>
+{# the name already sits in the sidebar; keep an h1 for the outline, not for the eye #}
+<h1 class="visually-hidden">{{ trans(key="author", lang=lang) }}</h1>
 
 {% if section.extra.bio %}
 <div class="page__lead">{{ section.extra.bio | markdown | safe }}</div>
