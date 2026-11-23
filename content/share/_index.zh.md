@@ -1,5 +1,5 @@
 +++
-title = "好物分享"
+title = "分享"
 description = "我常用的工具和站点"
 sort_by = "weight"
 template = "share.html"
