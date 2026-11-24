@@ -59,6 +59,7 @@
     {% endif %}
     <nav class="masthead__nav" aria-label="Main">
     <ul class="masthead__menu">
+      <li><a{% if top == "" %} class="is-active"{% endif %} href="{{ get_url(path='@/_index.md') }}">{{ trans(key="nav_home", lang=lang) }}</a></li>
       <li><a{% if top == "papers" %} class="is-active"{% endif %} href="{{ get_url(path='@/papers/_index.md') }}">{{ trans(key="nav_papers", lang=lang) }}</a></li>
       <li><a{% if top == "research" %} class="is-active"{% endif %} href="{{ get_url(path='@/research/_index.md') }}">{{ trans(key="nav_research", lang=lang) }}</a></li>
       <li><a{% if top == "projects" %} class="is-active"{% endif %} href="{{ get_url(path='@/projects/_index.md') }}">{{ trans(key="nav_projects", lang=lang) }}</a></li>

@@ -1107,10 +1107,21 @@ details.research-story .prose { margin-top: 0; }
 }
 
 .story-more {
-  margin: 0.9rem 0 0;
+  margin: 0.8rem 0 1.1rem;
   font-size: 0.88rem;
   font-weight: 700;
 }
+
+.story-link {
+  display: inline-block;
+  padding: 0.12rem 0.6rem;
+  color: var(--link);
+  text-decoration: none;
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+}
+
+.story-link:hover { border-color: var(--link); }
 
 /* ---------- footer ----------------------------------------------------- */
 
@@ -1269,6 +1280,15 @@ details.research-story .prose { margin-top: 0; }
   .page__footer-inner { padding: 1.4rem 1rem; }
 
   .guardian-btn { width: 54px; height: 60px; }
+}
+
+@media (max-width: 500px) {
+  .masthead__menu {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: space-between;
+    column-gap: 0.5rem;
+  }
 }
 
 @media (max-width: 760px) {

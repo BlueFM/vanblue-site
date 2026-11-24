@@ -49,13 +49,13 @@
 <section id="research-stories">
   <h2>{{ trans(key="research_stories", lang=lang) }}</h2>
   {% if section.extra.stories_intro %}<p class="section-intro">{{ section.extra.stories_intro }}</p>{% endif %}
+  <p class="story-more"><a class="story-link" href="{{ get_url(path='@/lab.md') }}">Play with the loss landscape →</a></p>
   {% for story in research.pages %}
   <details class="research-story">
     <summary>{{ trans(key="read_story", lang=lang) }}{{ story.title }}</summary>
     <div class="prose">{{ story.content | safe }}</div>
   </details>
   {% endfor %}
-  <p class="story-more"><a href="{{ get_url(path='@/lab.md') }}">Play with the loss landscape →</a></p>
 </section>
 {% endif %}
 
