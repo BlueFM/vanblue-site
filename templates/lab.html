@@ -14,7 +14,7 @@
 <figure class="lab-figure">
   <div class="lab-canvas-wrap">
     <canvas id="lab-canvas" role="img"
-            aria-label="A loss surface with a sharp well and a wide flat basin, with four optimisation trajectories drawn on it"></canvas>
+            aria-label="A loss surface with a sharp well and a wide flat basin, with four optimization trajectories drawn on it"></canvas>
   </div>
 
   <div class="lab-controls">
@@ -26,7 +26,7 @@
     <span class="lab-hint">drag anywhere to move the start</span>
   </div>
 
-  <div class="lab-show" role="group" aria-label="Show optimiser">
+  <div class="lab-show" role="group" aria-label="Show optimizer">
     <span class="lab-show__label">show</span>
     <button type="button" class="lab-toggle" data-key="sgd" aria-pressed="false">
       <span class="lab-dot" style="background:#717a80"></span>SGD
@@ -79,53 +79,61 @@
   <p class="math-note">Two inverted Gaussians, plus a shallow quadratic bowl
     that only keeps the trajectories on screen.</p>
 
-  <h3 class="math-h">Optimisers</h3>
-  <div class="eq">
-    <div class="eq-body">SGD:&nbsp; <i>p</i> ← <i>p</i> − <i>η</i>∇<i>f</i></div>
+  <h3 class="math-h">Optimizers</h3>
+  <div class="eq eq--named">
+    <div class="eq-name">SGD</div>
+    <div class="eq-body"><i>p</i> ← <i>p</i> − <i>η</i>∇<i>f</i></div>
   </div>
-  <div class="eq">
-    <div class="eq-body">SGDM:&nbsp; <i>v</i> ← <i>β</i><i>v</i> − <i>η</i>∇<i>f</i>,&nbsp;
+  <div class="eq eq--named">
+    <div class="eq-name">SGDM</div>
+    <div class="eq-body"><i>v</i> ← <i>β</i><i>v</i> − <i>η</i>∇<i>f</i>,&nbsp;
       <i>p</i> ← <i>p</i> + <i>v</i></div>
   </div>
-  <div class="eq">
-    <div class="eq-body">DIESGD:&nbsp; <i>s</i><sub>1</sub> ← <i>s</i><sub>1</sub>
+  <div class="eq eq--named">
+    <div class="eq-name">DIESGD</div>
+    <div class="eq-body"><i>s</i><sub>1</sub> ← <i>s</i><sub>1</sub>
       + <i>α</i>(∇<i>f</i> − <i>s</i><sub>1</sub>),&nbsp;
       <i>s</i><sub>2</sub> ← <i>s</i><sub>2</sub> + <i>α</i>(<i>s</i><sub>1</sub> − <i>s</i><sub>2</sub>),&nbsp;
       <i>p</i> ← <i>p</i> − <i>η</i><i>s</i><sub>2</sub></div>
   </div>
-
-  <h3 class="math-h">MIE</h3>
-  <div class="eq">
+  <div class="eq eq--named">
+    <div class="eq-name">MIE</div>
     <div class="eq-body"><i>s</i><sup>(0)</sup> = ∇<i>f</i></div>
     <div class="eq-note">proportional term</div>
   </div>
-  <div class="eq">
+  <div class="eq eq--named">
+    <div class="eq-name" aria-hidden="true"></div>
     <div class="eq-body"><i>s</i><sup>(<i>j</i>)</sup> ← <i>ξ</i> <i>s</i><sup>(<i>j</i>)</sup>
       + <i>α</i> <i>s</i><sup>(<i>j</i>−1)</sup></div>
     <div class="eq-note">integral orders</div>
   </div>
-  <div class="eq">
+  <div class="eq eq--named">
+    <div class="eq-name" aria-hidden="true"></div>
     <div class="eq-body"><i>λ</i><sup>(<i>j</i>)</sup> = softplus(<i>λ̂</i><sup>(<i>j</i>)</sup>)</div>
     <div class="eq-note">so <i>λ</i> &gt; 0</div>
   </div>
-  <div class="eq">
+  <div class="eq eq--named">
+    <div class="eq-name" aria-hidden="true"></div>
     <div class="eq-body"><i>λ̃</i><sup>(<i>j</i>)</sup> = −<i>α</i>
       (<i>g</i><sup>⊤</sup><i>s</i><sup>(<i>j</i>)</sup>) /
       ((‖<i>g</i>‖ + <i>ε</i>)(‖<i>s</i><sup>(<i>j</i>)</sup>‖ + <i>ε</i>))
       · <i>σ</i>(<i>λ̂</i><sup>(<i>j</i>)</sup>)</div>
     <div class="eq-note"><i>g</i> = ∇<i>f</i></div>
   </div>
-  <div class="eq">
+  <div class="eq eq--named">
+    <div class="eq-name" aria-hidden="true"></div>
     <div class="eq-body"><i>m</i><sup>(<i>j</i>)</sup> ← <i>μ</i><i>m</i><sup>(<i>j</i>)</sup>
       + (1 − <i>μ</i>)<i>λ̃</i><sup>(<i>j</i>)</sup></div>
     <div class="eq-note">smoothed</div>
   </div>
-  <div class="eq">
+  <div class="eq eq--named">
+    <div class="eq-name" aria-hidden="true"></div>
     <div class="eq-body"><i>λ̂</i><sup>(<i>j</i>)</sup> ← <i>λ̂</i><sup>(<i>j</i>)</sup>
       − <i>η</i><sub>h</sub><i>m</i><sup>(<i>j</i>)</sup></div>
     <div class="eq-note"><i>λ</i>(0) &gt; 0</div>
   </div>
-  <div class="eq">
+  <div class="eq eq--named">
+    <div class="eq-name" aria-hidden="true"></div>
     <div class="eq-body"><i>p</i> ← <i>p</i> − <i>α</i>[(∇<i>f</i> − ∇<i>f</i><sup>−</sup>)
       + Σ<sub><i>j</i></sub> <i>λ</i><sup>(<i>j</i>)</sup><i>s</i><sup>(<i>j</i>)</sup>]</div>
     <div class="eq-note">full step</div>
@@ -133,7 +141,7 @@
 
   <p class="math-note">“Sharpness” is the trace of the Hessian at the resting
     point, estimated by finite differences — a local curvature proxy, not a
-    generalisation bound.</p>
+    generalization bound.</p>
 </details>
 
 <p class="lab-note">

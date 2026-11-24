@@ -1175,6 +1175,19 @@ details.research-story .prose { margin-top: 0; }
   border-bottom: 1px solid var(--rule);
 }
 
+.eq--named {
+  grid-template-columns: 4.6rem minmax(0, 1fr) auto;
+}
+
+.eq-name {
+  color: var(--muted);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.9em;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
 .eq-body {
   color: var(--fg);
   font-family: Georgia, "Cambria Math", "Segoe UI Symbol", "Times New Roman", "Songti SC", serif;
@@ -1395,8 +1408,10 @@ details.research-story .prose { margin-top: 0; }
 }
 
 @media (max-width: 640px) {
-  .eq { grid-template-columns: minmax(0, 1fr); gap: 0.1rem; }
+  .eq,
+  .eq--named { grid-template-columns: minmax(0, 1fr); gap: 0.1rem; }
   .eq-note { white-space: normal; }
+  .eq--named .eq-name:empty { display: none; }
 }
 
 @media (max-width: 760px) {
