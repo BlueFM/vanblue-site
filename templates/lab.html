@@ -81,14 +81,16 @@
       <code>p ← p − ηs₂</code>, with <code>α = 0.16</code>.
     </p>
     <p>
-      MIE keeps three integral orders. Order <code>j</code> is the gradient
-      through <code>j</code> chained leaky integrators:
-      <code>Iⱼ ← (1 − λ)Iⱼ + λIⱼ₋₁</code>, <code>I₀ = ∇f</code>,
-      <code>λ = 0.16</code>. The coefficients descend the hypergradient of the
-      loss with respect to them — <code>∂L/∂kⱼ = −η ∇fᵀIⱼ</code> — so
-      <code>kⱼ ← kⱼ + 0.15 ∇fᵀIⱼ</code>, clipped to <code>[0.05, 1]</code> and
-      renormalised; the step is <code>p ← p − 0.8 Σ k̂ⱼIⱼ</code>. Step sizes
-      are 0.004, 0.01, 0.03 and 0.8.
+      MIE runs order <code>l = 3</code>: <code>s⁰ = ∇f</code> and
+      <code>sʲ ← ξsʲ + αsʲ⁻¹</code> with <code>ξ = 0.98</code> and
+      <code>α = 0.05</code>. Coefficients stay positive through a softplus map,
+      <code>λʲ = log(1 + e^λ̂ʲ)</code>, and the hypergradient rule moves the
+      underlying <code>λ̂ʲ</code> with a smoothed, normalised alignment signal:
+      <code>λ̃ʲ = −α (∇f·sʲ) / ((‖∇f‖+ε)(‖sʲ‖+ε)) · σ(λ̂ʲ)</code>,
+      <code>mʲ ← 0.9mʲ + 0.1λ̃ʲ</code>, <code>λ̂ʲ ← λ̂ʲ − 0.01mʲ</code>.
+      The step adds the gradient difference to the multi-order sum,
+      <code>p ← p − α[(∇f − ∇f⁻) + Σⱼ λʲsʲ]</code>, from
+      <code>λ(0) = 1.5</code>.
     </p>
     <p>
       "Sharpness" is the trace of the Hessian at the final point, estimated by

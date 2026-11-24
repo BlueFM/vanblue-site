@@ -57,35 +57,53 @@
       },
     },
     {
-      // three integral orders: order k is the gradient through k chained
-      // leaky integrators. Coefficients descend the hypergradient
-      // dL/dk_j = -eta * (grad . I_j), then renormalise.
+      // MIESGD, l = 3: s0 = g, sj = xi sj + alpha s(j-1); coefficients are
+      // softplus of a hypergradient-smoothed state; the step adds the
+      // gradient difference to the multi-order integral sum.
       key: 'mie', label: 'MIE', colour: '#2f6f63', width: 2.6, dash: null,
       step: function (s) {
+        var alpha = 0.05, eta = 0.01, xi = 0.98, mu = 0.9, eps = 1e-8, l = 3;
         var g = gradAt(s.x, s.y);
-        var lam = 0.16, eta = 0.8, gamma = 0.15;
-        var px = g[0], py = g[1];
-        var i, o;
-        for (i = 0; i < 3; i++) {
-          o = s.orders[i];
-          o.x = (1 - lam) * o.x + lam * px;
-          o.y = (1 - lam) * o.y + lam * py;
-          px = o.x;
-          py = o.y;
+        var gn = Math.hypot(g[0], g[1]);
+        var j;
+
+        var next = [[g[0], g[1]]];
+        for (j = 1; j <= l; j++) {
+          var prev = next[j - 1];
+          var old = s.order[j];
+          next.push([xi * old[0] + alpha * prev[0], xi * old[1] + alpha * prev[1]]);
         }
-        var total = 0;
-        for (i = 0; i < 3; i++) {
-          o = s.orders[i];
-          s.k[i] = Math.min(1, Math.max(0.05, s.k[i] + gamma * (g[0] * o.x + g[1] * o.y)));
-          total += s.k[i];
+
+        for (j = 0; j <= l; j++) {
+          var st = s.order[j];
+          var sn = Math.hypot(st[0], st[1]);
+          var tilt = (g[0] * st[0] + g[1] * st[1]) / ((gn + eps) * (sn + eps));
+          var signal = -alpha * tilt * sigmoid(s.lamHat[j]);
+          s.hm[j] = mu * s.hm[j] + (1 - mu) * signal;
+          s.lamHat[j] -= eta * s.hm[j];
         }
-        var sx = 0, sy = 0;
-        for (i = 0; i < 3; i++) {
-          sx += (s.k[i] / total) * s.orders[i].x;
-          sy += (s.k[i] / total) * s.orders[i].y;
+
+        var stepx, stepy;
+        if (s.steps === 0) {
+          stepx = alpha * g[0];
+          stepy = alpha * g[1];
+        } else {
+          var sumx = 0, sumy = 0;
+          for (j = 0; j <= l; j++) {
+            sumx += s.lamPrev[j] * s.order[j][0];
+            sumy += s.lamPrev[j] * s.order[j][1];
+          }
+          stepx = alpha * (s.gPrev[0] - s.gPrev2[0]) + alpha * sumx;
+          stepy = alpha * (s.gPrev[1] - s.gPrev2[1]) + alpha * sumy;
         }
-        s.x -= eta * sx;
-        s.y -= eta * sy;
+        s.x -= stepx;
+        s.y -= stepy;
+
+        s.gPrev2 = s.gPrev || g;
+        s.gPrev = g;
+        s.order = next;
+        s.lamPrev = s.lamHat.map(function (v) { return softplus(v); });
+        s.steps += 1;
       },
     },
   ];
@@ -96,6 +114,14 @@
   var playing = false, steps = 2, raf = 0;
   var states = [];
   var visible = { sgd: false, sgdm: true, diesgd: false, mie: true };
+
+  function sigmoid(x) {
+    return 1 / (1 + Math.exp(-Math.max(-30, Math.min(30, x))));
+  }
+
+  function softplus(x) {
+    return Math.log1p(Math.exp(Math.min(30, x)));
+  }
 
   function lossAt(x, y) {
     var v = BOWL * (x * x + y * y);
@@ -187,8 +213,13 @@
         path: [[START.x, START.y]], done: false,
       };
       if (m.key === 'mie') {
-        st.orders = [0, 0, 0].map(function () { return { x: 0, y: 0 }; });
-        st.k = [1 / 3, 1 / 3, 1 / 3];
+        st.order = [[0, 0], [0, 0], [0, 0], [0, 0]];
+        st.lamHat = [1.2477, 1.2477, 1.2477, 1.2477];
+        st.lamPrev = [1.5, 1.5, 1.5, 1.5];
+        st.hm = [0, 0, 0, 0];
+        st.gPrev = null;
+        st.gPrev2 = null;
+        st.steps = 0;
       }
       return st;
     });
