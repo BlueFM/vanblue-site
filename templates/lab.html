@@ -72,12 +72,15 @@
   <div class="eq">
     <div class="eq-body">
       <i>f</i>(<i>p</i>) = −Σ<sub><i>i</i></sub> <i>A</i><sub><i>i</i></sub>
-      exp(−‖<i>p</i> − <i>c</i><sub><i>i</i></sub>‖² / 2<i>σ</i><sub><i>i</i></sub>²)
+      exp(−½ (<i>p</i> − <i>c</i><sub><i>i</i></sub>)<sup>⊤</sup>
+      <i>M</i><sub><i>i</i></sub> (<i>p</i> − <i>c</i><sub><i>i</i></sub>))
+      + <i>A</i><sub>h</sub> exp(−‖<i>p</i> − <i>c</i><sub>h</sub>‖² / 2<i>σ</i><sub>h</sub>²)
     </div>
-    <div class="eq-note">one sharp well, one wide</div>
+    <div class="eq-note">two rotated wells, one hill</div>
   </div>
-  <p class="math-note">Two inverted Gaussians, plus a shallow quadratic bowl
-    that only keeps the trajectories on screen.</p>
+  <p class="math-note">Two anisotropic, slightly rotated wells — one sharp, one
+    wide — and a broad low hill, over a shallow quadratic bowl that keeps the
+    trajectories on screen.</p>
 
   <h3 class="math-h">Optimizers</h3>
   <div class="eq eq--named">

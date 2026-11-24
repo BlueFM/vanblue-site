@@ -14,11 +14,13 @@
   var resetBtn = document.getElementById('lab-reset');
   var speedInput = document.getElementById('lab-speed');
 
+  // two anisotropic, slightly rotated wells and one broad low hill
   var WELLS = [
-    { x: 0.36, y: 0.06, a: 1.00, s: 0.17 },   // sharp
-    { x: -0.36, y: -0.06, a: 0.86, s: 0.46 },  // flat
+    { x: 0.34, y: 0.04, a: 1.00, sx: 0.15, sy: 0.24, th: 0.45 },   // sharp
+    { x: -0.36, y: -0.06, a: 0.86, sx: 0.52, sy: 0.36, th: -0.30 }, // flat
   ];
-  var BOWL = 0.08;
+  var HILL = { x: 0.02, y: -0.52, a: 0.16, s: 0.34 };
+  var BOWL = 0.07;
   var XMIN = -1.35, XMAX = 1.35;
   var WORLD_W = XMAX - XMIN;
   var MAX_STEPS = 1400;
@@ -125,23 +127,43 @@
 
   function lossAt(x, y) {
     var v = BOWL * (x * x + y * y);
-    for (var i = 0; i < WELLS.length; i++) {
-      var w = WELLS[i];
-      var dx = x - w.x, dy = y - w.y;
-      v -= w.a * Math.exp(-(dx * dx + dy * dy) / (2 * w.s * w.s));
+    var i, w, dx, dy, c, sn, u, t;
+    for (i = 0; i < WELLS.length; i++) {
+      w = WELLS[i];
+      dx = x - w.x;
+      dy = y - w.y;
+      c = Math.cos(w.th);
+      sn = Math.sin(w.th);
+      u = c * dx + sn * dy;
+      t = -sn * dx + c * dy;
+      v -= w.a * Math.exp(-0.5 * (u * u / (w.sx * w.sx) + t * t / (w.sy * w.sy)));
     }
+    dx = x - HILL.x;
+    dy = y - HILL.y;
+    v += HILL.a * Math.exp(-(dx * dx + dy * dy) / (2 * HILL.s * HILL.s));
     return v;
   }
 
   function gradAt(x, y) {
     var gx = 2 * BOWL * x, gy = 2 * BOWL * y;
-    for (var i = 0; i < WELLS.length; i++) {
-      var w = WELLS[i];
-      var dx = x - w.x, dy = y - w.y;
-      var e = w.a * Math.exp(-(dx * dx + dy * dy) / (2 * w.s * w.s)) / (w.s * w.s);
-      gx += e * dx;
-      gy += e * dy;
+    var i, w, dx, dy, c, sn, u, t, e;
+    for (i = 0; i < WELLS.length; i++) {
+      w = WELLS[i];
+      dx = x - w.x;
+      dy = y - w.y;
+      c = Math.cos(w.th);
+      sn = Math.sin(w.th);
+      u = c * dx + sn * dy;
+      t = -sn * dx + c * dy;
+      e = w.a * Math.exp(-0.5 * (u * u / (w.sx * w.sx) + t * t / (w.sy * w.sy)));
+      gx += e * (u / (w.sx * w.sx) * c - t / (w.sy * w.sy) * sn);
+      gy += e * (u / (w.sx * w.sx) * sn + t / (w.sy * w.sy) * c);
     }
+    dx = x - HILL.x;
+    dy = y - HILL.y;
+    e = HILL.a * Math.exp(-(dx * dx + dy * dy) / (2 * HILL.s * HILL.s)) / (HILL.s * HILL.s);
+    gx -= e * dx;
+    gy -= e * dy;
     return [gx, gy];
   }
 
@@ -174,7 +196,20 @@
     var data = img.data;
     var bands = new Uint8Array(w * h);
     var BANDS = 14;
-    var span = lossMax - lossMin;
+
+    // the shading range follows the surface, so new terms never clip it
+    lossMin = Infinity;
+    lossMax = -Infinity;
+    for (var sy2 = 0; sy2 < 18; sy2++) {
+      var ly = yMin + ((yMax - yMin) * (sy2 + 0.5)) / 18;
+      for (var sx2 = 0; sx2 < 24; sx2++) {
+        var lx = XMIN + (WORLD_W * (sx2 + 0.5)) / 24;
+        var lv = lossAt(lx, ly);
+        if (lv < lossMin) lossMin = lv;
+        if (lv > lossMax) lossMax = lv;
+      }
+    }
+    var span = lossMax - lossMin || 1;
 
     for (var j = 0; j < h; j++) {
       var wy = yMin + ((j + 0.5) / h) * (yMax - yMin);
