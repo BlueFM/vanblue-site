@@ -43,7 +43,7 @@ needs Pillow and the Trebuchet MS fonts that ship with Windows.
 ## Lab
 
 `/lab/` draws two Gaussian wells and races four updates from one start — SGD,
-heavy-ball momentum, DIESGD and MIE — then reports the loss, the Hessian trace
+SGDM, DIESGD and MIE — then reports the loss, the Hessian trace
 and the step count where each one stops. `static/js/lab.js` holds the surface and
 the update rules; the page's "The maths" panel spells them out. Dragging on the
 canvas moves the start.

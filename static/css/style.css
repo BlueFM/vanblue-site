@@ -1046,6 +1046,56 @@ details.research-story .prose { margin-top: 0; }
 
 .lab-hint { color: var(--muted); font-size: 0.82rem; }
 
+.lab-show {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.5rem;
+  margin: 0.55rem 0 0;
+}
+
+.lab-show__label {
+  margin-right: 0.1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.lab-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.06rem 0.55rem;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1.75;
+  background: none;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.lab-toggle:hover { opacity: 1; }
+
+.lab-toggle.is-on {
+  color: var(--fg);
+  border-color: var(--light);
+  opacity: 1;
+}
+
+.lab-dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+
+.lab-toggle:not(.is-on) .lab-dot {
+  background: transparent !important;
+  border: 1px solid currentColor;
+}
+
 .lab-caption {
   margin-top: 0.6rem;
   color: var(--muted);

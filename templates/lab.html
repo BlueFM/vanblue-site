@@ -26,11 +26,27 @@
     <span class="lab-hint">drag anywhere to move the start</span>
   </div>
 
+  <div class="lab-show" role="group" aria-label="Show optimiser">
+    <span class="lab-show__label">show</span>
+    <button type="button" class="lab-toggle" data-key="sgd" aria-pressed="false">
+      <span class="lab-dot" style="background:#717a80"></span>SGD
+    </button>
+    <button type="button" class="lab-toggle is-on" data-key="sgdm" aria-pressed="true">
+      <span class="lab-dot" style="background:#6d8fbd"></span>SGDM
+    </button>
+    <button type="button" class="lab-toggle" data-key="diesgd" aria-pressed="false">
+      <span class="lab-dot" style="background:#224b8d"></span>DIESGD
+    </button>
+    <button type="button" class="lab-toggle is-on" data-key="mie" aria-pressed="true">
+      <span class="lab-dot" style="background:#2f6f63"></span>MIE
+    </button>
+  </div>
+
   <figcaption class="lab-caption">
-    Four updates, one start, the same number of steps. Grey: plain SGD. Dashed:
-    heavy-ball momentum. Navy: DIESGD, the gradient through two first-order
-    filters. Teal: MIE, three integral orders whose coefficients move with the
-    gradient.
+    Four updates, one start, the same number of steps. Grey: plain SGD. Dashed
+    blue: SGDM. Navy: DIESGD, the gradient through two first-order filters.
+    Teal: MIE, three integral orders with coefficients that follow the
+    hypergradient.
   </figcaption>
 </figure>
 
@@ -59,18 +75,20 @@
       trajectories on screen.
     </p>
     <p>
-      SGD: <code>p ← p − η∇f</code>. Momentum: <code>v ← 0.8v − η∇f</code>,
+      SGD: <code>p ← p − η∇f</code>. SGDM: <code>v ← 0.8v − η∇f</code>,
       <code>p ← p + v</code>. DIESGD, a second-order low-pass on the gradient:
       <code>s₁ ← s₁ + α(∇f − s₁)</code>, <code>s₂ ← s₂ + α(s₁ − s₂)</code>,
       <code>p ← p − ηs₂</code>, with <code>α = 0.16</code>.
     </p>
     <p>
-      MIE keeps three orders, <code>k = 1..3</code>, each its own two-stage
-      filter with <code>α = (0.30, 0.12, 0.05)</code>. Its coefficients follow
-      the directional alignment between the gradient and each order:
-      <code>wₖ ← wₖ + 0.02 cos(∇f, bₖ)</code>, renormalised so they sum to one,
-      and <code>p ← p − η Σ wₖ bₖ</code>. Step sizes are 0.004, 0.01, 0.03 and
-      0.09.
+      MIE keeps three integral orders. Order <code>j</code> is the gradient
+      through <code>j</code> chained leaky integrators:
+      <code>Iⱼ ← (1 − λ)Iⱼ + λIⱼ₋₁</code>, <code>I₀ = ∇f</code>,
+      <code>λ = 0.16</code>. The coefficients descend the hypergradient of the
+      loss with respect to them — <code>∂L/∂kⱼ = −η ∇fᵀIⱼ</code> — so
+      <code>kⱼ ← kⱼ + 0.15 ∇fᵀIⱼ</code>, clipped to <code>[0.05, 1]</code> and
+      renormalised; the step is <code>p ← p − 0.8 Σ k̂ⱼIⱼ</code>. Step sizes
+      are 0.004, 0.01, 0.03 and 0.8.
     </p>
     <p>
       "Sharpness" is the trace of the Hessian at the final point, estimated by

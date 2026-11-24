@@ -34,7 +34,7 @@
       },
     },
     {
-      key: 'momentum', label: 'Momentum', colour: '#6d8fbd', width: 2.2, dash: [6, 4],
+      key: 'sgdm', label: 'SGDM', colour: '#6d8fbd', width: 2.2, dash: [6, 4],
       step: function (s) {
         var g = gradAt(s.x, s.y);
         s.vx = 0.8 * s.vx - 0.01 * g[0];
@@ -44,7 +44,7 @@
       },
     },
     {
-      key: 'cascaded', label: 'DIESGD', colour: '#224b8d', width: 3, dash: null,
+      key: 'diesgd', label: 'DIESGD', colour: '#224b8d', width: 3, dash: null,
       step: function (s) {
         var g = gradAt(s.x, s.y);
         var a = 0.16;
@@ -57,37 +57,35 @@
       },
     },
     {
-      // three integral orders, each a two-stage low-pass at its own timescale;
-      // the coefficients follow how well an order lines up with the gradient
+      // three integral orders: order k is the gradient through k chained
+      // leaky integrators. Coefficients descend the hypergradient
+      // dL/dk_j = -eta * (grad . I_j), then renormalise.
       key: 'mie', label: 'MIE', colour: '#2f6f63', width: 2.6, dash: null,
-      alphas: [0.30, 0.12, 0.05],
       step: function (s) {
         var g = gradAt(s.x, s.y);
-        var gn = Math.hypot(g[0], g[1]) + 1e-9;
-        var i, o, al;
-        for (i = 0; i < s.orders.length; i++) {
+        var lam = 0.16, eta = 0.8, gamma = 0.15;
+        var px = g[0], py = g[1];
+        var i, o;
+        for (i = 0; i < 3; i++) {
           o = s.orders[i];
-          al = this.alphas[i];
-          o.a[0] += al * (g[0] - o.a[0]);
-          o.a[1] += al * (g[1] - o.a[1]);
-          o.b[0] += al * (o.a[0] - o.b[0]);
-          o.b[1] += al * (o.a[1] - o.b[1]);
+          o.x = (1 - lam) * o.x + lam * px;
+          o.y = (1 - lam) * o.y + lam * py;
+          px = o.x;
+          py = o.y;
         }
         var total = 0;
-        for (i = 0; i < s.orders.length; i++) {
+        for (i = 0; i < 3; i++) {
           o = s.orders[i];
-          var bn = Math.hypot(o.b[0], o.b[1]) + 1e-9;
-          var align = (g[0] * o.b[0] + g[1] * o.b[1]) / (gn * bn);
-          s.w[i] = Math.max(0.05, s.w[i] + 0.02 * align);
-          total += s.w[i];
+          s.k[i] = Math.min(1, Math.max(0.05, s.k[i] + gamma * (g[0] * o.x + g[1] * o.y)));
+          total += s.k[i];
         }
         var sx = 0, sy = 0;
-        for (i = 0; i < s.orders.length; i++) {
-          sx += (s.w[i] / total) * s.orders[i].b[0];
-          sy += (s.w[i] / total) * s.orders[i].b[1];
+        for (i = 0; i < 3; i++) {
+          sx += (s.k[i] / total) * s.orders[i].x;
+          sy += (s.k[i] / total) * s.orders[i].y;
         }
-        s.x -= 0.09 * sx;
-        s.y -= 0.09 * sy;
+        s.x -= eta * sx;
+        s.y -= eta * sy;
       },
     },
   ];
@@ -97,6 +95,7 @@
   var lossMin = -1.25, lossMax = 0.25;
   var playing = false, steps = 2, raf = 0;
   var states = [];
+  var visible = { sgd: false, sgdm: true, diesgd: false, mie: true };
 
   function lossAt(x, y) {
     var v = BOWL * (x * x + y * y);
@@ -188,8 +187,8 @@
         path: [[START.x, START.y]], done: false,
       };
       if (m.key === 'mie') {
-        st.orders = m.alphas.map(function () { return { a: [0, 0], b: [0, 0] }; });
-        st.w = m.alphas.map(function () { return 1 / m.alphas.length; });
+        st.orders = [0, 0, 0].map(function () { return { x: 0, y: 0 }; });
+        st.k = [1 / 3, 1 / 3, 1 / 3];
       }
       return st;
     });
@@ -220,6 +219,7 @@
     ctx.drawImage(field, 0, 0, cssW, cssH);
 
     states.forEach(function (s) {
+      if (!visible[s.m.key]) return;
       if (s.path.length < 2) return;
       var n = s.path.length;
 
@@ -293,6 +293,7 @@
     if (!statsBody) return;
     statsBody.innerHTML = '';
     states.forEach(function (s) {
+      if (!visible[s.m.key]) return;
       var tr = document.createElement('tr');
       var name = document.createElement('td');
       var swatch = document.createElement('span');
@@ -376,6 +377,27 @@
   speedInput.addEventListener('input', function () {
     steps = parseInt(speedInput.value, 10) || 1;
   });
+
+  var toggles = Array.prototype.slice.call(document.querySelectorAll('.lab-toggle'));
+
+  function paintToggles() {
+    toggles.forEach(function (b) {
+      var on = !!visible[b.dataset.key];
+      b.classList.toggle('is-on', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  }
+
+  toggles.forEach(function (b) {
+    b.addEventListener('click', function () {
+      visible[b.dataset.key] = !visible[b.dataset.key];
+      paintToggles();
+      draw();
+      renderStats();
+    });
+  });
+
+  paintToggles();
 
   var dragging = false;
 
