@@ -67,38 +67,77 @@
 
 <details class="lab-math">
   <summary>The maths</summary>
-  <div class="prose">
-    <p>
-      The surface is two inverted Gaussians and a shallow bowl:
-      <code>f(p) = −Σᵢ Aᵢ exp(−‖p − cᵢ‖² / 2σᵢ²) + 0.08‖p‖²</code>, with
-      <code>(A, σ) = (1.00, 0.17)</code> for the sharp well and
-      <code>(0.86, 0.46)</code> for the flat one. The bowl only keeps the
-      trajectories on screen.
-    </p>
-    <p>
-      SGD: <code>p ← p − η∇f</code>. SGDM: <code>v ← 0.8v − η∇f</code>,
-      <code>p ← p + v</code>. DIESGD, a second-order low-pass on the gradient:
-      <code>s₁ ← s₁ + α(∇f − s₁)</code>, <code>s₂ ← s₂ + α(s₁ − s₂)</code>,
-      <code>p ← p − ηs₂</code>, with <code>α = 0.16</code>.
-    </p>
-    <p>
-      MIE runs order <code>l = 3</code>: <code>s⁰ = ∇f</code> and
-      <code>sʲ ← ξsʲ + αsʲ⁻¹</code> with <code>ξ = 0.98</code> and
-      <code>α = 0.05</code>. Coefficients stay positive through a softplus map,
-      <code>λʲ = log(1 + e^λ̂ʲ)</code>, and the hypergradient rule moves the
-      underlying <code>λ̂ʲ</code> with a smoothed, normalised alignment signal:
-      <code>λ̃ʲ = −α (∇f·sʲ) / ((‖∇f‖+ε)(‖sʲ‖+ε)) · σ(λ̂ʲ)</code>,
-      <code>mʲ ← 0.9mʲ + 0.1λ̃ʲ</code>, <code>λ̂ʲ ← λ̂ʲ − 0.01mʲ</code>.
-      The step adds the gradient difference to the multi-order sum,
-      <code>p ← p − α[(∇f − ∇f⁻) + Σⱼ λʲsʲ]</code>, from
-      <code>λ(0) = 1.5</code>.
-    </p>
-    <p>
-      "Sharpness" is the trace of the Hessian at the final point, estimated by
-      finite differences. It is not a generalisation bound — just the local
-      curvature that flat-minima work uses as a proxy.
-    </p>
+
+  <h3 class="math-h">Surface</h3>
+  <div class="eq">
+    <div class="eq-body">
+      <i>f</i>(<i>p</i>) = −Σ<sub><i>i</i></sub> <i>A</i><sub><i>i</i></sub>
+      exp(−‖<i>p</i> − <i>c</i><sub><i>i</i></sub>‖² / 2<i>σ</i><sub><i>i</i></sub>²)
+      + 0.08‖<i>p</i>‖²
+    </div>
+    <div class="eq-note">sharp (1.00, 0.17) · flat (0.86, 0.46)</div>
   </div>
+  <p class="math-note">Two inverted Gaussians and a shallow bowl; the bowl only
+    keeps the trajectories on screen.</p>
+
+  <h3 class="math-h">Baselines</h3>
+  <div class="eq">
+    <div class="eq-body">SGD:&nbsp; <i>p</i> ← <i>p</i> − <i>η</i>∇<i>f</i></div>
+    <div class="eq-note"><i>η</i> = 0.004</div>
+  </div>
+  <div class="eq">
+    <div class="eq-body">SGDM:&nbsp; <i>v</i> ← 0.8<i>v</i> − <i>η</i>∇<i>f</i>,&nbsp;
+      <i>p</i> ← <i>p</i> + <i>v</i></div>
+    <div class="eq-note"><i>η</i> = 0.01</div>
+  </div>
+  <div class="eq">
+    <div class="eq-body">DIESGD:&nbsp; <i>s</i><sub>1</sub> ← <i>s</i><sub>1</sub>
+      + <i>α</i>(∇<i>f</i> − <i>s</i><sub>1</sub>),&nbsp;
+      <i>s</i><sub>2</sub> ← <i>s</i><sub>2</sub> + <i>α</i>(<i>s</i><sub>1</sub> − <i>s</i><sub>2</sub>),&nbsp;
+      <i>p</i> ← <i>p</i> − <i>η</i><i>s</i><sub>2</sub></div>
+    <div class="eq-note"><i>α</i> = 0.16, <i>η</i> = 0.03</div>
+  </div>
+
+  <h3 class="math-h">MIE</h3>
+  <div class="eq">
+    <div class="eq-body"><i>s</i><sup>(0)</sup> = ∇<i>f</i></div>
+    <div class="eq-note"><i>l</i> = 3, proportional term</div>
+  </div>
+  <div class="eq">
+    <div class="eq-body"><i>s</i><sup>(<i>j</i>)</sup> ← <i>ξ</i> <i>s</i><sup>(<i>j</i>)</sup>
+      + <i>α</i> <i>s</i><sup>(<i>j</i>−1)</sup></div>
+    <div class="eq-note"><i>ξ</i> = 0.98, <i>α</i> = 0.05</div>
+  </div>
+  <div class="eq">
+    <div class="eq-body"><i>λ</i><sup>(<i>j</i>)</sup> = softplus(<i>λ̂</i><sup>(<i>j</i>)</sup>)</div>
+    <div class="eq-note">log(1 + <i>e</i><sup><i>x</i></sup>), so <i>λ</i> &gt; 0</div>
+  </div>
+  <div class="eq">
+    <div class="eq-body"><i>λ̃</i><sup>(<i>j</i>)</sup> = −<i>α</i>
+      (<i>g</i><sup>⊤</sup><i>s</i><sup>(<i>j</i>)</sup>) /
+      ((‖<i>g</i>‖ + <i>ε</i>)(‖<i>s</i><sup>(<i>j</i>)</sup>‖ + <i>ε</i>))
+      · <i>σ</i>(<i>λ̂</i><sup>(<i>j</i>)</sup>)</div>
+    <div class="eq-note"><i>g</i> = ∇<i>f</i></div>
+  </div>
+  <div class="eq">
+    <div class="eq-body"><i>m</i><sup>(<i>j</i>)</sup> ← 0.9<i>m</i><sup>(<i>j</i>)</sup>
+      + 0.1<i>λ̃</i><sup>(<i>j</i>)</sup></div>
+    <div class="eq-note">smoothed</div>
+  </div>
+  <div class="eq">
+    <div class="eq-body"><i>λ̂</i><sup>(<i>j</i>)</sup> ← <i>λ̂</i><sup>(<i>j</i>)</sup>
+      − 0.01<i>m</i><sup>(<i>j</i>)</sup></div>
+    <div class="eq-note"><i>λ</i>(0) = 1.5</div>
+  </div>
+  <div class="eq">
+    <div class="eq-body"><i>p</i> ← <i>p</i> − <i>α</i>[(∇<i>f</i> − ∇<i>f</i><sup>−</sup>)
+      + Σ<sub><i>j</i></sub> <i>λ</i><sup>(<i>j</i>)</sup><i>s</i><sup>(<i>j</i>)</sup>]</div>
+    <div class="eq-note">full step</div>
+  </div>
+
+  <p class="math-note">“Sharpness” is the trace of the Hessian at the resting
+    point, estimated by finite differences — a local curvature proxy, not a
+    generalisation bound.</p>
 </details>
 
 <p class="lab-note">
