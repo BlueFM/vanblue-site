@@ -254,34 +254,18 @@
       if (s.path.length < 2) return;
       var n = s.path.length;
 
-      // the whole history, barely there: it explains where the trail came from
-      ctx.beginPath();
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = s.m.colour;
-      ctx.globalAlpha = 0.07;
-      if (ctx.setLineDash) ctx.setLineDash([]);
-      for (var h = 1; h < n; h++) {
-        var ha = toScreen(s.path[h - 1][0], s.path[h - 1][1]);
-        var hb = toScreen(s.path[h][0], s.path[h][1]);
-        ctx.moveTo(ha[0], ha[1]);
-        ctx.lineTo(hb[0], hb[1]);
-      }
-      ctx.stroke();
-      ctx.globalAlpha = 1;
-
-      // the last stretch in chunks, so the recent move reads clearly
-      var trail = 120;
-      var first = Math.max(1, n - trail);
-      var chunks = 5;
+      // the trajectory, drawn in chunks so the head stands out but the
+      // whole route stays visible once the run has settled
+      var chunks = 10;
       for (var c = 0; c < chunks; c++) {
-        var from = Math.max(first, Math.floor(first + ((n - first) * c) / chunks));
-        var to = Math.min(n - 1, Math.floor(first + ((n - first) * (c + 1)) / chunks));
+        var from = Math.max(1, Math.floor((n * c) / chunks));
+        var to = Math.min(n - 1, Math.floor((n * (c + 1)) / chunks));
         if (to <= from) continue;
         var t = (c + 1) / chunks;
         ctx.beginPath();
-        ctx.lineWidth = s.m.width * (0.7 + 0.3 * t);
+        ctx.lineWidth = s.m.width * (0.8 + 0.25 * t);
         ctx.strokeStyle = s.m.colour;
-        ctx.globalAlpha = 0.35 + 0.65 * t;
+        ctx.globalAlpha = s.done ? 0.75 : 0.3 + 0.7 * t;
         ctx.lineJoin = 'round';
         ctx.lineCap = 'round';
         if (ctx.setLineDash) ctx.setLineDash(s.m.dash || []);
@@ -468,4 +452,5 @@
     draw();
   });
   if (!reduced) play();
+
 })();
