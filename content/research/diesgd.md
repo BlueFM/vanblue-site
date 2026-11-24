@@ -1,5 +1,5 @@
 +++
-title = "DIESGD - cascaded inertia optimiser"
+title = "DIESGD - cascaded inertia optimizer"
 description = "Neurodynamics-derived second-order inertia that steers training into flat minima."
 date = 2026-02-18
 weight = 1
@@ -13,7 +13,7 @@ into a sharp or a flat basin.
 
 DIESGD adds a **second integral term**: the gradient signal is integrated twice before
 entering the update, which acts as a low-pass filter on the loss surface and removes the
-sharp components that hurt generalisation. The four coefficients weighting these terms
+sharp components that hurt generalization. The four coefficients weighting these terms
 are not hand-tuned - a small feed-forward network predicts them, trained offline on noisy
 gradients through a neurodynamic error equation.
 

@@ -1,5 +1,5 @@
 +++
-title = "MIE - meta integration-enhanced optimiser"
+title = "MIE - meta integration-enhanced optimizer"
 description = "Multiple integral orders over the gradient history, with coefficients updated by a hypergradient rule. Under review at IEEE Transactions on Cybernetics."
 weight = 2
 
@@ -8,7 +8,7 @@ paper = "/papers/meta-integration-enhanced-optimizer/"
 # NOTE: Under review. Keep numbers off this page until the paper is accepted.
 +++
 DIESGD fixes the integral order at two, so it can only filter a limited band of sharp
-minima - a local view of the optimisation problem. The MIE mechanism instead stacks
+minima - a local view of the optimization problem. The MIE mechanism instead stacks
 **multiple integral orders** over the gradient history, each reshaping the loss at its own
 timescale and generating momentum that does not decay the way EMA momentum does.
 

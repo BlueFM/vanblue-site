@@ -7,7 +7,7 @@ authors = ["Shunbao Zhang"]
 [extra]
 venue = "Submitted to IEEE Transactions on Cybernetics"
 status = "Under review"
-# NOTE: Submitted manuscript. Abstract and results summarised from MIE_final_version.pdf.
+# NOTE: Submitted manuscript. Abstract and results summarized from MIE_final_version.pdf.
 # NOTE: Author list is not reproduced here while the submission is under review.
 +++
 **TL;DR** - Exponential-moving-average momentum forgets old gradients, so it cannot sustain
@@ -17,7 +17,7 @@ online by a hypergradient rule.
 
 ## Problem
 
-Flat minima correlate with better generalisation, and EMA-based momentum is the standard
+Flat minima correlate with better generalization, and EMA-based momentum is the standard
 mechanism used to reach them. But historical gradient information decays rapidly under an
 EMA, which prevents the accumulation of the sustained directional signal required to escape
 a sharp minimum.
@@ -42,6 +42,6 @@ gradient and the historical integral states.
 ## Results
 
 Simulations and experiments across multiple datasets show that MIE-based optimizers achieve
-better optimisation and generalisation than the baselines.
+better optimization and generalization than the baselines.
 
 *Full manuscript available on request while the submission is under review.*

@@ -3,11 +3,11 @@ title = "Home"
 [extra]
 is_home = true
 bio = """
-I study why deep networks generalise and stay robust. My current work asks a narrow version of that question: how the geometry of the loss landscape can be shaped during training, and whether optimisers derived from neurodynamics — integral and inertia terms over the gradient history — can steer a model toward flat minima without extra per-step cost.
+I study why deep networks generalize and stay robust. My current work asks a narrow version of that question: how the geometry of the loss landscape can be shaped during training, and whether optimizers derived from neurodynamics — integral and inertia terms over the gradient history — can steer a model toward flat minima without extra per-step cost.
 
 Before that I worked on access strategies for mmWave cell-free networks, and on a cascaded inertia SGD whose coefficients are learned offline rather than tuned by hand.
 """
-interests = ["Loss-landscape shaping", "Neurodynamics-inspired optimisation", "Generalisation", "Robustness", "Hyperparameter learning"]
+interests = ["Loss-landscape shaping", "Neurodynamics-inspired optimization", "Generalization", "Robustness", "Hyperparameter learning"]
 stories_intro = "Two projects on one theme: how a second-order integral term filters sharp minima out of the training trajectory, and what changes once the integral order itself becomes adaptive."
 
 [[extra.experience]]

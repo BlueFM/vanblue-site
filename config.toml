@@ -19,7 +19,7 @@ icp = "陇ICP备2025018043号"
 
 [languages.en]
 title = "Shunbao Zhang"
-description = "MSc student at Lanzhou University working on the robustness and generalisation of deep networks."
+description = "MSc student at Lanzhou University working on the robustness and generalization of deep networks."
 generate_feeds = true
 feed_filenames = ["atom.xml"]
 
@@ -27,7 +27,7 @@ feed_filenames = ["atom.xml"]
 author = "Shunbao Zhang"
 site_brand = "vanblue.online"
 affiliation = "Lanzhou University · School of Artificial Intelligence"
-tagline = "I work on why deep networks generalise and stay robust. My current focus is neurodynamics-inspired optimisers that reshape the loss landscape toward flat minima."
+tagline = "I work on why deep networks generalize and stay robust. My current focus is neurodynamics-inspired optimizers that reshape the loss landscape toward flat minima."
 role = "MSc student, Software Engineering"
 location = "Lanzhou, China"
 interests_heading = "Research interests"
@@ -36,7 +36,7 @@ research_stories = "Research Stories"
 experience_heading = "Academic Experience"
 read_story = "Read the story: "
 contact_heading = "Contact"
-contact_note = "Email is the best way to reach me — questions about the papers, or anything adjacent to optimisation and generalisation."
+contact_note = "Email is the best way to reach me — questions about the papers, or anything adjacent to optimization and generalization."
 news_heading = "News"
 nav_papers = "Publications"
 nav_home = "Home"

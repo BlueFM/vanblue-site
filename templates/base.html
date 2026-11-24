@@ -40,7 +40,7 @@
   "image": "{{ config.base_url }}{{ config.extra.photo }}",
   "description": "{{ config.description }}",
   "affiliation": { "@type": "CollegeOrUniversity", "name": "Lanzhou University" },
-  "knowsAbout": ["Deep learning", "Optimisation", "Generalisation", "Robustness"],
+  "knowsAbout": ["Deep learning", "Optimization", "Generalization", "Robustness"],
   {% set_global sameas = "" %}{% if config.extra.github %}{% set_global sameas = '"' ~ config.extra.github ~ '"' %}{% endif %}{% if config.extra.scholar %}{% if sameas != "" %}{% set_global sameas = sameas ~ ", " %}{% endif %}{% set_global sameas = sameas ~ '"' ~ config.extra.scholar ~ '"' %}{% endif %}
   "sameAs": [{{ sameas | safe }}]
 }

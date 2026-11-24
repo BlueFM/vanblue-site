@@ -7,7 +7,7 @@ date = 2026-10-29
 
 ## Research interests
 
-Robustness and generalisation of deep networks; neurodynamics-inspired optimisation;
+Robustness and generalization of deep networks; neurodynamics-inspired optimization;
 loss-landscape shaping; hyperparameter learning.
 
 ## Education

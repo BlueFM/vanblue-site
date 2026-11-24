@@ -30,7 +30,7 @@ by a small network rather than tuned by hand.
 
 ## Problem
 
-Flat minima correlate with better generalisation and robustness, but plain SGD and
+Flat minima correlate with better generalization and robustness, but plain SGD and
 momentum methods offer no direct handle on the sharpness of the basin a model settles
 into. Sharpness-aware methods pay for that control with extra forward/backward passes or
 hand-tuned schedules.
@@ -48,5 +48,5 @@ four coefficients that govern the update.
 Across image-classification and remote-sensing benchmarks the method improves on standard
 baselines without extra per-step cost during training.
 
-*Published open access under a [CC BY 4.0 licence](https://creativecommons.org/licenses/by/4.0/);
+*Published open access under a [CC BY 4.0 license](https://creativecommons.org/licenses/by/4.0/);
 the PDF above is the publisher's version of record.*
