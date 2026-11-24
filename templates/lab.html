@@ -14,7 +14,7 @@
 <figure class="lab-figure">
   <div class="lab-canvas-wrap">
     <canvas id="lab-canvas" role="img"
-            aria-label="A loss surface with a sharp well and a wide flat basin, with three optimisation trajectories drawn on it"></canvas>
+            aria-label="A loss surface with a sharp well and a wide flat basin, with four optimisation trajectories drawn on it"></canvas>
   </div>
 
   <div class="lab-controls">
@@ -27,9 +27,10 @@
   </div>
 
   <figcaption class="lab-caption">
-    Three updates, one start, the same number of steps. Grey: plain SGD. Dashed:
-    heavy-ball momentum. Navy: the gradient passed through two first-order
-    filters before it becomes a step.
+    Four updates, one start, the same number of steps. Grey: plain SGD. Dashed:
+    heavy-ball momentum. Navy: DIESGD, the gradient through two first-order
+    filters. Teal: MIE, three integral orders whose coefficients move with the
+    gradient.
   </figcaption>
 </figure>
 
@@ -40,6 +41,7 @@
       <th scope="col">Method</th>
       <th scope="col">Loss</th>
       <th scope="col">Sharpness</th>
+      <th scope="col">Steps</th>
       <th scope="col">Ends in</th>
     </tr>
   </thead>
@@ -58,10 +60,17 @@
     </p>
     <p>
       SGD: <code>p ← p − η∇f</code>. Momentum: <code>v ← 0.8v − η∇f</code>,
-      <code>p ← p + v</code>. Cascaded inertia, as a second-order low-pass on
-      the gradient: <code>s₁ ← s₁ + α(∇f − s₁)</code>,
-      <code>s₂ ← s₂ + α(s₁ − s₂)</code>, <code>p ← p − ηs₂</code>, with
-      <code>α = 0.16</code>. Step sizes are 0.004, 0.01 and 0.03.
+      <code>p ← p + v</code>. DIESGD, a second-order low-pass on the gradient:
+      <code>s₁ ← s₁ + α(∇f − s₁)</code>, <code>s₂ ← s₂ + α(s₁ − s₂)</code>,
+      <code>p ← p − ηs₂</code>, with <code>α = 0.16</code>.
+    </p>
+    <p>
+      MIE keeps three orders, <code>k = 1..3</code>, each its own two-stage
+      filter with <code>α = (0.30, 0.12, 0.05)</code>. Its coefficients follow
+      the directional alignment between the gradient and each order:
+      <code>wₖ ← wₖ + 0.02 cos(∇f, bₖ)</code>, renormalised so they sum to one,
+      and <code>p ← p − η Σ wₖ bₖ</code>. Step sizes are 0.004, 0.01, 0.03 and
+      0.09.
     </p>
     <p>
       "Sharpness" is the trace of the Hessian at the final point, estimated by

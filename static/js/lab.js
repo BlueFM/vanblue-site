@@ -44,7 +44,7 @@
       },
     },
     {
-      key: 'cascaded', label: 'Cascaded inertia', colour: '#224b8d', width: 3, dash: null,
+      key: 'cascaded', label: 'DIESGD', colour: '#224b8d', width: 3, dash: null,
       step: function (s) {
         var g = gradAt(s.x, s.y);
         var a = 0.16;
@@ -54,6 +54,40 @@
         s.s2y += a * (s.s1y - s.s2y);
         s.x -= 0.03 * s.s2x;
         s.y -= 0.03 * s.s2y;
+      },
+    },
+    {
+      // three integral orders, each a two-stage low-pass at its own timescale;
+      // the coefficients follow how well an order lines up with the gradient
+      key: 'mie', label: 'MIE', colour: '#2f6f63', width: 2.6, dash: null,
+      alphas: [0.30, 0.12, 0.05],
+      step: function (s) {
+        var g = gradAt(s.x, s.y);
+        var gn = Math.hypot(g[0], g[1]) + 1e-9;
+        var i, o, al;
+        for (i = 0; i < s.orders.length; i++) {
+          o = s.orders[i];
+          al = this.alphas[i];
+          o.a[0] += al * (g[0] - o.a[0]);
+          o.a[1] += al * (g[1] - o.a[1]);
+          o.b[0] += al * (o.a[0] - o.b[0]);
+          o.b[1] += al * (o.a[1] - o.b[1]);
+        }
+        var total = 0;
+        for (i = 0; i < s.orders.length; i++) {
+          o = s.orders[i];
+          var bn = Math.hypot(o.b[0], o.b[1]) + 1e-9;
+          var align = (g[0] * o.b[0] + g[1] * o.b[1]) / (gn * bn);
+          s.w[i] = Math.max(0.05, s.w[i] + 0.02 * align);
+          total += s.w[i];
+        }
+        var sx = 0, sy = 0;
+        for (i = 0; i < s.orders.length; i++) {
+          sx += (s.w[i] / total) * s.orders[i].b[0];
+          sy += (s.w[i] / total) * s.orders[i].b[1];
+        }
+        s.x -= 0.09 * sx;
+        s.y -= 0.09 * sy;
       },
     },
   ];
@@ -148,11 +182,16 @@
 
   function reset() {
     states = METHODS.map(function (m) {
-      return {
+      var st = {
         m: m, x: START.x, y: START.y, vx: 0, vy: 0,
         s1x: 0, s1y: 0, s2x: 0, s2y: 0,
         path: [[START.x, START.y]], done: false,
       };
+      if (m.key === 'mie') {
+        st.orders = m.alphas.map(function () { return { a: [0, 0], b: [0, 0] }; });
+        st.w = m.alphas.map(function () { return 1 / m.alphas.length; });
+      }
+      return st;
     });
     draw();
     renderStats();
@@ -180,7 +219,7 @@
     ctx.clearRect(0, 0, cssW, cssH);
     ctx.drawImage(field, 0, 0, cssW, cssH);
 
-    states.slice().reverse().forEach(function (s) {
+    states.forEach(function (s) {
       if (s.path.length < 2) return;
       var n = s.path.length;
 
@@ -188,7 +227,7 @@
       ctx.beginPath();
       ctx.lineWidth = 1;
       ctx.strokeStyle = s.m.colour;
-      ctx.globalAlpha = 0.12;
+      ctx.globalAlpha = 0.07;
       if (ctx.setLineDash) ctx.setLineDash([]);
       for (var h = 1; h < n; h++) {
         var ha = toScreen(s.path[h - 1][0], s.path[h - 1][1]);
@@ -200,7 +239,7 @@
       ctx.globalAlpha = 1;
 
       // the last stretch in chunks, so the recent move reads clearly
-      var trail = 160;
+      var trail = 120;
       var first = Math.max(1, n - trail);
       var chunks = 5;
       for (var c = 0; c < chunks; c++) {
@@ -268,6 +307,9 @@
       var sharp = document.createElement('td');
       sharp.textContent = sharpness(s.x, s.y).toFixed(1);
 
+      var counted = document.createElement('td');
+      counted.textContent = String(s.path.length - 1);
+
       var where = document.createElement('td');
       where.className = 'lab-verdict';
       where.textContent = s.done ? wellOf(s) : '—';
@@ -275,6 +317,7 @@
       tr.appendChild(name);
       tr.appendChild(loss);
       tr.appendChild(sharp);
+      tr.appendChild(counted);
       tr.appendChild(where);
       statsBody.appendChild(tr);
     });

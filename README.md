@@ -40,6 +40,14 @@ The home page is assembled from content rather than typed by hand:
 used by `og:image` on every page. The strings are at the top of that file; it
 needs Pillow and the Trebuchet MS fonts that ship with Windows.
 
+## Lab
+
+`/lab/` draws two Gaussian wells and races four updates from one start — SGD,
+heavy-ball momentum, DIESGD and MIE — then reports the loss, the Hessian trace
+and the step count where each one stops. `static/js/lab.js` holds the surface and
+the update rules; the page's "The maths" panel spells them out. Dragging on the
+canvas moves the start.
+
 ## CCF Deadlines
 
 `/ccf-deadlines/` lists CCF-ranked AI, CV and NLP venues plus KDD, WSDM, CIKM and
