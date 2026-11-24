@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }} — {{ config.title }}{% endblock title %}
+{% block description %}{{ page.description }}{% endblock description %}
+{% block og_description %}{{ page.description }}{% endblock og_description %}
+
+{% block head %}
+<script src="{{ get_url(path='js/lab.js', cachebust=true) }}" defer></script>
+{% endblock head %}
+
+{% block content %}
+<h1 class="page__title">{{ page.title }}</h1>
+<div class="prose page-intro">{{ page.content | safe }}</div>
+
+<figure class="lab-figure">
+  <div class="lab-canvas-wrap">
+    <canvas id="lab-canvas" role="img"
+            aria-label="A loss surface with a sharp well and a wide flat basin, with three optimisation trajectories drawn on it"></canvas>
+  </div>
+
+  <div class="lab-controls">
+    <button type="button" id="lab-play" class="lab-btn">Play</button>
+    <button type="button" id="lab-reset" class="lab-btn">Reset</button>
+    <label class="lab-speed" for="lab-speed">steps / frame
+      <input id="lab-speed" type="range" min="1" max="6" value="2" step="1">
+    </label>
+    <span class="lab-hint">drag anywhere to move the start</span>
+  </div>
+
+  <figcaption class="lab-caption">
+    Three updates, one start, the same number of steps. Grey: plain SGD. Dashed:
+    heavy-ball momentum. Navy: the gradient passed through two first-order
+    filters before it becomes a step.
+  </figcaption>
+</figure>
+
+<table class="lab-stats">
+  <caption class="visually-hidden">Loss and curvature where each method comes to rest</caption>
+  <thead>
+    <tr>
+      <th scope="col">Method</th>
+      <th scope="col">Loss</th>
+      <th scope="col">Sharpness</th>
+      <th scope="col">Ends in</th>
+    </tr>
+  </thead>
+  <tbody id="lab-stats"></tbody>
+</table>
+
+<details class="lab-math">
+  <summary>The maths</summary>
+  <div class="prose">
+    <p>
+      The surface is two inverted Gaussians and a shallow bowl:
+      <code>f(p) = −Σᵢ Aᵢ exp(−‖p − cᵢ‖² / 2σᵢ²) + 0.08‖p‖²</code>, with
+      <code>(A, σ) = (1.00, 0.17)</code> for the sharp well and
+      <code>(0.86, 0.46)</code> for the flat one. The bowl only keeps the
+      trajectories on screen.
+    </p>
+    <p>
+      SGD: <code>p ← p − η∇f</code>. Momentum: <code>v ← 0.8v − η∇f</code>,
+      <code>p ← p + v</code>. Cascaded inertia, as a second-order low-pass on
+      the gradient: <code>s₁ ← s₁ + α(∇f − s₁)</code>,
+      <code>s₂ ← s₂ + α(s₁ − s₂)</code>, <code>p ← p − ηs₂</code>, with
+      <code>α = 0.16</code>. Step sizes are 0.004, 0.01 and 0.03.
+    </p>
+    <p>
+      "Sharpness" is the trace of the Hessian at the final point, estimated by
+      finite differences. It is not a generalisation bound — just the local
+      curvature that flat-minima work uses as a proxy.
+    </p>
+  </div>
+</details>
+
+<p class="lab-note">
+  A toy, not an experiment: two wells, hand-tuned constants, no data and no
+  training. The honest parts are the landscape, the update rules and the
+  curvature readout.
+</p>
+{% endblock content %}
