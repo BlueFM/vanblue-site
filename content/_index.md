@@ -21,4 +21,5 @@ text = "BSc in Software Engineering, Northwest Normal University"
 # NOTE: News lives in the body as a Markdown list, newest first. Only add items
 # that Selected Work, Research Stories or Experience do not already say.
 +++
+- **2026.11** — New post: [The optimizer zoo, drawn on one landscape](/blog/optimizer-zoo/) — momentum, adaptive steps and flat minima, with five figures.
 - **2026.11** — Awarded the Lanzhou University Special Prize Scholarship for postgraduate study.

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" width="720" height="300" role="img" aria-labelledby="t d">
+<title id="t">Gradient descent and momentum on an elongated valley</title>
+<desc id="d">On a narrow quadratic valley, gradient descent with a stable step size bounces across the valley at every step and then crawls along it, still 0.4 units from the bottom only after fifty-odd steps. Heavy-ball momentum at almost the same step size crosses the valley once and reaches the bottom in about twenty.</desc>
+<style>text{font-family:'Trebuchet MS', Helvetica, Arial, sans-serif;}</style>
+<ellipse cx="393.0" cy="131.0" rx="75.3" ry="15.1" fill="none" stroke="#e3e5e6" stroke-width="1.1"/>
+<ellipse cx="393.0" cy="131.0" rx="112.9" ry="22.6" fill="none" stroke="#e3e5e6" stroke-width="1.1"/>
+<ellipse cx="393.0" cy="131.0" rx="150.5" ry="30.1" fill="none" stroke="#e3e5e6" stroke-width="1.1"/>
+<ellipse cx="393.0" cy="131.0" rx="188.1" ry="37.6" fill="none" stroke="#e3e5e6" stroke-width="1.1"/>
+<ellipse cx="393.0" cy="131.0" rx="225.8" ry="45.2" fill="none" stroke="#e3e5e6" stroke-width="1.1"/>
+<ellipse cx="393.0" cy="131.0" rx="263.4" ry="52.7" fill="none" stroke="#e3e5e6" stroke-width="1.1"/>
+<line x1="393.0" y1="26.0" x2="393.0" y2="236.0" stroke="#f0f1f2" stroke-width="1"/>
+<line x1="92.0" y1="131.0" x2="694.0" y2="131.0" stroke="#f0f1f2" stroke-width="1"/>
+<line x1="140.6" y1="237.0" x2="140.6" y2="241.0" stroke="#b3b8bb" stroke-width="1"/>
+<text x="140.6" y="253.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">-3</text>
+<line x1="224.7" y1="237.0" x2="224.7" y2="241.0" stroke="#b3b8bb" stroke-width="1"/>
+<text x="224.7" y="253.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">-2</text>
+<line x1="308.9" y1="237.0" x2="308.9" y2="241.0" stroke="#b3b8bb" stroke-width="1"/>
+<text x="308.9" y="253.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">-1</text>
+<line x1="393.0" y1="237.0" x2="393.0" y2="241.0" stroke="#b3b8bb" stroke-width="1"/>
+<text x="393.0" y="253.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">0</text>
+<line x1="477.1" y1="237.0" x2="477.1" y2="241.0" stroke="#b3b8bb" stroke-width="1"/>
+<text x="477.1" y="253.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">1</text>
+<line x1="561.3" y1="237.0" x2="561.3" y2="241.0" stroke="#b3b8bb" stroke-width="1"/>
+<text x="561.3" y="253.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">2</text>
+<line x1="645.4" y1="237.0" x2="645.4" y2="241.0" stroke="#b3b8bb" stroke-width="1"/>
+<text x="645.4" y="253.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">3</text>
+<line x1="87.0" y1="215.2" x2="91.0" y2="215.2" stroke="#b3b8bb" stroke-width="1"/>
+<text x="83.0" y="218.8" font-size="11.5" fill="#7a8288" text-anchor="end" font-weight="400">-1</text>
+<line x1="87.0" y1="131.0" x2="91.0" y2="131.0" stroke="#b3b8bb" stroke-width="1"/>
+<text x="83.0" y="134.6" font-size="11.5" fill="#7a8288" text-anchor="end" font-weight="400">0</text>
+<line x1="87.0" y1="46.8" x2="91.0" y2="46.8" stroke="#b3b8bb" stroke-width="1"/>
+<text x="83.0" y="50.4" font-size="11.5" fill="#7a8288" text-anchor="end" font-weight="400">1</text>
+<text x="393.0" y="274.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">along the valley (flat curvature)</text>
+<text x="0" y="0" font-size="11.5" fill="#7a8288" text-anchor="middle" transform="translate(30.0,131.0) rotate(-90)">across the valley (steep curvature)</text>
+<path d="M 102.7,88.9 L 123.0,162.6 L 141.9,107.3 L 159.5,148.8 L 175.9,117.7 L 191.1,141.0 L 205.2,123.5 L 218.3,136.6 L 230.6,126.8 L 241.9,134.2 L 252.5,128.6 L 262.3,132.8 L 271.5,129.7 L 280.0,132.0 L 287.9,130.3 L 295.3,131.6 L 302.1,130.6 L 308.5,131.3 L 314.4,130.8 L 319.9,131.2 L 325.0,130.9 L 329.8,131.1 L 334.2,130.9 L 338.3,131.1 L 342.1,131.0 L 345.7,131.0 L 349.0,131.0 L 352.1,131.0 L 355.0,131.0 L 357.6,131.0 L 360.1,131.0 L 362.4,131.0 L 364.5,131.0 L 366.5,131.0 L 368.4,131.0 L 370.1,131.0 L 371.7,131.0 L 373.2,131.0 L 374.6,131.0 L 375.9,131.0 L 377.1,131.0 L 378.2,131.0 L 379.2,131.0 L 380.2,131.0 L 381.1,131.0 L 381.9,131.0 L 382.7,131.0 L 383.4,131.0 L 384.1,131.0 L 384.7,131.0 L 385.3,131.0 L 385.8,131.0 L 386.3,131.0 L 386.8,131.0 L 387.2,131.0 L 387.6,131.0 L 388.0,131.0 L 388.4,131.0 L 388.7,131.0 L 389.0,131.0 L 389.3,131.0" fill="none" stroke="#a8472c" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+<path d="M 102.7,88.9 L 126.0,173.1 L 158.9,131.0 L 194.1,110.0 L 227.7,141.5 L 257.6,136.3 L 283.5,123.1 L 305.1,132.3 L 323.0,134.3 L 337.5,128.7 L 349.2,130.5 L 358.6,132.4 L 366.0,130.5 L 371.9,130.5 L 376.5,131.5 L 380.1,131.0 L 383.0,130.8 L 385.2,131.1 L 386.9,131.1 L 388.3,130.9 L 389.4,131.0 L 390.2,131.0 L 390.8,131.0 L 391.3,131.0 L 391.7,131.0 L 392.0,131.0 L 392.2,131.0 L 392.4,131.0 L 392.5,131.0 L 392.6,131.0 L 392.7,131.0 L 392.8,131.0 L 392.8,131.0 L 392.9,131.0 L 392.9,131.0 L 392.9,131.0 L 392.9,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0 L 393.0,131.0" fill="none" stroke="#224b8d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="102.7" cy="88.9" r="4.4" fill="#494e52" stroke="none" stroke-width="1"/>
+<text x="110.7" y="79.9" font-size="11" fill="#494e52" text-anchor="start" font-weight="400">start</text>
+<circle cx="393.0" cy="131.0" r="3.2" fill="#224b8d" stroke="none" stroke-width="1"/>
+<circle cx="389.3" cy="131.0" r="3.0" fill="#a8472c" stroke="none" stroke-width="1"/>
+<line x1="100.0" y1="184.0" x2="118.0" y2="184.0" stroke="#a8472c" stroke-width="2.2"/>
+<text x="124.0" y="188.0" font-size="11.5" fill="#494e52" text-anchor="start" font-weight="700">gradient descent</text>
+<text x="236.0" y="188.0" font-size="11.5" fill="#7a8288" text-anchor="start" font-weight="400">lr 0.07</text>
+<line x1="100.0" y1="204.0" x2="118.0" y2="204.0" stroke="#224b8d" stroke-width="2.2"/>
+<text x="124.0" y="208.0" font-size="11.5" fill="#494e52" text-anchor="start" font-weight="700">momentum</text>
+<text x="236.0" y="208.0" font-size="11.5" fill="#7a8288" text-anchor="start" font-weight="400">lr 0.08, beta 0.5</text>
+<text x="690.0" y="30.0" font-size="11.5" fill="#7a8288" text-anchor="end" font-weight="400">60 steps each</text>
+</svg>

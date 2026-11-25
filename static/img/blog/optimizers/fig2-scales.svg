@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" width="720" height="400" role="img" aria-labelledby="t d">
+<title id="t">Two coordinates whose curvatures differ by four orders of magnitude</title>
+<desc id="d">Distance to the optimum against step number for gradient descent and Adam on a quadratic whose two coordinates have curvatures 100 and 0.01. Gradient descent collapses the steep coordinate and leaves the flat one untouched; Adam moves both at the same rate until it reaches the floor set by its step size.</desc>
+<style>text{font-family:'Trebuchet MS', Helvetica, Arial, sans-serif;}</style>
+<line x1="96.0" y1="46.9" x2="618.0" y2="46.9" stroke="#f0f1f2" stroke-width="1"/>
+<text x="86.0" y="50.5" font-size="11.5" fill="#7a8288" text-anchor="end" font-weight="400">2</text>
+<line x1="96.0" y1="68.1" x2="618.0" y2="68.1" stroke="#f0f1f2" stroke-width="1"/>
+<text x="86.0" y="71.7" font-size="11.5" fill="#7a8288" text-anchor="end" font-weight="400">1</text>
+<line x1="96.0" y1="138.3" x2="618.0" y2="138.3" stroke="#f0f1f2" stroke-width="1"/>
+<text x="86.0" y="141.9" font-size="11.5" fill="#7a8288" text-anchor="end" font-weight="400">0.1</text>
+<line x1="96.0" y1="208.6" x2="618.0" y2="208.6" stroke="#f0f1f2" stroke-width="1"/>
+<text x="86.0" y="212.2" font-size="11.5" fill="#7a8288" text-anchor="end" font-weight="400">0.01</text>
+<line x1="96.0" y1="278.8" x2="618.0" y2="278.8" stroke="#f0f1f2" stroke-width="1"/>
+<text x="86.0" y="282.4" font-size="11.5" fill="#7a8288" text-anchor="end" font-weight="400">0.001</text>
+<line x1="96.0" y1="305.0" x2="96.0" y2="309.0" stroke="#b3b8bb" stroke-width="1"/>
+<text x="96.0" y="321.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">0</text>
+<line x1="200.4" y1="305.0" x2="200.4" y2="309.0" stroke="#b3b8bb" stroke-width="1"/>
+<text x="200.4" y="321.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">20</text>
+<line x1="304.8" y1="305.0" x2="304.8" y2="309.0" stroke="#b3b8bb" stroke-width="1"/>
+<text x="304.8" y="321.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">40</text>
+<line x1="409.2" y1="305.0" x2="409.2" y2="309.0" stroke="#b3b8bb" stroke-width="1"/>
+<text x="409.2" y="321.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">60</text>
+<line x1="513.6" y1="305.0" x2="513.6" y2="309.0" stroke="#b3b8bb" stroke-width="1"/>
+<text x="513.6" y="321.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">80</text>
+<line x1="618.0" y1="305.0" x2="618.0" y2="309.0" stroke="#b3b8bb" stroke-width="1"/>
+<text x="618.0" y="321.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">100</text>
+<text x="357.0" y="342.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">step</text>
+<text x="0" y="0" font-size="11.5" fill="#7a8288" text-anchor="middle" transform="translate(28.0,172.0) rotate(-90)">distance to the minimum (log scale)</text>
+<path d="M 101.2,57.5 L 106.4,64.7 L 111.7,67.1 L 116.9,67.8 L 122.1,68.0 L 127.3,68.1 L 132.5,68.1 L 137.8,68.1 L 143.0,68.1 L 148.2,68.1 L 153.4,68.1 L 158.6,68.1 L 163.9,68.1 L 169.1,68.1 L 174.3,68.1 L 179.5,68.1 L 184.7,68.1 L 190.0,68.1 L 195.2,68.1 L 200.4,68.1 L 205.6,68.1 L 210.8,68.2 L 216.1,68.2 L 221.3,68.2 L 226.5,68.2 L 231.7,68.2 L 236.9,68.2 L 242.2,68.2 L 247.4,68.2 L 252.6,68.2 L 257.8,68.2 L 263.0,68.2 L 268.3,68.2 L 273.5,68.2 L 278.7,68.2 L 283.9,68.2 L 289.1,68.2 L 294.4,68.2 L 299.6,68.2 L 304.8,68.2 L 310.0,68.2 L 315.2,68.2 L 320.5,68.2 L 325.7,68.2 L 330.9,68.2 L 336.1,68.2 L 341.3,68.3 L 346.6,68.3 L 351.8,68.3 L 357.0,68.3 L 362.2,68.3 L 367.4,68.3 L 372.7,68.3 L 377.9,68.3 L 383.1,68.3 L 388.3,68.3 L 393.5,68.3 L 398.8,68.3 L 404.0,68.3 L 409.2,68.3 L 414.4,68.3 L 419.6,68.3 L 424.9,68.3 L 430.1,68.3 L 435.3,68.3 L 440.5,68.3 L 445.7,68.3 L 451.0,68.3 L 456.2,68.3 L 461.4,68.3 L 466.6,68.3 L 471.8,68.3 L 477.1,68.3 L 482.3,68.3 L 487.5,68.3 L 492.7,68.3 L 497.9,68.3 L 503.2,68.3 L 508.4,68.3 L 513.6,68.3 L 518.8,68.3 L 524.0,68.3 L 529.3,68.3 L 534.5,68.3 L 539.7,68.3 L 544.9,68.3 L 550.1,68.3 L 555.4,68.3 L 560.6,68.3 L 565.8,68.3 L 571.0,68.3 L 576.2,68.3 L 581.5,68.3 L 586.7,68.3 L 591.9,68.3 L 597.1,68.3 L 602.3,68.3 L 607.6,68.3 L 612.8,68.3 L 618.0,68.3" fill="none" stroke="#a2a8ac" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 101.2,58.1 L 106.4,58.7 L 111.7,59.4 L 116.9,60.0 L 122.1,60.7 L 127.3,61.4 L 132.5,62.1 L 137.8,62.8 L 143.0,63.5 L 148.2,64.2 L 153.4,64.9 L 158.6,65.7 L 163.9,66.5 L 169.1,67.2 L 174.3,68.0 L 179.5,68.8 L 184.7,69.6 L 190.0,70.5 L 195.2,71.3 L 200.4,72.1 L 205.6,73.0 L 210.8,73.9 L 216.1,74.7 L 221.3,75.6 L 226.5,76.5 L 231.7,77.4 L 236.9,78.4 L 242.2,79.3 L 247.4,80.2 L 252.6,81.2 L 257.8,82.1 L 263.0,83.1 L 268.3,84.1 L 273.5,85.0 L 278.7,86.0 L 283.9,87.0 L 289.1,88.0 L 294.4,89.0 L 299.6,90.0 L 304.8,91.0 L 310.0,92.0 L 315.2,93.0 L 320.5,94.0 L 325.7,95.0 L 330.9,96.0 L 336.1,97.0 L 341.3,98.0 L 346.6,99.0 L 351.8,100.0 L 357.0,101.0 L 362.2,102.0 L 367.4,103.0 L 372.7,104.0 L 377.9,104.9 L 383.1,105.9 L 388.3,106.8 L 393.5,107.7 L 398.8,108.7 L 404.0,109.6 L 409.2,110.5 L 414.4,111.4 L 419.6,112.2 L 424.9,113.1 L 430.1,113.9 L 435.3,114.7 L 440.5,115.5 L 445.7,116.3 L 451.0,117.1 L 456.2,117.8 L 461.4,118.5 L 466.6,119.2 L 471.8,119.9 L 477.1,120.6 L 482.3,121.2 L 487.5,121.8 L 492.7,122.4 L 497.9,123.0 L 503.2,123.5 L 508.4,124.0 L 513.6,124.5 L 518.8,125.0 L 524.0,125.4 L 529.3,125.9 L 534.5,126.3 L 539.7,126.6 L 544.9,127.0 L 550.1,127.3 L 555.4,127.6 L 560.6,127.9 L 565.8,128.1 L 571.0,128.3 L 576.2,128.5 L 581.5,128.7 L 586.7,128.8 L 591.9,129.0 L 597.1,129.1 L 602.3,129.1 L 607.6,129.2 L 612.8,129.2 L 618.0,129.2" fill="none" stroke="#2f6f6b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="108.0" y1="222.8" x2="130.0" y2="222.8" stroke="#a2a8ac" stroke-width="2.2"/>
+<text x="136.0" y="226.8" font-size="11.5" fill="#494e52" text-anchor="start" font-weight="400">gradient descent</text>
+<line x1="108.0" y1="244.8" x2="130.0" y2="244.8" stroke="#2f6f6b" stroke-width="2.2"/>
+<text x="136.0" y="248.8" font-size="11.5" fill="#494e52" text-anchor="start" font-weight="400">Adam</text>
+</svg>
