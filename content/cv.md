@@ -12,28 +12,13 @@ loss-landscape shaping; hyperparameter learning.
 
 ## Education
 
-- **MSc, Software Engineering** (combined MSc-PhD track), Lanzhou University, School of
-  Artificial Intelligence, 2025.09 - present
+- **MSc, Software Engineering**, Lanzhou University, School of Artificial Intelligence,
+  2025.09 - present
 - **BSc, Software Engineering**, Northwest Normal University, 2020.09 - 2024.06
 
 ## Publications
 
 See the [publications page](/papers/).
-
-- Y. Guan, **S. Zhang**, L. Wang, E. Li. *Enhancing Generalisation via Cascaded Inertia
-  SGD With Learnt Hyperparameters.* CAAI Transactions on Intelligence Technology,
-  11(4):1019-1027, 2026.
-- Z. Ma, X. Zhang, **S. Zhang**, J. Pu, X. Lin, Q. Guo. *Access strategies in mmWave
-  cell-free network: A matching and auction theory based approach.* Computer Networks,
-  252:110659, 2024.
-- **S. Zhang** et al. *Improving Generalization through a Meta Integration-Enhanced
-  Mechanism.* Submitted to IEEE Transactions on Cybernetics, 2026 (under review).
-
-## Projects
-
-- **vanblue.online** — personal academic site. Zola static build, nginx serving,
-  symlink-swapped releases and Let's Encrypt TLS on a 1.7 GiB VPS.
-  [Live](https://vanblue.online) · [Write-up](/projects/vanblue-site/)
 
 ## Awards
 
