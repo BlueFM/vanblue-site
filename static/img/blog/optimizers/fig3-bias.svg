@@ -13,14 +13,14 @@
 <line x1="72.0" y1="60.1" x2="614.0" y2="60.1" stroke="#f0f1f2" stroke-width="1"/>
 <text x="62.0" y="63.7" font-size="11.5" fill="#7a8288" text-anchor="end" font-weight="400">1.00</text>
 <rect x="72.0" y="42.0" width="91.9" height="244.0" rx="0" fill="#224b8d" stroke="none" stroke-width="1" opacity="0.045"/>
-<text x="78.0" y="56.0" font-size="11.5" fill="#224b8d" text-anchor="start" font-weight="400" opacity="0.9">first ~1/(1-beta) steps</text>
+<text x="78.0" y="80.1" font-size="11.5" fill="#224b8d" text-anchor="start" font-weight="400" opacity="0.9">the first steps are built on too little data</text>
 <path d="M 72.0,263.4 L 81.2,243.1 L 90.4,224.8 L 99.6,208.3 L 108.7,193.5 L 117.9,180.1 L 127.1,168.1 L 136.3,157.3 L 145.5,147.6 L 154.7,138.8 L 163.9,131.0 L 173.1,123.9 L 182.2,117.5 L 191.4,111.8 L 200.6,106.6 L 209.8,101.9 L 219.0,97.8 L 228.2,94.0 L 237.4,90.6 L 246.5,87.5 L 255.7,84.8 L 264.9,82.3 L 274.1,80.1 L 283.3,78.1 L 292.5,76.3 L 301.7,74.7 L 310.8,73.2 L 320.0,71.9 L 329.2,70.7 L 338.4,69.7 L 347.6,68.7 L 356.8,67.8 L 366.0,67.1 L 375.2,66.4 L 384.3,65.7 L 393.5,65.2 L 402.7,64.7 L 411.9,64.2 L 421.1,63.8 L 430.3,63.4 L 439.5,63.1 L 448.6,62.8 L 457.8,62.5 L 467.0,62.3 L 476.2,62.0 L 485.4,61.8 L 494.6,61.7 L 503.8,61.5 L 512.9,61.4 L 522.1,61.2 L 531.3,61.1 L 540.5,61.0 L 549.7,60.9 L 558.9,60.8 L 568.1,60.8 L 577.3,60.7 L 586.4,60.6 L 595.6,60.6 L 604.8,60.5 L 614.0,60.5" fill="none" stroke="#a8472c" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M 72.0,283.7 L 81.2,281.5 L 90.4,279.3 L 99.6,277.1 L 108.7,274.9 L 117.9,272.8 L 127.1,270.7 L 136.3,268.5 L 145.5,266.5 L 154.7,264.4 L 163.9,262.4 L 173.1,260.3 L 182.2,258.3 L 191.4,256.3 L 200.6,254.4 L 209.8,252.4 L 219.0,250.5 L 228.2,248.6 L 237.4,246.7 L 246.5,244.9 L 255.7,243.0 L 264.9,241.2 L 274.1,239.4 L 283.3,237.6 L 292.5,235.8 L 301.7,234.0 L 310.8,232.3 L 320.0,230.6 L 329.2,228.9 L 338.4,227.2 L 347.6,225.5 L 356.8,223.9 L 366.0,222.2 L 375.2,220.6 L 384.3,219.0 L 393.5,217.4 L 402.7,215.8 L 411.9,214.3 L 421.1,212.7 L 430.3,211.2 L 439.5,209.7 L 448.6,208.2 L 457.8,206.7 L 467.0,205.3 L 476.2,203.8 L 485.4,202.4 L 494.6,200.9 L 503.8,199.5 L 512.9,198.1 L 522.1,196.8 L 531.3,195.4 L 540.5,194.0 L 549.7,192.7 L 558.9,191.4 L 568.1,190.1 L 577.3,188.8 L 586.4,187.5 L 595.6,186.2 L 604.8,184.9 L 614.0,183.7" fill="none" stroke="#9c8456" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
 <line x1="72.0" y1="60.1" x2="614.0" y2="60.1" stroke="#224b8d" stroke-width="1.8" stroke-dasharray="6 5"/>
-<text x="614.0" y="51.1" font-size="11.5" fill="#224b8d" text-anchor="end" font-weight="700">after correction</text>
-<text x="614.0" y="75.9" font-size="11" fill="#224b8d" text-anchor="end" font-weight="400">m_t / (1 - beta1^t)</text>
-<text x="283.3" y="195.6" font-size="11.5" fill="#a8472c" text-anchor="start" font-weight="700">raw m_t, beta1 = 0.9</text>
-<text x="411.9" y="258.9" font-size="11.5" fill="#9c8456" text-anchor="start" font-weight="700">raw m_t, beta1 = 0.99</text>
+<text x="614.0" y="51.1" font-size="11.5" fill="#224b8d" text-anchor="end" font-weight="700">average after the correction</text>
+<text x="614.0" y="82.7" font-size="11.5" fill="#224b8d" text-anchor="end" font-weight="400">the same number, scaled up</text>
+<text x="301.7" y="159.5" font-size="11.5" fill="#a8472c" text-anchor="start" font-weight="700">the raw average, short memory</text>
+<text x="375.2" y="258.9" font-size="11.5" fill="#9c8456" text-anchor="start" font-weight="700">the raw average, long memory</text>
 <line x1="72.0" y1="291.0" x2="72.0" y2="295.0" stroke="#b3b8bb" stroke-width="1"/>
 <text x="72.0" y="307.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">1</text>
 <line x1="154.7" y1="291.0" x2="154.7" y2="295.0" stroke="#b3b8bb" stroke-width="1"/>
@@ -36,5 +36,5 @@
 <line x1="614.0" y1="291.0" x2="614.0" y2="295.0" stroke="#b3b8bb" stroke-width="1"/>
 <text x="614.0" y="307.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">60</text>
 <text x="343.0" y="328.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">step</text>
-<text x="62.0" y="28.0" font-size="11.5" fill="#7a8288" text-anchor="start" font-weight="400">first moment divided by the gradient</text>
+<text x="62.0" y="28.0" font-size="11.5" fill="#7a8288" text-anchor="start" font-weight="400">the running average of one signal</text>
 </svg>

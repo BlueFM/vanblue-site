@@ -199,9 +199,9 @@ def fig_zigzag():
     for v in [-1, 0, 1]:
         fig.line(L - 9, ym(v), L - 5, ym(v), stroke=FAINT, width=1)
         fig.text(L - 13, ym(v) + 3.6, str(v), size=10.5, fill=MUTED, anchor="end")
-    fig.text((L + R) / 2, Bm + 42, "along the valley (flat curvature)", size=11.5,
+    fig.text((L + R) / 2, Bm + 42, "along the valley (gentle slope)", size=11.5,
              fill=MUTED, anchor="middle")
-    fig.rotated(30, (T + Bm) / 2, "across the valley (steep curvature)")
+    fig.rotated(30, (T + Bm) / 2, "across the valley (steep walls)")
 
     x0 = np.array([-3.45, 0.5])
     gd = run_gd(x0, 0.07, 60)
@@ -216,14 +216,14 @@ def fig_zigzag():
     fig.circle(xm(gd[-1][0]), ym(gd[-1][1]), 3.0, fill=RUST)
 
     items = [
-        ("gradient descent", "lr 0.07", RUST),
-        ("momentum", "lr 0.08, beta 0.5", BLUE),
+        ("walking downhill", "step 0.07", RUST),
+        ("rolling downhill", "step 0.08, momentum 0.5", BLUE),
     ]
     for i, (name, note, color) in enumerate(items):
         y = Bm - 44 + i * 20
         fig.line(L + 4, y - 4, L + 22, y - 4, stroke=color, width=2.2)
         fig.text(L + 28, y, name, size=11.5, fill=INK, weight="700")
-        fig.text(L + 140, y, note, size=10.8, fill=MUTED)
+        fig.text(L + 150, y, note, size=10.8, fill=MUTED)
 
     fig.text(R, T, "60 steps each", size=10.8, fill=MUTED, anchor="end")
 
@@ -257,7 +257,7 @@ def fig_scales():
         fig.line(xm(v), Bm + 5, xm(v), Bm + 9, stroke=FAINT, width=1)
         fig.text(xm(v), Bm + 21, str(v), size=10.5, fill=MUTED, anchor="middle")
     fig.text((L + R) / 2, Bm + 42, "step", size=11.5, fill=MUTED, anchor="middle")
-    fig.rotated(28, (T + Bm) / 2, "distance to the minimum (log scale)")
+    fig.rotated(28, (T + Bm) / 2, "distance to the best answer")
 
     a, b = 100.0, 0.01  # the two coordinates disagree by four orders of magnitude
     steps = 100
@@ -290,7 +290,7 @@ def fig_scales():
     fig.poly([(xm(tt), ym(np.log10(max(d, 1e-3)))) for tt, d in zip(t, adam)],
              stroke=TEAL, width=2.2)
 
-    for i, (name, color) in enumerate([("gradient descent", GRAY), ("Adam", TEAL)]):
+    for i, (name, color) in enumerate([("walking downhill", GRAY), ("Adam", TEAL)]):
         y = ym(np.log10(0.0055)) + i * 22
         fig.line(L + 12, y - 4, L + 34, y - 4, stroke=color, width=2.2)
         fig.text(L + 40, y, name, size=11.5, fill=INK)
@@ -320,27 +320,29 @@ def fig_bias():
         fig.line(L, ym(v), R, ym(v), stroke=GRID, width=1)
         fig.text(L - 10, ym(v) + 3.6, f"{v:.2f}", size=10.5, fill=MUTED, anchor="end")
     fig.rect(xm(1), T, xm(11) - xm(1), ym(0) - T, fill=BLUE, opacity=0.045)
-    fig.text(xm(1) + 6, T + 14, "first ~1/(1-beta) steps", size=10.5, fill=BLUE,
-             opacity=0.9)
+    fig.text(xm(1) + 6, ym(1.0) + 20, "the first steps are built on too little data",
+             size=10.5, fill=BLUE, opacity=0.9)
 
     t = np.arange(1, 61)
     for beta, color in [(0.9, RUST), (0.99, SAND)]:
         raw = 1 - beta**t
         fig.poly([(xm(tt), ym(v)) for tt, v in zip(t, raw)], stroke=color, width=2.0)
     fig.line(L, ym(1.0), R, ym(1.0), stroke=BLUE, width=1.8, dash="6 5")
-    fig.text(R, ym(1.0) - 9, "after correction", size=11.5, fill=BLUE, anchor="end",
-             weight="700")
-    fig.text(R, ym(0.93), "m_t / (1 - beta1^t)", size=11, fill=BLUE, anchor="end")
+    fig.text(R, ym(1.0) - 9, "average after the correction", size=11.5, fill=BLUE,
+             anchor="end", weight="700")
+    fig.text(R, ym(0.90), "the same number, scaled up", size=10.8, fill=BLUE,
+             anchor="end")
 
-    fig.text(xm(24), ym(0.40), "raw m_t, beta1 = 0.9", size=11.5, fill=RUST, weight="700")
-    fig.text(xm(38), ym(0.12), "raw m_t, beta1 = 0.99", size=11.5, fill=SAND,
+    fig.text(xm(26), ym(0.56), "the raw average, short memory", size=11.5, fill=RUST,
+             weight="700")
+    fig.text(xm(34), ym(0.12), "the raw average, long memory", size=11.5, fill=SAND,
              weight="700")
 
     for v in [1, 10, 20, 30, 40, 50, 60]:
         fig.line(xm(v), Bm + 5, xm(v), Bm + 9, stroke=FAINT, width=1)
         fig.text(xm(v), Bm + 21, str(v), size=10.5, fill=MUTED, anchor="middle")
     fig.text((L + R) / 2, Bm + 42, "step", size=11.5, fill=MUTED, anchor="middle")
-    fig.text(L - 10, T - 14, "first moment divided by the gradient", size=11.5,
+    fig.text(L - 10, T - 14, "the running average of one signal", size=11.5,
              fill=MUTED)
 
     fig.save(
@@ -397,17 +399,17 @@ def fig_minima():
         fig.line(L, ym(v), R, ym(v), stroke=GRID, width=1)
         fig.text(L - 10, ym(v) + 3.6, f"{v:g}", size=10.5, fill=MUTED, anchor="end")
     fig.text(L - 10, ym(0.0) + 3.6, "0", size=10.5, fill=MUTED, anchor="end")
-    fig.text(L, T - 16, "training loss along a slice", size=11.5, fill=MUTED)
+    fig.text(L, T - 16, "the height of the ground across one basin", size=11.5, fill=MUTED)
 
-    fig.text(xm(left), Bm + 20, "flat basin", size=11.5, fill=INK, anchor="middle",
+    fig.text(xm(left), Bm + 20, "wide, shallow basin", size=11.5, fill=INK, anchor="middle",
              weight="700")
-    fig.text(xm(left), Bm + 34, f"curvature ~{Hl:.2f}", size=10.5, fill=MUTED,
+    fig.text(xm(left), Bm + 34, "gentle walls", size=10.5, fill=MUTED,
              anchor="middle")
-    fig.text(xm(right), Bm + 20, "sharp basin", size=11.5, fill=INK, anchor="middle",
+    fig.text(xm(right), Bm + 20, "narrow, deep basin", size=11.5, fill=INK, anchor="middle",
              weight="700")
-    fig.text(xm(right), Bm + 34, f"curvature ~{Hr:.2f}", size=10.5, fill=MUTED,
+    fig.text(xm(right), Bm + 34, "steep walls", size=10.5, fill=MUTED,
              anchor="middle")
-    fig.rotated(26, (T + Bm) / 2, "loss")
+    fig.rotated(26, (T + Bm) / 2, "height")
 
     # ---- right panel: the same two basins under parameter jitter
     L2, R2 = 456, 690
@@ -425,7 +427,7 @@ def fig_minima():
     ym2 = mapper(0, top, Bm, T)
     fig.line(L2, ym2(0), R2, ym2(0), stroke=FAINT, width=1)
 
-    centers = {"sharp": L2 + 52, "flat": L2 + 148}
+    centers = {"sharp": L2 + 56, "flat": L2 + 152}
     for name, cx in centers.items():
         train, jitter = vals[name]
         for i, (v, fill, op) in enumerate([(train, LIGHT, 1.0), (jitter, BLUE, 0.85)]):
@@ -434,13 +436,14 @@ def fig_minima():
             fig.rect(x, ym2(0) - height, 32, height, fill=fill, opacity=op, rx=1.5)
             fig.text(x + 16, ym2(0) - height - 7, f"{abs(v):.3f}", size=10, fill=INK,
                      anchor="middle", weight="700")
-        fig.text(cx + 3, Bm + 20, name, size=11, fill=INK, anchor="middle")
+        fig.text(cx + 3, Bm + 20, {"sharp": "narrow", "flat": "wide"}[name], size=11,
+                 fill=INK, anchor="middle")
 
-    fig.text(L2, T - 16, "loss under weight jitter", size=11.5, fill=MUTED)
+    fig.text(L2, T - 16, "the score after a small nudge", size=11.5, fill=MUTED)
     fig.rect(L2, T + 2, 10, 10, fill=LIGHT)
-    fig.text(L2 + 15, T + 11, "at the minimum", size=10.5, fill=MUTED)
-    fig.rect(L2 + 106, T + 2, 10, 10, fill=BLUE, opacity=0.85)
-    fig.text(L2 + 121, T + 11, "expected", size=10.5, fill=MUTED)
+    fig.text(L2 + 15, T + 11, "right at the bottom", size=10.5, fill=MUTED)
+    fig.rect(L2 + 152, T + 2, 10, 10, fill=BLUE, opacity=0.85)
+    fig.text(L2 + 167, T + 11, "after a nudge", size=10.5, fill=MUTED)
 
     fig.save(
         "fig4-minima.svg",
@@ -456,53 +459,60 @@ def fig_minima():
 # figure 5 - integrals are low-pass filters
 # ======================================================================
 
-def fig_lowpass():
+def fig_smoothing():
+    """A noisy gradient signal and the same signal after one and two averaging stages."""
     W, H = 720, 390
     fig = Figure(W, H)
-    L, R, T, Bm = 88, 620, 46, 300
-    w_lo, w_hi = 0.05, 1.0
-    xm = mapper(np.log10(w_lo), np.log10(w_hi), L, R)
-    ym = mapper(-64, 3, Bm, T)
+    L, R, T, Bm = 86, 690, 74, 288
 
-    for v in [0, -20, -40, -60]:
-        fig.line(L, ym(v), R, ym(v), stroke=GRID, width=1)
-        fig.text(L - 10, ym(v) + 3.6, str(v), size=10.5, fill=MUTED, anchor="end")
+    t = np.arange(0, 161)
+    rng = np.random.default_rng(7)
+    trend = 0.5 * np.sin(2 * np.pi * t / 160 - 0.6) + 0.15
+    g = trend + 0.42 * np.sin(2 * np.pi * t / 7.0) + rng.normal(0, 0.13, t.size)
 
-    fig.rect(xm(np.log10(0.45)), T, xm(np.log10(w_hi)) - xm(np.log10(0.45)),
-             ym(-64) - T, fill=TEAL, opacity=0.05)
-    fig.text(xm(np.log10(0.48)), T + 16, "fast, sharp", size=10.5, fill=TEAL)
-    fig.text(xm(np.log10(0.48)), T + 29, "directions", size=10.5, fill=TEAL)
+    def smooth(sig, a=0.12):
+        out = np.empty_like(sig)
+        e = sig[0]
+        for i, v in enumerate(sig):
+            e = (1 - a) * e + a * v
+            out[i] = e
+        return out
 
-    w = np.logspace(np.log10(0.056), np.log10(w_hi), 420)  # omega / pi
-    ref = w_lo
-    for k, color in [(1, RUST), (2, BLUE), (3, TEAL)]:
-        gain = 20 * k * np.log10(np.sin(np.pi * ref / 2) / np.sin(np.pi * w / 2))
-        fig.poly([(xm(np.log10(x)), ym(g)) for x, g in zip(w, gain)],
-                 stroke=color, width=2.2)
+    s1 = smooth(g)
+    s2 = smooth(s1)
 
-    fig.text(xm(np.log10(0.072)), ym(-11), "first integral", size=11.5, fill=RUST,
-             weight="700")
-    fig.text(xm(np.log10(0.17)), ym(-31), "second (DIESGD)", size=11.5, fill=BLUE,
-             weight="700")
-    fig.text(xm(np.log10(0.34)), ym(-46), "third (MIE)", size=11.5, fill=TEAL,
-             weight="700")
+    lo = min(g.min(), s1.min(), s2.min()) - 0.3
+    hi = max(g.max(), s1.max(), s2.max()) + 0.3
+    xm = mapper(0, 160, L, R)
+    ym = mapper(lo, hi, Bm, T)
 
-    for v, lab in [(0.05, "0.05"), (0.1, "0.1"), (0.3, "0.3"), (1.0, "1")]:
-        fig.line(xm(np.log10(v)), Bm + 5, xm(np.log10(v)), Bm + 9, stroke=FAINT,
-                 width=1)
-        fig.text(xm(np.log10(v)), Bm + 21, lab, size=10.5, fill=MUTED, anchor="middle")
-    fig.text((L + R) / 2, Bm + 42,
-             "frequency of the gradient signal (omega / pi, log scale)", size=11.5,
-             fill=MUTED, anchor="middle")
-    fig.rotated(26, (T + Bm) / 2, "gain relative to slow directions (dB)")
+    fig.line(L, ym(0), R, ym(0), stroke=GRID, width=1)
+    fig.poly([(xm(a), ym(b)) for a, b in zip(t, g)], stroke=FAINT, width=1.0)
+    fig.poly([(xm(a), ym(b)) for a, b in zip(t, s1)], stroke=RUST, width=2.0)
+    fig.poly([(xm(a), ym(b)) for a, b in zip(t, s2)], stroke=BLUE, width=2.4)
+
+    for v in [0, 40, 80, 120, 160]:
+        fig.line(xm(v), Bm + 5, xm(v), Bm + 9, stroke=FAINT, width=1)
+        fig.text(xm(v), Bm + 21, str(v), size=11, fill=MUTED, anchor="middle")
+    fig.text((L + R) / 2, Bm + 44, "training step", size=11.5, fill=MUTED, anchor="middle")
+    fig.rotated(30, (T + Bm) / 2, "what the model feels at each step")
+
+    rows = [
+        ("the signal itself", FAINT, 1.4),
+        ("after one smoothing stage", RUST, 2.2),
+        ("after two smoothing stages", BLUE, 2.6),
+    ]
+    for i, (label, color, width) in enumerate(rows):
+        y = T - 40 + i * 19
+        fig.line(L, y - 4, L + 26, y - 4, stroke=color, width=width)
+        fig.text(L + 34, y, label, size=11.5, fill=INK)
 
     fig.save(
-        "fig5-lowpass.svg",
-        "Integrating the gradient acts as a low-pass filter",
-        "Frequency response of one, two and three cascaded discrete integrations of the "
-        "gradient, normalised to unity gain at the lowest frequency shown. Higher orders "
-        "suppress the fast components of the gradient, which are the ones that sharpen a "
-        "minimum.",
+        "fig5-smoothing.svg",
+        "A noisy gradient signal and the same signal smoothed once and twice",
+        "A synthetic gradient signal with a slow trend and fast jitter, then the same "
+        "signal after one and after two averaging stages. The second stage follows the "
+        "trend and ignores the jitter; it also lags behind it.",
     )
 
 
@@ -513,4 +523,4 @@ if __name__ == "__main__":
     fig_scales()
     fig_bias()
     fig_minima()
-    fig_lowpass()
+    fig_smoothing()

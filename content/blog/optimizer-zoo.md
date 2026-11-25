@@ -1,264 +1,237 @@
 +++
-title = "The optimizer zoo, drawn on one landscape"
-description = "Momentum, adaptive step sizes, curvature and flat minima: a picture-heavy tour of what each optimizer in the standard toolbox actually buys you, and where the field is still guessing."
+title = "How a machine finds the bottom of a hill"
+description = "A neural network is trained by one humble rule: feel the slope, take a step, repeat. This is the story of how that rule got smarter, told in five pictures and no equations."
 date = 2026-11-25
 
 [extra]
-reading_time = "17 min read"
+reading_time = "12 min read"
 +++
 
-Pick any optimizer off the shelf — plain gradient descent, SGD with momentum, AdamW, or whatever
-last week's paper recommended — and it is answering one of three questions: **which way to step**,
-**how far to step**, and **what kind of minimum you want to land in**. The first two are geometry.
-The third is where the field is still arguing, and where most of the interesting work happens now.
+Imagine being dropped on a hillside in thick fog. You cannot see the valley, the river, or where
+the ground flattens out. All you have is the ground under your feet: it slopes *this* way, so you
+take a step *that* way, feel again, and repeat. Sooner or later you end up somewhere low.
 
-This post walks through the family in roughly historical order, one picture per idea. Every figure
-is a toy problem computed for this post — a quadratic valley, two basins, a frequency response —
-in `tools/make-blog-figures.py` in the site repository. They are meant to be read, not cited.
+That is how a neural network is trained, almost literally. The network is a pile of adjustable
+numbers — call them knobs — and the "hillside" is a score that says how wrong the network is at
+any setting of those knobs. Turn a knob a little, and the score changes. Your position on the
+hillside is the current setting; the height is the error; and the slope you feel under your feet
+is something engineers call the gradient. Training is walking downhill until you cannot go lower.
 
-## The walk
+The knobs number in the millions, sometimes billions, so nobody can see the hillside. It has as
+many dimensions as the network has knobs. All the model ever gets is a slope: which way is down,
+from where it stands right now.
 
-Training is a walk downhill. Your parameters are a point θ in some very high-dimensional space,
-the loss L(θ) is the height under your feet, and the gradient tells you which way is up. The oldest
-update in deep learning, and still the reference point for everything else, is
+The rules for taking those steps are called **optimizers**, and the last sixty years of research
+in this corner of machine learning is the story of making one humble instruction smarter:
 
-<pre><code>θ ← θ − η ∇L(θ)</code></pre>
+> feel the slope, take a step, repeat.
 
-Two numbers decide everything: the direction −∇L(θ) and the length η. A neural network has tens of
-millions to hundreds of billions of coordinates, so you will never see this surface; you only ever
-probe it along one direction at a time. That is the whole reason the picture below matters.
+Everything below is about the two things you can fiddle with in that sentence — *which way* and
+*how far* — and about one thing that turns out to matter more than either: *which valley you end up
+in*. The five figures are toy hillsides drawn for this post; the code that draws them is in the
+site repository, and none of them is a measurement of a real network.
+
+## The valley that makes walkers look silly
+
+Start with the classic awkward case. Picture a long, narrow valley: steep walls on both sides, a
+gentle slope along its length.
 
 <figure>
   <img src="/img/blog/optimizers/fig1-zigzag.svg" width="720" height="300" loading="lazy"
-       alt="Two trajectories on an elongated valley. Gradient descent bounces from wall to wall and crawls along the floor; momentum crosses the valley once and settles at the bottom.">
-  <figcaption><strong>Figure 1.</strong> Two optimizers on the same narrow valley, starting from the
-  same point, for 60 steps. The contours are level sets of a quadratic whose curvature is 25 across
-  the valley and 1 along it. Gradient descent (lr 0.07) overshoots the steep direction on every step;
-  momentum (lr 0.08, β = 0.5) crosses the valley once and is done in about twenty steps.</figcaption>
+       alt="A narrow valley seen from above, with two paths: one bounces from wall to wall while drifting forward, the other crosses once and settles.">
+  <figcaption><strong>Figure 1.</strong> Two walkers on the same narrow valley, starting at the same
+  place and taking 60 steps each. The orange path feels the slope and steps: its stride is fine
+  across the valley but far too big for the walls, so it bounces from side to side and only creeps
+  forward. The blue path rolls: it carries speed, crosses the valley once, and reaches the bottom in
+  about twenty steps.</figcaption>
 </figure>
 
-The zigzag is the single most useful picture in optimization. The curvature across this valley is
-25 times the curvature along it. A step size is stable only while ηλ stays below 2 for every
-curvature λ you own, so the steep direction sets an upper bound — here η < 0.08. But the progress
-you make along the floor is proportional to ηλ_flat, which is tiny at that step size. So you pick a
-step size at the edge of what the steep direction allows, the steep direction punishes you for it,
-and the iterate alternates sign across the valley while creeping forward. A step size large enough
-to make progress along the flat direction is already too large for the steep one.
+The orange path is doing exactly what it was told, and it looks like a drunk crossing a corridor.
+The problem is that one stride has to serve two jobs. Across the valley the ground is steep, so a
+long stride overshoots and lands on the opposite wall. Along the valley the ground is almost flat,
+so the same stride barely advances. Shorten it and the bouncing stops, but now you crawl forward
+even more slowly. A step size that makes progress down the valley is already too big for its walls.
 
-None of this is a bug in your code. It is the conditioning of the problem, and it is what every
-optimizer below is trying to fix.
+This is not a bug in the code. It is the shape of the problem, and every method below is a
+different answer to it.
 
-## Momentum: break the coupling with memory
+## Give the walker some momentum
 
-The first fix is to stop treating each step as an independent decision. Give the iterate a velocity:
+The first fix is the one a child discovers on a sled. Stop re-deciding the direction from scratch at
+every step; keep some of the last step's motion. Now the walker is a ball, and the ball's speed
+accumulates whenever the slope keeps pointing the same way.
 
-<pre><code>v ← β v − η ∇L(θ)
-θ ← θ + v</code></pre>
+That is **momentum**, and it is old — Polyak described it in 1964, long before there were neural
+networks to train with it. In Figure 1 the rolling walker is not smarter about the slope; it simply
+does not throw away its speed. Along a long flat stretch, the small pushes add up instead of being
+cancelled by a fresh start each time.
 
-This is Polyak's heavy-ball method, from 1964 — older than the neural networks it now trains. The
-intuition is physical: a ball rolling down a valley does not stop and re-decide direction at every
-step; it carries speed. On a direction with small curvature the velocity accumulates, and the
-effective step size becomes roughly η/(1−β). With the usual β = 0.9 that is a factor of ten, for
-the cost of one extra buffer of the same size as the parameters.
+The price is the overshoot you can see at the bottom: a ball with speed does not stop neatly where
+the ground flattens. Turn the momentum up and it goes faster and overshoots further; turn it down
+and it behaves like a careful walker again. Every practical recipe is a compromise between those
+two failures, and most people simply pick a middle value that works and stop thinking about it.
 
-In Figure 1 momentum gets one clean crossing instead of sixty small ones, because the accumulated
-velocity carries it through the valley and the flat direction stops fighting it. The price is the
-overshoot you can see: the ball crosses the floor and comes back. Tuning β is trading that overshoot
-against speed; β close to 1 buys more acceleration and a longer bounce.
+Momentum also does not solve the second half of the problem. It still gives every knob the same
+stride.
 
-Nesterov's variant (1983) evaluates the gradient at the point you are *about to* reach instead of the
-point you are at, which is like aiming ahead of a moving target. It costs the same and usually
-converges a little sooner, and it is the "Nesterov" flag in every framework. The important thing for
-this post is what momentum does *not* do: it still uses one η and one β for every coordinate, and it
-still does not look at curvature. It makes the valley easier to walk, it does not reshape it.
+## Every knob deserves its own stride
 
-## One step size per weight
+Real networks are not uniform. Some knobs are delicate: nudge one and the score jumps. Others are
+sluggish: nudge one and almost nothing happens, so you need a big move to see any effect. A single
+stride that suits the delicate knob will take years to move the sluggish one, and a stride that
+suits the sluggish knob will wreck the delicate one.
 
-Real networks break the assumption that all coordinates look alike. A weight in an early
-convolution and a weight in an output embedding can see gradients and curvatures that differ by
-orders of magnitude; the loss can be a beautifully conditioned bowl in one block and a flat plain in
-another. Any single η is a compromise, and usually a bad one.
-
-The adaptive family replaces the global step size with one per weight, by dividing the update by a
-running estimate of how big that weight's gradients have been. AdaGrad (2011) accumulated the sum of
-squared gradients; RMSProp (2012) replaced the sum with an exponential average, so the denominator
-can shrink again; Adam (2014) added a first-moment term — momentum — and a bias correction, and
-became the default for everything that is not a convolutional network trained by someone with a
-long weekend.
+The fix, from around 2011, was to give each knob its own stride, adjusted by how that knob has
+behaved so far. If its slope has been large and jumpy, take smaller steps; if it has been small and
+steady, take bigger ones. The version that ended up everywhere is called **Adam** (2014), and it
+adds one more idea: keep a running average of the slope as well, so a single noisy reading does not
+send the walker running in a random direction.
 
 <figure>
   <img src="/img/blog/optimizers/fig2-scales.svg" width="720" height="400" loading="lazy"
-       alt="Distance to the minimum against step number on a log scale. Gradient descent stays flat near one; Adam falls smoothly to about a tenth.">
-  <figcaption><strong>Figure 2.</strong> Distance to the minimum for a quadratic whose two coordinates
-  have curvatures 100 and 0.01, with the step size decayed by a cosine schedule for both methods.
-  Gradient descent collapses the steep coordinate immediately and then cannot move the flat one:
-  its error is stuck at 1, all of it in the direction it cannot see. Adam takes a step of roughly
-  lr in each coordinate and brings both down together.</figcaption>
+       alt="Distance to the best answer against step number: one line stays flat near the top, the other falls steadily to about a tenth.">
+  <figcaption><strong>Figure 2.</strong> One knob that is very sensitive, one that is barely
+  sensitive, and two walkers. The grey line is a fixed stride: it collapses the sensitive knob in a
+  couple of steps and then cannot budge the sluggish one, so its distance to the best answer stays
+  stuck. Adam gives each knob its own stride and brings both down together.</figcaption>
 </figure>
 
-Figure 2 is the case for adaptivity in one plot. Gradient descent's stable step size is capped at
-2/100 = 0.02 by the steep coordinate; at that step size, the flat coordinate moves by 0.02 × 0.01 ×
-θ per step, which is to say it does not move. Adam normalizes each coordinate by its own gradient
-scale, so both fall at the same rate — the update becomes a step in *parameter* space of size ~η,
-independent of curvature.
+The grey line in Figure 2 is the frustrating part of the fixed stride: after a few steps it looks
+like it has stopped making progress, and it has — in one direction it ran out of room, in the other
+it barely moves. This mismatch is the everyday reason training stalls.
 
-That scale invariance is the feature and the trap. Because Adam's step does not shrink when the
-gradient shrinks, a coordinate whose gradient is a thousand times smaller gets the *same* step as
-the loud ones. Good: it can still make progress. Bad: at the end of training it is also the
-mechanism that turns label noise and numerical dust into a step of the same size as before. It is
-also why an Adam learning rate rarely transfers between problems the way an SGD one does — the
-number no longer means "how far down the loss".
+Adam's per-knob stride has a catch, and it is worth knowing because it explains a lot of odd
+behaviour. Because the stride no longer shrinks when the slope shrinks, a knob whose slope has
+become tiny still gets a normal-sized step. That is how it escapes a flat stretch instead of
+stalling there — and also how, at the very end, it keeps hopping around the bottom of the valley
+instead of settling. This is why everyone slows the stride down at the end of training: not because
+the maths demands it, but because the walker will otherwise never stop fidgeting.
 
-## The two corrections that made Adam work
+## The cold-start correction
 
-Adam's denominator is an average of squared gradients, and an average that starts empty is biased.
-With a constant gradient of 1 and β₁ = 0.9, the first estimate is 0.1, not 1 — every early step is
-smaller than it should be, by a factor that itself changes every step. The fix is a division by the
-same missing mass:
+One more small piece, because it is the sort of detail that quietly breaks things.
+
+Adam keeps running averages of the slope, and running averages start empty. With nothing in them,
+the first few readings are diluted by zero and the average looks much smaller than the truth. For
+the score to behave, that early average has to be scaled up to compensate.
 
 <figure>
   <img src="/img/blog/optimizers/fig3-bias.svg" width="720" height="360" loading="lazy"
-       alt="Two curves rising from zero to one, and a dashed line at one labelled after correction.">
-  <figcaption><strong>Figure 3.</strong> The raw exponential average rises as 1 − β^t from zero;
-  dividing by the same factor puts it at 1 immediately. The gap is mild for the first moment
-  (β₁ = 0.9, the fast curve) and severe for the second (β₂ = 0.999, the slow one), which is why the
-  first few hundred steps of an Adam run are the ones most sensitive to warmup.</figcaption>
+       alt="Two curves rising from zero to one, and a dashed line at one labelled as the corrected average.">
+  <figcaption><strong>Figure 3.</strong> An average of a constant signal, built from too few readings.
+  The orange curve is the raw running average: it climbs slowly towards the true value and only gets
+  there after dozens of steps. The blue dashed line is the same average with the cold start
+  corrected, which puts it at the right value immediately. The slower the memory, the longer the
+  wrong stretch — which is why the first few steps of a run are the ones most likely to go wrong.</figcaption>
 </figure>
 
-The second correction is not in the paper: AdamW (2017) moved weight decay out of the gradient and
-applied it directly to the weights. The difference is subtle and matters. If you fold decay into the
-gradient, the adaptive denominator divides it too — so a weight with a large gradient is decayed
-*less* than a quiet one, exactly backwards. Decoupling it means decay applies uniformly, which is
-what the regularization was supposed to do. Together with learning-rate warmup, AdamW is the reason
-the standard recipe for transformers looks the way it does.
+The fix is a small division, and it is in every modern implementation. It is the reason training
+runs often begin with a gentle warmup instead of the intended stride: while the averages are still
+being built, it pays to walk softly.
 
-## What the loss does not tell you
+## It matters which bottom you reach
 
-Everything so far was about reaching a minimum fast. But for a network, the interesting question is
-which minimum you reach, because the value of the loss there is not what you are graded on.
+So far everything has been about getting down fast. For a model that will be used on data it has
+never seen, the interesting question is *where* it ends up, because two bottoms can have almost
+exactly the same height and behave very differently afterwards.
 
 <figure>
   <img src="/img/blog/optimizers/fig4-minima.svg" width="720" height="400" loading="lazy"
-       alt="Left: a one-dimensional slice with a wide shallow minimum and a narrow deep one. Right: bars showing the sharp basin is better at the minimum but worse after weight jitter.">
-  <figcaption><strong>Figure 4.</strong> Left: a slice through two minima, one wide with curvature
-  ~0.1, one narrow with curvature ~1.8. Right: the loss at each minimum, and the loss averaged over
-  Gaussian weight jitter (σ = 0.35, computed by quadrature). The sharp basin wins on the training
-  loss and loses once the weights are perturbed, which is the toy version of why the curvature at
-  the endpoint is worth caring about.</figcaption>
+       alt="Left: a wide shallow basin and a narrow deep one. Right: bars showing the narrow basin wins at the bottom but loses after a small nudge.">
+  <figcaption><strong>Figure 4.</strong> Left: a slice through two places a walker can stop — a wide,
+  shallow basin and a narrow, deep one. Right: the score at each bottom, and the score after nudging
+  the position slightly, in every direction, as if the data shifted a little. The narrow basin wins
+  outright at the bottom and loses after the nudge.</figcaption>
 </figure>
 
-This is the sharp-versus-flat story, and it has survived fifteen years of scrutiny in a form close to
-the one in Figure 4: two points with nearly the same training loss, different curvature, different
-behaviour under the tiny perturbations that separate training from test. Keskar and colleagues made
-it concrete in 2016 by tying sharp minima to large batch sizes; SAM in 2020 took the next step and
-optimized the loss at a perturbed point directly, which is flatness as an explicit objective.
+The narrow groove is the show-off: the lowest point of all, perfect on the data you trained on. It
+is also the fragile one. Nudge the knob settings a fraction and the score falls apart, because the
+walls rise steeply on every side. The wide, shallow basin is a worse fit on paper and a much better
+bet on anything new, because being a little off in any direction barely costs you.
 
-It is worth being honest about what is not settled. Flatness as measured in parameter space depends
-on the parameterization: rescale the weights of one layer and its curvature changes without changing
-the function at all. So "flat" is best read as a property of *this* endpoint under *this*
-parameterization, and the claims that survive are empirical — optimizers that land in flatter
-regions tend to transfer better across datasets in practice. That is a weaker statement than the
-papers sometimes make, and a more useful one.
+This is the squishy centre of modern machine learning: a model that scores beautifully on its
+training data and then fails on new data is often a model that got parked in a narrow groove. The
+2016 finding that made this famous tied it to batch size — big-batch training tends to land in
+narrower spots. Later work turned it into something you can optimize for directly: instead of
+walking downhill on the plain hillside, walk downhill on the hillside as it looks after being
+nudged, which prefers wide basins by construction.
 
-## Ten waypoints
+Honest footnote: "wide" here is measured in the space of knobs, and knobs can be rescaled. Rescale a
+layer's knobs and its walls change steepness without changing what the network computes at all. So
+the idea is a useful map, not a law of nature, and the strongest evidence for it is practical: across
+many settings, the methods that land in wide basins tend to hold up better on data they have not
+seen.
 
-The whole family, in order, with the one thing each added. Two of the last three are the reason this
-page exists; more on those below.
+## A short family album
 
-| Year | Optimizer | What it added | Family |
-|------|-----------|---------------|--------|
-| 1964 | Heavy ball | velocity: the past keeps pushing | inertia |
-| 1983 | Nesterov | look ahead before stepping | inertia |
-| 2011 | AdaGrad | one step size per weight, from gradient history | adaptive |
-| 2012 | RMSProp | forget that history exponentially | adaptive |
-| 2014 | Adam | first and second moments, bias-corrected | adaptive |
-| 2017 | AdamW | weight decay decoupled from the adaptive step | adaptive |
-| 2020 | SAM | optimize the loss at a perturbed point | curvature |
-| 2023 | Lion | signed momentum, half the memory | adaptive |
-| 2023–24 | Sophia, Shampoo, Muon | curvature or matrix structure at scale | curvature |
-| 2026 | DIESGD, MIE | integrals of the gradient, coefficients learnt | integrals |
+Six entries, one per idea. No versions, no equations.
 
-The recent entries in the last two rows are the interesting ones, and they are all variations on a
-single move: stop treating the gradient as a vector to be rescaled and start treating the *history*
-of gradients as a signal, or the parameters as a matrix with structure worth exploiting.
+| Year | The new idea | What it fixed |
+|------|--------------|---------------|
+| 1964 | Let the walker roll | Stepping from a standstill is slow |
+| 1983 | Look one step ahead | A rolling walker overshoots |
+| 2011 | A separate stride per knob | Knobs differ wildly in sensitivity |
+| 2014 | Both at once, plus a cold-start correction | Became the default answer |
+| 2020 | Aim for wide basins, not just low points | The lowest point is not the safest |
+| 2026 | Smooth the signal before walking (the work on this site) | Jitter drags models into narrow grooves |
 
-## Integrals: a different route to a flat basin
+## Listening more carefully
 
-Momentum is one integral of the gradient, and one integral is already a filter. Integrate twice, and
-you get a second-order low-pass: the slow, consistent part of the gradient passes through almost
-unchanged, while the fast, jittery part — the part that pushes the iterate into the narrow, sharp
-corners of the valley floor — is attenuated.
+The last entry deserves a picture, because it is a different idea from all the ones before it.
+
+All the walkers so far react to the slope they feel *right now*. But that reading is noisy: on a real
+training run it jitters, and part of the jitter is exactly what pushes the walker into narrow,
+fragile corners of the landscape. What if, instead of reacting to the latest reading, you react to a
+smoothed version of the last few hundred?
 
 <figure>
-  <img src="/img/blog/optimizers/fig5-lowpass.svg" width="720" height="390" loading="lazy"
-       alt="Three curves falling with frequency, the higher orders falling much faster, shaded region on the right labelled fast sharp directions.">
-  <figcaption><strong>Figure 5.</strong> Gain of one, two and three cascaded discrete integrations of
-  the gradient, relative to the slowest frequency shown. Each extra integral adds roughly 20 dB per
-  decade of suppression of the fast components. If sharp minima live at high frequency and flat ones
-  at low frequency, this is the mechanism by which an integral update could prefer the latter.</figcaption>
+  <img src="/img/blog/optimizers/fig5-smoothing.svg" width="720" height="390" loading="lazy"
+       alt="A jagged signal and two smoothed versions of it: one follows the trend loosely, the other much more smoothly.">
+  <figcaption><strong>Figure 5.</strong> A made-up signal that a model might feel while training —
+  a slow trend buried in fast jitter — and the same signal after one and after two smoothing stages.
+  One stage (momentum) already helps. Two stages follow the trend and ignore the jitter almost
+  entirely, at the cost of lagging a little behind it.</figcaption>
 </figure>
 
-That is the intuition behind the two methods on this site. DIESGD fixes the order at two and learns
-the four coefficients that weight the terms, offline, from the statistics of noisy gradients. MIE
-stacks several integral orders, each filtering at its own timescale, and updates the coefficients
-online by a hypergradient rule driven by the alignment between the instantaneous gradient and the
-integral states — which is a way of asking the history "are you still pointing where the loss is
-going down?"
+One smoothing stage is momentum. Two stages in a row is a stronger filter, and that is the core of
+the work on this site: rather than making the walker faster, make its sense of the ground steadier.
+The first of the two methods fixes the amount of smoothing; the second lets it adapt during
+training, judging how much to trust the smoothed signal by how well it lines up with what the
+ground is saying now. If you want to play with it, [this page](/lab/) lets you drag the starting
+point around and watch four walkers take the same hillside, and the two research notes have the
+details: [one](/research/diesgd/), [two](/research/mieo/).
 
-Whether this actually flattens minima is a measurement, not an intuition, and both papers carry the
-usual theoretical furniture: an escape-time argument that the update leaves sharp minima faster, and
-a Lyapunov-style stability result for the local dynamics. If you want the geometry rather than the
-prose, the [lab page](/lab/) lets you drag the starting point and watch four updates settle into
-different minima on the same surface, and the two research pages have the details:
-[DIESGD](/research/diesgd/) and [MIE](/research/mieo/).
+Whether smoother walking really does produce a wider basin is a claim to be tested, not a story to
+be told, and the papers do the testing. What the picture offers is the intuition: the noise you are
+reacting to is not neutral, and being deaf to part of it can change where you stop.
 
-## A field guide
+## What all this means outside a lab
 
-Everything above in one list, for when you just need to train something.
+Three things worth keeping, even if you never train a model yourself.
 
-- **Convolutional networks on images, small to medium data.** SGD with momentum, β = 0.9, step size
-  scaled with batch size, weight decay ~5e-4, cosine or step decay to near zero. Still the most
-  reliable recipe, and the flat-minima story was built on it.
-- **Transformers, LLMs, anything with heavy-tailed gradients.** AdamW, β = (0.9, 0.95), warmup over
-  the first 1–2% of steps, cosine decay to near zero, weight decay 0.1. The warmup is not cosmetic:
-  it gives the second moment time to mean something before the step size is trusted.
-- **Fine-tuning a pretrained model.** AdamW at 1e-5 to 1e-4, often without warmup, usually with
-  weight decay off for the head.
-- **When the endpoint matters more than the curve.** SAM-style updates, or an integral-type update,
-  at roughly twice the compute per step. Worth it if you are chasing transfer instead of a leaderboard
-  number on the training distribution.
-- **Always.** Decay the step size to zero at the end. Figure 2's floor is real: a constant step size
-  cannot resolve anything below itself, and the last few percent of loss live down there. And check
-  that "the loss went to zero" is not hiding a coordinate that stopped moving.
+**No method is "just better".** Every one of these rules buys something and pays for it: momentum
+buys speed and pays in overshoot; per-knob strides buy scale-independence and pay in fidgeting;
+smoothing buys steadiness and pays in lag. When somebody announces that one of them "solves
+optimization", what they usually mean is that it is a good trade for a particular kind of problem.
 
-## Three invariants
+**Training is expensive, and the rules decide the bill.** Walking downhill sounds cheap, but you do
+it billions of times, with millions of knobs, on hardware that costs real money and real electricity.
+A rule that converges in half the steps is not a mathematical nicety; it is a data-centre bill.
 
-Strip away the branding and every optimizer in the zoo is a bet on which of three things is worth
-modelling explicitly:
+**The last few percent are about robustness, not score.** The scores reported on the data you trained
+with tell you how well the walker found a bottom. They tell you almost nothing about whether the
+bottom will still be there when the world shifts slightly. That gap is where most of the practical
+disappointment with machine learning lives.
 
-1. **Direction.** Momentum, Nesterov, integrals — all ways of using the past to pick a better vector
-   than the raw gradient. Cheap, one buffer, usually the best ratio of gain to complexity.
-2. **Step size.** AdaGrad, RMSProp, Adam — all ways of letting each coordinate pick its own. Buys
-   scale invariance, costs you the meaning of the number.
-3. **Curvature.** Shampoo, Sophia, SAM, DIESGD — all ways of noticing that the surface is not the
-   same shape in every direction. Expensive, and the only family that can change *which* minimum you
-   land in rather than how fast you get there.
+## If you want to go deeper
 
-The history of this field is less a history of new mathematics than of changing budgets: momentum
-arrived when a buffer of the parameters was affordable, Adam when storing two more was, and the
-curvature methods are arriving now because someone finally has the memory and the batch size to make
-a second-order estimate pay for itself. If you are choosing an optimizer, you are really asking
-which of these three you can afford today.
-
-## Reading list
-
-- Polyak, *Some methods of speeding up the convergence of iteration methods* (1964) — the heavy ball.
-- Duchi, Hazan & Singer, [Adaptive subgradient methods](https://jmlr.org/papers/v12/duchi11a.html) (2011).
-- Kingma & Ba, [Adam](https://arxiv.org/abs/1412.6980) (2014).
-- Loshchilov & Hutter, [Decoupled weight decay regularization](https://arxiv.org/abs/1711.05101) (2017).
-- Keskar et al., [On large-batch training](https://arxiv.org/abs/1609.04836) (2016) — sharp minima.
-- Dinh et al., [Sharp minima can generalize](https://arxiv.org/abs/1712.09913) (2017) — the counter-argument.
-- Foret et al., [SAM](https://arxiv.org/abs/2010.01412) (2020).
-- Chen et al., [Lion](https://arxiv.org/abs/2302.06675) and Liu et al., [Sophia](https://arxiv.org/abs/2305.14342) (2023).
-- Gupta et al., [Shampoo](https://arxiv.org/abs/1802.09568) (2018), and [distributed Shampoo](https://arxiv.org/abs/2309.06497) (2023) for the scale-up.
-- Wilson et al., [The marginal value of adaptive gradient methods](https://arxiv.org/abs/1705.08292) (2017) — why adaptive is not free.
+- Kingma & Ba, [Adam](https://arxiv.org/abs/1412.6980) (2014) — the running-average idea that became
+  the default.
+- Keskar et al., [On large-batch training](https://arxiv.org/abs/1609.04836) (2016) — why big batches
+  land in narrow grooves.
+- Dinh et al., [Sharp minima can generalize](https://arxiv.org/abs/1712.09913) (2017) — the honest
+  counter-argument to the whole story above.
+- Foret et al., [SAM](https://arxiv.org/abs/2010.01412) (2020) — optimizing for the nudge as well as
+  the point.
+- Polyak, *Some methods of speeding up the convergence of iteration methods* (1964) — the original
+  rolling walker.

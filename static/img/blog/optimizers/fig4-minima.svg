@@ -15,26 +15,26 @@
 <line x1="72.0" y1="65.8" x2="372.0" y2="65.8" stroke="#f0f1f2" stroke-width="1"/>
 <text x="62.0" y="69.4" font-size="11.5" fill="#7a8288" text-anchor="end" font-weight="400">0.6</text>
 <text x="62.0" y="303.6" font-size="11.5" fill="#7a8288" text-anchor="end" font-weight="400">0</text>
-<text x="72.0" y="42.0" font-size="11.5" fill="#7a8288" text-anchor="start" font-weight="400">training loss along a slice</text>
-<text x="148.8" y="320.0" font-size="11.5" fill="#494e52" text-anchor="middle" font-weight="700">flat basin</text>
-<text x="148.8" y="334.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">curvature ~0.10</text>
-<text x="295.2" y="320.0" font-size="11.5" fill="#494e52" text-anchor="middle" font-weight="700">sharp basin</text>
-<text x="295.2" y="334.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">curvature ~1.79</text>
-<text x="0" y="0" font-size="11.5" fill="#7a8288" text-anchor="middle" transform="translate(26.0,179.0) rotate(-90)">loss</text>
+<text x="72.0" y="42.0" font-size="11.5" fill="#7a8288" text-anchor="start" font-weight="400">the height of the ground across one basin</text>
+<text x="148.8" y="320.0" font-size="11.5" fill="#494e52" text-anchor="middle" font-weight="700">wide, shallow basin</text>
+<text x="148.8" y="334.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">gentle walls</text>
+<text x="295.2" y="320.0" font-size="11.5" fill="#494e52" text-anchor="middle" font-weight="700">narrow, deep basin</text>
+<text x="295.2" y="334.0" font-size="11.5" fill="#7a8288" text-anchor="middle" font-weight="400">steep walls</text>
+<text x="0" y="0" font-size="11.5" fill="#7a8288" text-anchor="middle" transform="translate(26.0,179.0) rotate(-90)">height</text>
 <line x1="456.0" y1="300.0" x2="690.0" y2="300.0" stroke="#b3b8bb" stroke-width="1"/>
-<rect x="474.0" y="298.0" width="32.0" height="2.0" rx="1.5" fill="#c8d2e0" stroke="none" stroke-width="1"/>
-<text x="490.0" y="291.0" font-size="11.5" fill="#494e52" text-anchor="middle" font-weight="700">0.000</text>
-<rect x="514.0" y="129.6" width="32.0" height="170.4" rx="1.5" fill="#224b8d" stroke="none" stroke-width="1" opacity="0.85"/>
-<text x="530.0" y="122.6" font-size="11.5" fill="#494e52" text-anchor="middle" font-weight="700">0.084</text>
-<text x="511.0" y="320.0" font-size="11" fill="#494e52" text-anchor="middle" font-weight="400">sharp</text>
-<rect x="570.0" y="177.7" width="32.0" height="122.3" rx="1.5" fill="#c8d2e0" stroke="none" stroke-width="1"/>
-<text x="586.0" y="170.7" font-size="11.5" fill="#494e52" text-anchor="middle" font-weight="700">0.060</text>
-<rect x="610.0" y="165.2" width="32.0" height="134.8" rx="1.5" fill="#224b8d" stroke="none" stroke-width="1" opacity="0.85"/>
-<text x="626.0" y="158.2" font-size="11.5" fill="#494e52" text-anchor="middle" font-weight="700">0.066</text>
-<text x="607.0" y="320.0" font-size="11" fill="#494e52" text-anchor="middle" font-weight="400">flat</text>
-<text x="456.0" y="42.0" font-size="11.5" fill="#7a8288" text-anchor="start" font-weight="400">loss under weight jitter</text>
+<rect x="478.0" y="298.0" width="32.0" height="2.0" rx="1.5" fill="#c8d2e0" stroke="none" stroke-width="1"/>
+<text x="494.0" y="291.0" font-size="11.5" fill="#494e52" text-anchor="middle" font-weight="700">0.000</text>
+<rect x="518.0" y="129.6" width="32.0" height="170.4" rx="1.5" fill="#224b8d" stroke="none" stroke-width="1" opacity="0.85"/>
+<text x="534.0" y="122.6" font-size="11.5" fill="#494e52" text-anchor="middle" font-weight="700">0.084</text>
+<text x="515.0" y="320.0" font-size="11" fill="#494e52" text-anchor="middle" font-weight="400">narrow</text>
+<rect x="574.0" y="177.7" width="32.0" height="122.3" rx="1.5" fill="#c8d2e0" stroke="none" stroke-width="1"/>
+<text x="590.0" y="170.7" font-size="11.5" fill="#494e52" text-anchor="middle" font-weight="700">0.060</text>
+<rect x="614.0" y="165.2" width="32.0" height="134.8" rx="1.5" fill="#224b8d" stroke="none" stroke-width="1" opacity="0.85"/>
+<text x="630.0" y="158.2" font-size="11.5" fill="#494e52" text-anchor="middle" font-weight="700">0.066</text>
+<text x="611.0" y="320.0" font-size="11" fill="#494e52" text-anchor="middle" font-weight="400">wide</text>
+<text x="456.0" y="42.0" font-size="11.5" fill="#7a8288" text-anchor="start" font-weight="400">the score after a small nudge</text>
 <rect x="456.0" y="60.0" width="10.0" height="10.0" rx="0" fill="#c8d2e0" stroke="none" stroke-width="1"/>
-<text x="471.0" y="69.0" font-size="11.5" fill="#7a8288" text-anchor="start" font-weight="400">at the minimum</text>
-<rect x="562.0" y="60.0" width="10.0" height="10.0" rx="0" fill="#224b8d" stroke="none" stroke-width="1" opacity="0.85"/>
-<text x="577.0" y="69.0" font-size="11.5" fill="#7a8288" text-anchor="start" font-weight="400">expected</text>
+<text x="471.0" y="69.0" font-size="11.5" fill="#7a8288" text-anchor="start" font-weight="400">right at the bottom</text>
+<rect x="608.0" y="60.0" width="10.0" height="10.0" rx="0" fill="#224b8d" stroke="none" stroke-width="1" opacity="0.85"/>
+<text x="623.0" y="69.0" font-size="11.5" fill="#7a8288" text-anchor="start" font-weight="400">after a nudge</text>
 </svg>
