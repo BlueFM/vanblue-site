@@ -8,6 +8,7 @@ Example (run from the repository root; keep the external originals out of Git):
 The cast recipe is tuned to the supplied square, beige-background cat-and-book
 reference (1254 x 1254, or a resolution-scaled copy), not arbitrary photographs.
 Copy a Harness attachment to a workspace .png before supplying --cast-image.
+Its missing near ear is restored from the ZIP's transparent idle-open original.
 Without that optional reference, cell 10 deliberately reuses idle-open.
 
 Contract: static RGBA WebP, 4 columns x 3 rows, 384 px cells; index 11 is empty.
@@ -190,7 +191,64 @@ def remove_cheek_glow(rgb: Image.Image, alpha: Image.Image, scale: float) -> tup
     return result, len(coordinates)
 
 
-def prepare_cast(path: Path) -> tuple[Image.Image, dict]:
+def restore_cast_ear(cast: Image.Image, idle_open: Image.Image) -> tuple[Image.Image, dict]:
+    # Reuse the near ear's actual fur, pink interior and dark contour from the
+    # transparent idle original. The traced boundary excludes its purple hat.
+    outline = ((387, 424), (390, 385), (395, 353), (401, 326),
+               (409, 302), (418, 281), (428, 265), (438, 257),
+               (448, 254), (459, 255), (475, 259), (494, 267),
+               (514, 278), (534, 291), (552, 305), (569, 321),
+               (583, 339), (581, 343), (556, 356), (531, 369),
+               (505, 381), (478, 393), (450, 405), (420, 417),
+               (398, 425), (389, 427))
+    sx, sy = idle_open.width / 1234, idle_open.height / 1275
+    mask = Image.new("L", (idle_open.width * 3, idle_open.height * 3))
+    ImageDraw.Draw(mask).polygon(
+        [(round(x * sx * 3), round(y * sy * 3)) for x, y in outline], fill=255)
+    mask = mask.resize(idle_open.size, Image.Resampling.LANCZOS)
+    mask = ImageChops.multiply(mask, idle_open.getchannel("A"))
+    red, green, blue, _ = idle_open.split()
+    ear = Image.merge("RGBA", (red, green.point(lambda value: round(value * 0.95)),
+                              blue.point(lambda value: round(value * 0.82)), mask))
+
+    # Match the cast hat's perspective with a mild shear/scale, and its warmer
+    # lighting with the channel tint above. Source root-left/root-right/tip:
+    # (389,426), (586,342), (445,255); target: (329,453), (535,368), (391,284).
+    ux, uy, vx, vy = 206, -85, 62, -169
+    determinant = ux * vy - vx * uy
+    a = (197 * vy - 56 * uy) / determinant
+    b = (ux * 56 - vx * 197) / determinant
+    d = (-84 * vy + 171 * uy) / determinant
+    e = (-171 * ux + 84 * vx) / determinant
+    c, f = 389 - a * 329 - b * 453, 426 - d * 329 - e * 453
+    scale = cast.width / 1254
+    inverse = (a * sx / scale, b * sx / scale, c * sx,
+               d * sy / scale, e * sy / scale, f * sy)
+    ear = ear.convert("RGBa").transform(cast.size, Image.Transform.AFFINE, inverse,
+                                      Image.Resampling.BICUBIC).convert("RGBA")
+
+    # Keep the original front brim IN FRONT of the root: the ear emerges through
+    # an opening, not on top of the brim. Do not touch the existing far ear.
+    brim_edge = ((310, 471), (335, 454), (360, 438), (390, 421),
+                 (420, 406), (450, 393), (480, 382), (510, 371),
+                 (540, 361), (570, 350), (600, 340))
+    foreground = Image.new("L", (cast.width * 3, cast.height * 3))
+    ImageDraw.Draw(foreground).polygon(
+        [(round(x * scale * 3), round(y * scale * 3)) for x, y in brim_edge]
+        + [(round(600 * scale * 3), cast.height * 3),
+           (round(310 * scale * 3), cast.height * 3)], fill=255)
+    foreground = foreground.resize(cast.size, Image.Resampling.LANCZOS)
+    ear.putalpha(ImageChops.multiply(ear.getchannel("A"), ImageChops.invert(foreground)))
+    result = clear_invisible_rgb(Image.alpha_composite(cast, ear))
+    assert result.getchannel("A").getbbox() == cast.getchannel("A").getbbox(), "Ear repair must not change placement"
+    return result, {"source_frame": "frames/idle-blink/open.png", "source_ear": "near/left",
+                    "tint_rgb": [1, 0.95, 0.82], "front_brim_occludes_root": True,
+                    "tip_in_reference_xy": [391, 284],
+                    "root_in_reference_xy": [[329, 453], [535, 368]],
+                    "composite_bbox_xyxy_exclusive": ear.getchannel("A").getbbox()}
+
+
+def prepare_cast(path: Path, idle_open: Image.Image) -> tuple[Image.Image, dict]:
     with Image.open(path) as source:
         rgb = ImageOps.exif_transpose(source).convert("RGB")
     width, height = rgb.size
@@ -224,8 +282,10 @@ def prepare_cast(path: Path) -> tuple[Image.Image, dict]:
     result = rgb.convert("RGBA")
     result.putalpha(alpha)
     result, cleanup = clean_source(result)
+    result, ear_repair = restore_cast_ear(result, idle_open)
     return result, {"sha256": sha256(path), "original_size": [width, height],
-                    "repaired_cheek_pixels": repaired, "cleanup": cleanup}
+                    "repaired_cheek_pixels": repaired, "cleanup": cleanup,
+                    "ear_repair": ear_repair}
 
 
 def place_action(frames: list[Image.Image]) -> tuple[list[Image.Image], dict]:
@@ -295,7 +355,7 @@ def main() -> None:
         tiles.extend(prepared)
     cast_report = {"fallback_to_idle": True}
     if args.cast_image:
-        cast, cast_report = prepare_cast(args.cast_image)
+        cast, cast_report = prepare_cast(args.cast_image, groups["idle-blink"][0])
         prepared, placement["cast"] = place_action([cast])
         tiles.extend(prepared)
         cast.save(args.diagnostics_dir / "cast-cutout.png", optimize=True)

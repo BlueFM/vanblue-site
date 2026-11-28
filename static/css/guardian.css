@@ -88,6 +88,11 @@
 .guardian.is-dragging .guardian-shadow,
 .guardian.is-falling .guardian-shadow { opacity: 0; }
 
+.guardian[data-spell="fish"] { --spell-glow: #9bef88; --spell-ink: #63884e; }
+.guardian[data-spell="stars"] { --spell-glow: #f0cf79; --spell-ink: #9b742e; }
+.guardian[data-spell="shield"] { --spell-glow: #c4a5f2; --spell-ink: #8865a7; }
+.guardian[data-spell="puff"] { --spell-glow: #d3c6dc; --spell-ink: #84718f; }
+
 .guardian-magic {
   position: absolute;
   inset: 0;
@@ -95,9 +100,14 @@
   height: 100%;
   overflow: visible;
   opacity: 0;
-  color: #baf6a3;
-  filter: drop-shadow(0 0 4px #9bef88);
+  filter: drop-shadow(0 0 4px var(--spell-glow, #9bef88));
 }
+
+.guardian-spell-effect { display: none; }
+.guardian[data-spell="fish"] [data-effect="fish"],
+.guardian[data-spell="stars"] [data-effect="stars"],
+.guardian[data-spell="shield"] [data-effect="shield"],
+.guardian[data-spell="puff"] [data-effect="puff"] { display: inline; }
 
 .guardian-trail {
   stroke: #e6ffce;
@@ -114,10 +124,35 @@
 .guardian-fish circle { fill: #fff; }
 .guardian-sparks { stroke: #d9ffc3; stroke-width: 2.4; fill: #eaffdc; fill-opacity: 0.75; }
 
+.guardian-star-arc { stroke: #ffe6a4; stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 320; stroke-dashoffset: 320; }
+.guardian-star { fill: #fff0b6; stroke: #edce78; stroke-width: 2.2; stroke-linejoin: round; }
+.guardian-star--small use { transform: scale(0.62); }
+.guardian-shield { transform-origin: 192px 219px; }
+.guardian-shield-edge { stroke: #d5b9f5; stroke-width: 3; }
+.guardian-shield-runes { transform-origin: 192px 219px; stroke: #ead9ff; stroke-width: 2; }
+.guardian-shield-runes ellipse { stroke-dasharray: 5 19; }
+.guardian-shield-runes path { fill: #f4eaff; stroke-width: 1.2; }
+.guardian-shield-moon { fill: #f7edff; stroke: #d7b7f5; stroke-width: 2.4; transform: translate(112px, 0); }
+.guardian-puff-whiff { stroke: #d4c6dc; stroke-width: 2.8; stroke-linecap: round; }
+.guardian-puff-cloud { fill: #e9e0ee; fill-opacity: 0.87; stroke: #c9b8d2; stroke-width: 2; transform-origin: 250px 176px; }
+.guardian-puff-cloud .guardian-puff-swirl { fill: none; stroke: #b6a2c0; stroke-linecap: round; }
+.guardian-puff-question { stroke: #d5b467; stroke-width: 4.5; stroke-linecap: round; }
+.guardian-readable { transform-box: fill-box; transform-origin: center; transform: scaleX(var(--pet-facing, -1)); }
+.guardian-puff-pop { stroke: #d8c17f; stroke-width: 3; stroke-linecap: round; }
+
 .guardian.is-casting .guardian-magic { animation: guardian-magic 3.4s both; }
-.guardian.is-casting .guardian-trail { animation: guardian-trace 1.2s 0.1s both; }
-.guardian.is-casting .guardian-fish { animation: guardian-fish 3.4s both; }
-.guardian.is-casting .guardian-sparks { animation: guardian-twinkle 1.1s 0.4s 2 alternate both; }
+.guardian.is-casting[data-spell="fish"] .guardian-trail { animation: guardian-trace 1.2s 0.1s both; }
+.guardian.is-casting[data-spell="fish"] .guardian-fish { animation: guardian-fish 3.4s both; }
+.guardian.is-casting[data-spell="fish"] .guardian-sparks { animation: guardian-twinkle 1.1s 0.4s 2 alternate both; }
+.guardian.is-casting[data-spell="stars"] .guardian-star-arc { animation: guardian-trace 1.1s 0.1s both; }
+.guardian.is-casting[data-spell="stars"] .guardian-star { animation: guardian-star-fall 2.6s var(--star-delay, 0s) both; }
+.guardian.is-casting[data-spell="shield"] .guardian-shield { animation: guardian-shield 3.4s both; }
+.guardian.is-casting[data-spell="shield"] .guardian-shield-runes { animation: guardian-orbit 3.4s both; }
+.guardian.is-casting[data-spell="puff"] .guardian-puff-cloud { animation: guardian-puff 3.4s both; }
+.guardian.is-casting[data-spell="puff"] .guardian-puff-question { animation: guardian-question 3.4s both; }
+.guardian.is-casting[data-spell="puff"] .guardian-puff-pop { animation: guardian-twinkle 0.5s 0.6s 2 alternate both; }
+.guardian.is-casting[data-spell="puff"] .guardian-canvas,
+.guardian.is-casting[data-spell="puff"] .guardian-fallback { animation: guardian-oops 0.5s 0.8s both; transform-origin: center bottom; }
 
 @keyframes guardian-magic {
   0% { opacity: 0; }
@@ -135,6 +170,44 @@
   38% { opacity: 1; transform: translate(0, 0) scale(1.08); }
   65% { opacity: 1; transform: translate(0, -6px) scale(1); }
   100% { opacity: 0; transform: translate(8px, -20px) scale(0.9); }
+}
+
+@keyframes guardian-star-fall {
+  0% { opacity: 0; transform: translateY(-28px) rotate(-25deg) scale(0.2); }
+  20% { opacity: 1; transform: translateY(-12px) rotate(0) scale(1.05); }
+  65% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--star-drift, 10px), 48px) rotate(70deg) scale(0.5); }
+}
+
+@keyframes guardian-shield {
+  0% { opacity: 0; transform: scale(0.7); }
+  24% { opacity: 1; transform: scale(1.035); }
+  40%, 76% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.07); }
+}
+
+@keyframes guardian-orbit {
+  from { transform: rotate(-12deg); }
+  to { transform: rotate(25deg); }
+}
+
+@keyframes guardian-puff {
+  0%, 10% { opacity: 0; transform: translate(-15px, 14px) scale(0.2); }
+  28% { opacity: 1; transform: translate(0, 0) scale(1); }
+  65% { opacity: 0.8; }
+  100% { opacity: 0; transform: translate(10px, -30px) scale(1.18); }
+}
+
+@keyframes guardian-question {
+  0%, 25% { opacity: 0; transform: translateY(8px); }
+  38%, 80% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-12px); }
+}
+
+@keyframes guardian-oops {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-2deg); }
+  70% { transform: rotate(2deg); }
 }
 
 @keyframes guardian-twinkle {
@@ -233,6 +306,7 @@
 .guardian-name { color: #8b7387; font-size: 9px; line-height: 1.4; font-weight: 700; letter-spacing: 0.14em; }
 .guardian-eyebrow i { width: 5px; height: 5px; border-radius: 50%; background: #a3bf99; }
 .guardian-panel-close { position: absolute; right: 7px; top: 7px; }
+.guardian-spell-name { margin: 12px 0 -3px; color: var(--spell-ink, #8865a7); font-size: 9px; line-height: 1.5; font-weight: 600; letter-spacing: 0.09em; }
 .guardian-message { margin: 11px 0 10px; color: var(--pet-ink); font-size: 14px; line-height: 1.65; }
 .guardian-stats { margin: 0 0 12px; color: var(--pet-muted); font-size: 10px; line-height: 1.6; font-variant-numeric: tabular-nums; }
 .guardian-actions { display: flex; align-items: center; gap: 7px; }
@@ -290,7 +364,8 @@
 @media (prefers-reduced-motion: reduce) {
   .guardian *, .guardian *::before, .guardian *::after { animation: none !important; transition: none !important; }
   .guardian.is-casting .guardian-magic { opacity: 1; }
-  .guardian.is-casting .guardian-trail { stroke-dashoffset: 0; }
+  .guardian.is-casting .guardian-trail,
+  .guardian.is-casting .guardian-star-arc { stroke-dashoffset: 0; }
 }
 
 @media print {

@@ -10,6 +10,7 @@
   var POLL_MS = 60000;
   var STALE_S = 600;
   var PREF_KEY = 'vanblue:spell-cat:v1';
+  var SPELL_IDS = ['fish', 'stars', 'shield', 'puff'];
   var mounted = new WeakMap();
   var sequences = {
     idle: [[0, 2400], [1, 70], [2, 100], [1, 70]],
@@ -24,12 +25,12 @@
       hide: 'Hide the cat', restore: 'Bring back the wizard cat', close: 'Close',
       cast: 'Another spell', stay: 'Stay here', wander: 'Wander a little',
       help: 'Click for magic · drag to move', touchHelp: 'Tap for magic · drag to move',
-      spells: [
-        'Mew… a tiny spell for your next bright idea.',
-        'One little fish. A little extra luck.',
-        'May your gradients be kind and your minima flat.',
-        'A little magic for that next deadline. You’ve got this.'
-      ],
+      spells: {
+        fish: ['LITTLE FISH', 'Mew… one little fish, and a little extra luck.'],
+        stars: ['STARDUST', 'Stars, assemble! A bright idea is on its way.'],
+        shield: ['MOONSHIELD', 'A moonlit shield. May your next deadline be gentle.'],
+        puff: ['OOPS, A PUFF', 'Poof… that was meant to be a fish. Nothing to see here.']
+      },
       idle: 'Keeping a little magic in the margins.',
       sleep: 'Shh… collecting dreams for tomorrow.',
       busy: 'Watching over a very busy little server.',
@@ -42,12 +43,12 @@
       hide: '收起猫咪', restore: '请念咒猫回来', close: '关闭',
       cast: '再变一个', stay: '乖乖待着', wander: '去散散步',
       help: '点我施法 · 拖动换个位置', touchHelp: '轻点施法 · 拖动换个位置',
-      spells: [
-        '喵呜……给你的下一个灵感，施一点小魔法。',
-        '一条小鱼，再加一点点好运。',
-        '愿你的梯度乖巧，极小值平坦。',
-        '给下一个截止日期一点魔法。你可以的！'
-      ],
+      spells: {
+        fish: ['变小鱼', '喵呜……变出一条小鱼，再加一点点好运。'],
+        stars: ['星星雨', '星星集合！愿你的下一个灵感闪闪发亮。'],
+        shield: ['月光护盾', '月光护盾展开。愿下一个截止日期对你温柔一点。'],
+        puff: ['施法翻车', '噗……本来想变小鱼的。这团烟你就当没看见。']
+      },
       idle: '在页边，悄悄守着一点魔法。',
       sleep: '嘘……正在收集明天要用的好梦。',
       busy: '服务器忙碌中，本喵正在认真守护。',
@@ -114,6 +115,7 @@
     var fallback = el.querySelector('.guardian-fallback');
     var magic = el.querySelector('.guardian-magic');
     var message = el.querySelector('.guardian-message');
+    var spellName = el.querySelector('.guardian-spell-name');
     var stats = el.querySelector('.guardian-stats');
     var roamBtn = el.querySelector('.guardian-roam');
     var castBtn = el.querySelector('.guardian-cast');
@@ -159,7 +161,7 @@
     var previousPos = null;
     var disposers = [];
     var pos = { x: 0, y: 0 };
-    var state = { status: opts.status || null, mood: 'idle', pose: 'idle', frame: 0, clock: opts.freeze || 0 };
+    var state = { status: opts.status || null, mood: 'idle', pose: 'idle', spell: null, frame: 0, clock: opts.freeze || 0 };
     var motion = { mode: 'idle', target: 0, pauseUntil: 18000, velocity: 0 };
 
     function listen(target, type, fn, options) {
@@ -418,10 +420,18 @@
       wakeUntil = performance.now() + 16000;
       casting = true;
       el.classList.remove('is-casting');
+      // Cycle all four distinct effects, including across rapid repeat clicks.
+      var index = spellIndex;
+      var spell = SPELL_IDS[index];
+      spellIndex = (spellIndex + 1) % SPELL_IDS.length;
+      state.spell = spell;
+      el.dataset.spell = spell;
+      spellName.textContent = (index + 1) + ' / ' + SPELL_IDS.length + ' · ' + txt.spells[spell][0];
+      spellName.hidden = false;
+      message.textContent = txt.spells[spell][1];
       // Restart finite CSS effects on repeat clicks; there are no particle loops.
       void magic.getBoundingClientRect();
       el.classList.add('is-casting');
-      message.textContent = txt.spells[spellIndex++ % txt.spells.length];
       if (showPanel !== false) openPanel();
       draw(true);
       global.clearTimeout(castTimer);
@@ -437,6 +447,7 @@
       state.mood = opts.mood || moodFromStatus(next, Date.now() / 1000);
       updateStats();
       if (oldMood !== state.mood && !casting && !panel.hidden) {
+        spellName.hidden = true;
         message.textContent = attr('mood-' + state.mood, txt[state.mood]);
       }
       if (!canWander() && motion.mode === 'walk') idleFor();

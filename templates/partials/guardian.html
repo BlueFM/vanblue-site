@@ -18,21 +18,65 @@
         <img class="guardian-fallback" width="384" height="384" alt="" draggable="false" hidden>
         <canvas class="guardian-canvas" width="384" height="384"></canvas>
         <svg class="guardian-magic" viewBox="0 0 384 384" fill="none" focusable="false">
-          <path class="guardian-trail guardian-trail--glow" d="M233 189 C275 151 308 194 335 142 S300 99 349 68" />
-          <path class="guardian-trail" d="M233 189 C275 151 308 194 335 142 S300 99 349 68" />
-          <g class="guardian-fish">
-            <g transform="translate(365 49) rotate(-14)">
-              <path d="M-24 0C-13-17 12-17 27 0C12 17-13 17-24 0ZM-24 0L-39-13V13Z" />
-              <path d="M-5-11L-1-19L10-12M-6 12L1 19L10 12M3-9Q-4 0 3 9" />
-              <circle cx="14" cy="-2" r="2" />
+          <defs>
+            <path id="guardian-spell-star" d="M0-12 3-3 12 0 3 3 0 12-3 3-12 0-3-3Z" />
+            <radialGradient id="guardian-shield-glow">
+              <stop offset="0.5" stop-color="#dec5ff" stop-opacity="0" />
+              <stop offset="0.9" stop-color="#dac0ff" stop-opacity="0.1" />
+              <stop offset="1" stop-color="#d0acff" stop-opacity="0.22" />
+            </radialGradient>
+          </defs>
+          <g class="guardian-spell-effect" data-effect="fish">
+            <path class="guardian-trail guardian-trail--glow" d="M233 189 C275 151 308 194 335 142 S300 99 349 68" />
+            <path class="guardian-trail" d="M233 189 C275 151 308 194 335 142 S300 99 349 68" />
+            <g class="guardian-fish">
+              <g transform="translate(365 49) rotate(-14)">
+                <path d="M-24 0C-13-17 12-17 27 0C12 17-13 17-24 0ZM-24 0L-39-13V13Z" />
+                <path d="M-5-11L-1-19L10-12M-6 12L1 19L10 12M3-9Q-4 0 3 9" />
+                <circle cx="14" cy="-2" r="2" />
+              </g>
+            </g>
+            <g class="guardian-sparks" stroke-linejoin="round">
+              <path d="M310 94L314 105L325 109L314 113L310 124L306 113L295 109L306 105Z" />
+              <path d="M350 12L353 21L362 24L353 27L350 36L347 27L338 24L347 21Z" />
+              <path d="M278 145L280 151L286 153L280 155L278 161L276 155L270 153L276 151Z" />
+              <circle cx="333" cy="75" r="2" /><circle cx="373" cy="90" r="2.5" />
             </g>
           </g>
-          <g class="guardian-sparks" stroke-linejoin="round">
-            <path d="M310 94L314 105L325 109L314 113L310 124L306 113L295 109L306 105Z" />
-            <path d="M350 12L353 21L362 24L353 27L350 36L347 27L338 24L347 21Z" />
-            <path d="M278 145L280 151L286 153L280 155L278 161L276 155L270 153L276 151Z" />
-            <circle cx="333" cy="75" r="2" />
-            <circle cx="373" cy="90" r="2.5" />
+          <g class="guardian-spell-effect" data-effect="stars">
+            <path class="guardian-star-arc" d="M233 189C296 182 268 132 324 105S365 51 339 37" />
+            <g transform="translate(271 66)"><g class="guardian-star" style="--star-delay:0.1s;--star-drift:-16px"><use href="#guardian-spell-star" /></g></g>
+            <g transform="translate(323 88)"><g class="guardian-star" style="--star-delay:0.3s;--star-drift:12px"><use href="#guardian-spell-star" /></g></g>
+            <g transform="translate(367 42)"><g class="guardian-star" style="--star-delay:0.5s;--star-drift:20px"><use href="#guardian-spell-star" /></g></g>
+            <g transform="translate(296 133)"><g class="guardian-star guardian-star--small" style="--star-delay:0.65s;--star-drift:-13px"><use href="#guardian-spell-star" /></g></g>
+            <g transform="translate(351 157)"><g class="guardian-star guardian-star--small" style="--star-delay:0.4s;--star-drift:15px"><use href="#guardian-spell-star" /></g></g>
+            <g transform="translate(231 31)"><g class="guardian-star guardian-star--small" style="--star-delay:0.7s;--star-drift:-18px"><use href="#guardian-spell-star" /></g></g>
+            <g transform="translate(388 112)"><g class="guardian-star guardian-star--small" style="--star-delay:0.2s;--star-drift:5px"><use href="#guardian-spell-star" /></g></g>
+          </g>
+          <g class="guardian-spell-effect" data-effect="shield">
+            <g class="guardian-shield">
+              <ellipse cx="192" cy="219" rx="147" ry="150" fill="url(#guardian-shield-glow)" />
+              <ellipse class="guardian-shield-edge" cx="192" cy="219" rx="147" ry="150" />
+              <g class="guardian-shield-runes">
+                <ellipse cx="192" cy="219" rx="135" ry="138" />
+                <path d="m57 210 6 9-6 9-6-9Zm270 0 6 9-6 9-6-9ZM183 357l9-6 9 6-9 6Z" />
+              </g>
+              <path class="guardian-shield-moon" d="M208 62a27 27 0 1 0 17 44 24 24 0 0 1-17-44Z" />
+            </g>
+          </g>
+          <g class="guardian-spell-effect" data-effect="puff">
+            <path class="guardian-puff-whiff" d="M233 189q22-1 32-14t30-15" />
+            <g transform="translate(64 -2)"><g class="guardian-puff-cloud">
+              <path d="M262 151c-20 4-34-10-29-26-19-15-8-39 13-38 2-24 34-31 48-12 20-14 46 0 44 22 26 0 36 30 16 43 5 23-28 35-42 18-15 17-41 13-50-7Z" />
+              <path class="guardian-puff-swirl" d="M257 120c-14-17 10-31 18-16m37 26c15-12 27 4 16 12m-41-10c-12 11-2 27 13 18" />
+              <circle cx="235" cy="162" r="7" /><circle cx="354" cy="72" r="6" />
+            </g></g>
+            <g class="guardian-puff-question">
+              <g class="guardian-readable">
+                <path d="M318 62c0-10 8-16 18-16s17 6 17 15c0 12-17 12-17 24v3m0 12v2" />
+              </g>
+            </g>
+            <path class="guardian-puff-pop" d="m249 63-6-10m64 118 4 11m58-46 11 3" />
           </g>
         </svg>
       </span>
@@ -43,6 +87,7 @@
       <button class="guardian-panel-close guardian-icon-btn" type="button" aria-label="Close" title="Close">
         <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m6 6 8 8M14 6l-8 8" /></svg>
       </button>
+      <p class="guardian-spell-name" hidden></p>
       <p class="guardian-message" role="status" aria-live="polite" aria-atomic="true"></p>
       <p class="guardian-stats" hidden></p>
       <div class="guardian-actions">

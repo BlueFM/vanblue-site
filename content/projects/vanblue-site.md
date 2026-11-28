@@ -83,10 +83,13 @@ machine, no laptop in the loop).
 
 The purple-hatted wizard cat in the corner is a small exception to an otherwise quiet
 academic page. Its illustrated blink, breathing and walk frames share one transparent
-WebP atlas. Click it and a mint-green spell turns into a tiny fish; drag it to another
-spot and it lands softly. On desktop it takes short strolls near that spot. On phones
-it stays put, and a moon button lets visitors tuck it away. Reduced-motion preferences
-replace the animation with still poses; hidden tabs stop the animation loop.
+WebP atlas, including a casting pose whose two ears use the original character's
+artwork. Click it to cycle through a mint-green fish, golden stardust, a lilac
+moonshield and a small smoky mishap. Each spell has different vector effects, not
+just a different caption. Drag the cat to another spot and it lands softly. On
+desktop it takes short strolls nearby; on phones it stays put. A fixed moon button
+shows or hides it. Reduced-motion preferences replace movement with static spells;
+hidden tabs stop the animation loop.
 
 The site is still flat files. A systemd timer writes one small JSON snapshot every
 minute — load average, today's unique visitors, and the age of the release symlink —

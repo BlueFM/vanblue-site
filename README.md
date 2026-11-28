@@ -94,8 +94,12 @@ last 5 releases (`KEEP=5`).
 
 A small, purple-hatted wizard cat sits in the bottom-right corner of every page.
 Its transparent WebP sprite atlas contains the supplied blink, breathing and walk
-frames, plus a spell-casting pose. A finite SVG effect conjures a mint-green fish
-when clicked. No framework, external image host, audio or AI call is involved.
+frames, plus a two-eared spell-casting pose repaired from the same character's
+original ear artwork. Four finite SVG spells cycle without consecutive repeats:
+a mint-green fish, golden stardust, a lilac moonshield and an occasional smoky
+mishap. Each has its own shapes, motion, palette and caption; they share one cat
+pose rather than downloading four new animations. No framework, external image
+host, audio or AI call is involved.
 
 - Click (or Enter/Space) for a spell and today's site numbers. Drag to move; a
   mid-air drop lands gently. Escape or a click outside closes the little card.
