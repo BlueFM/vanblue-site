@@ -92,27 +92,45 @@ last 5 releases (`KEEP=5`).
 
 ## Site guardian
 
-A pixel creature sits in the bottom-right corner of every page. It is pure
-canvas, no dependencies; mood comes from `/guardian/status.json`, a static file
-rewritten once a minute by `guardian-status.timer` on the server:
+A small, purple-hatted wizard cat sits in the bottom-right corner of every page.
+Its transparent WebP sprite atlas contains the supplied blink, breathing and walk
+frames, plus a spell-casting pose. A finite SVG effect conjures a mint-green fish
+when clicked. No framework, external image host, audio or AI call is involved.
+
+- Click (or Enter/Space) for a spell and today's site numbers. Drag to move; a
+  mid-air drop lands gently. Escape or a click outside closes the little card.
+- On desktop, short strolls stay within 180 px of the cat's chosen spot, with
+  16–30 s pauses. Hover, keyboard focus and an open card stop roaming. **Stay
+  here** parks it; **Wander a little** lets it roam again.
+- On phones it is smaller and stays put. The close control hides it in a small
+  moon button; click the moon to bring it back. Hide and roam preferences are
+  stored locally and survive navigation. Storage being blocked is harmless.
+- `prefers-reduced-motion` uses still frames and a static, short-lived spell,
+  without roaming or falling animation. Hidden tabs and a hidden cat stop the
+  animation loop; status requests pause too. Printing excludes the companion.
+- If the atlas fails, a separate still image is the fallback. With JavaScript
+  disabled the widget stays hidden, and all site content remains available.
+
+Mood still comes from `/guardian/status.json`, a static file rewritten once a
+minute by `guardian-status.timer` on the server:
 
 | JSON `mood` | what the script sees                                      |
 |-------------|-----------------------------------------------------------|
-| `idle`      | default                                                   |
-| `sleep`     | 01:00–07:00 server time                                   |
-| `busy`      | load per core ≥ 0.7, or ≥ 20 visitors today                |
+| `idle`      | default; blinks and occasionally strolls                  |
+| `sleep`     | 01:00–07:00 server time; curled up, breathing              |
+| `busy`      | load per core ≥ 0.7, or ≥ 20 visitors today; stays nearby  |
 | `deploy`    | less than 120 s since `current` was swapped               |
 
-If the file is missing — local preview, fresh clone — the creature falls back to
-the visitor's clock and still animates. Click it for today's numbers.
+A missing, invalid or stale snapshot falls back to the visitor's clock. Clicking
+wakes a sleeping cat for a spell without changing the server's status.
 
-Moods decide the face, not the legs: in `idle` and `deploy` it roams — walking
-the floor at 24 px/s, climbing either wall at 40 px/s, pausing for a few seconds
-between trips. `busy` and `sleep` stand still. Drag it and it follows the
-pointer; let go in mid-air and it falls, or drop it against a wall and it clings
-there, hands on the wall. Its eyes track the cursor when it comes close, and it
-hops if you hover on it. `prefers-reduced-motion` keeps it parked in the corner
-with no walk cycle at all.
+The widget lives in `templates/partials/guardian.html`, `static/js/guardian.js`
+and `static/css/guardian.css`. To regenerate its optimized art from the original
+animation package and the spell-casting illustration:
+
+```bash
+python tools/prepare-wizard-cat.py --source-zip /path/to/wizard-cat-pet-animation.zip --cast-image /path/to/casting.png
+```
 
 Install and tuning live in `deploy/guardian/README.md`. The snapshot deliberately
 lives in `/var/www/vanblue/guardian/`, outside `releases/`, so deploys never

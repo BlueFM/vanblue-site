@@ -1,792 +1,638 @@
-/* Site guardian — a small pixel spirit that lives in the corner of the site.
- *
- * Its mood comes from /guardian/status.json: a static file rewritten once a
- * minute by a systemd timer on the server (see deploy/guardian/). If the file
- * is missing — local preview, a fresh clone, a failed timer — the spirit falls
- * back to the visitor's own clock, so it keeps blinking instead of vanishing.
- *
- * No dependencies, no build step. Attach with <div data-guardian>.
+/* The spell cat — transparent, illustrated sprites; no framework or service.
+ * Existing /guardian/status.json supplies the mood. Missing or stale snapshots
+ * fall back to the visitor's clock. All magic is local to the browser.
  */
 (function (global) {
   'use strict';
 
-  var W = 18;
-  var H = 20;
-  var BODY_Y = 5;
-  var BODY_X = 1;
+  var CELL = 384;
+  var COLS = 4;
   var POLL_MS = 60000;
   var STALE_S = 600;
-
-  /* ---------------------------------------------------------------- pixels */
-
-  // 16x15. '.' transparent, '#' outline, 'a' body, 'b' highlight,
-  // 'w' eye white, 'p' pupil, 'c' cheek, 'm' mouth.
-  var BODY_OPEN = [
-    '......####......',
-    '....#aaaaaa#....',
-    '...#aaaaaaaa#...',
-    '..#aaaaaaaaaa#..',
-    '..#aaaaaaaaaa#..',
-    '.#aaaaaaaaaaaa#.',
-    '.#aawwwaawwwaa#.',
-    '.#aawpwaawpwaa#.',
-    '.#aawwwaawwwaa#.',
-    '.#accaaaaaacca#.',
-    '.#aaaaammaaaaa#.',
-    '..#aaaaaaaaaa#..',
-    '...#aaaaaaaa#...',
-    '....#aaaaaa#....',
-    '.....aa..aa.....'
-  ];
-
-  var CLOSED_EYES = {
-    6: '.#aaaaaaaaaaaa#.',
-    7: '.#aammmaammmaa#.',
-    8: '.#aaaaaaaaaaaa#.'
+  var PREF_KEY = 'vanblue:spell-cat:v1';
+  var mounted = new WeakMap();
+  var sequences = {
+    idle: [[0, 2400], [1, 70], [2, 100], [1, 70]],
+    sleep: [[3, 780], [4, 370], [5, 600], [4, 480]],
+    walk: [[6, 130], [7, 130], [8, 130], [9, 130]],
+    cast: [[10, 3400]]
   };
-
-  function withRows(rows, changes) {
-    var out = rows.slice();
-    for (var k in changes) {
-      if (Object.prototype.hasOwnProperty.call(changes, k)) out[k] = changes[k];
+  var copy = {
+    en: {
+      label: 'The spell cat. Click for magic; drag to move.',
+      name: 'THE SPELL CAT', hint: 'A little magic?',
+      hide: 'Hide the cat', restore: 'Bring back the wizard cat', close: 'Close',
+      cast: 'Another spell', stay: 'Stay here', wander: 'Wander a little',
+      help: 'Click for magic · drag to move', touchHelp: 'Tap for magic · drag to move',
+      spells: [
+        'Mew… a tiny spell for your next bright idea.',
+        'One little fish. A little extra luck.',
+        'May your gradients be kind and your minima flat.',
+        'A little magic for that next deadline. You’ve got this.'
+      ],
+      idle: 'Keeping a little magic in the margins.',
+      sleep: 'Shh… collecting dreams for tomorrow.',
+      busy: 'Watching over a very busy little server.',
+      deploy: 'A fresh page, a fresh little spell.',
+      stats: '%n visitors today', load: 'load'
+    },
+    zh: {
+      label: '念咒猫。点我施法，拖动可以换个位置。',
+      name: '巫师的念咒猫', hint: '要来一点魔法吗？',
+      hide: '收起猫咪', restore: '请念咒猫回来', close: '关闭',
+      cast: '再变一个', stay: '乖乖待着', wander: '去散散步',
+      help: '点我施法 · 拖动换个位置', touchHelp: '轻点施法 · 拖动换个位置',
+      spells: [
+        '喵呜……给你的下一个灵感，施一点小魔法。',
+        '一条小鱼，再加一点点好运。',
+        '愿你的梯度乖巧，极小值平坦。',
+        '给下一个截止日期一点魔法。你可以的！'
+      ],
+      idle: '在页边，悄悄守着一点魔法。',
+      sleep: '嘘……正在收集明天要用的好梦。',
+      busy: '服务器忙碌中，本喵正在认真守护。',
+      deploy: '新页面上线，补上一点新魔法。',
+      stats: '今天有 %n 位访客', load: '负载'
     }
-    return out;
-  }
-
-  var BODY = {
-    open: BODY_OPEN,
-    blink: withRows(BODY_OPEN, CLOSED_EYES),
-    sleep: withRows(BODY_OPEN, CLOSED_EYES),
-    yawn: withRows(BODY_OPEN, { 11: '..#aaaammaaaa#..' })
   };
-
-  // Two-step shuffle: the feet swap places while the body bobs one pixel.
-  var BODY_WALK = [
-    withRows(BODY_OPEN, { 14: '....aa...aa.....' }),
-    withRows(BODY_OPEN, { 14: '.....aa...aa....' })
-  ];
-
-  // 6x4 cardboard box, held in front of the body while a release lands.
-  var BOX = [
-    'xxxxxx',
-    'xXttXx',
-    'xXttXx',
-    'xxxxxx'
-  ];
-
-  /* --------------------------------------------------------------- palette */
-
-  function parseColor(value) {
-    if (!value) return null;
-    var s = String(value).trim();
-    var m = /^#([0-9a-f]{3})$/i.exec(s);
-    if (m) {
-      return [
-        parseInt(m[1].charAt(0) + m[1].charAt(0), 16),
-        parseInt(m[1].charAt(1) + m[1].charAt(1), 16),
-        parseInt(m[1].charAt(2) + m[1].charAt(2), 16)
-      ];
-    }
-    m = /^#([0-9a-f]{6})$/i.exec(s);
-    if (m) {
-      return [
-        parseInt(m[1].slice(0, 2), 16),
-        parseInt(m[1].slice(2, 4), 16),
-        parseInt(m[1].slice(4, 6), 16)
-      ];
-    }
-    m = /^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i.exec(s);
-    if (m) return [Number(m[1]) | 0, Number(m[2]) | 0, Number(m[3]) | 0];
-    return null;
-  }
-
-  function mix(a, b, t) {
-    return [
-      Math.round(a[0] + (b[0] - a[0]) * t),
-      Math.round(a[1] + (b[1] - a[1]) * t),
-      Math.round(a[2] + (b[2] - a[2]) * t)
-    ];
-  }
-
-  function rgb(c) {
-    return 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')';
-  }
-
-  function cssVar(name) {
-    if (!document.documentElement) return '';
-    return global.getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  }
-
-  function isDark() {
-    return !!(global.matchMedia && global.matchMedia('(prefers-color-scheme: dark)').matches);
-  }
-
-  // The body uses the site accent, so the spirit inherits light/dark themes.
-  function palette() {
-    var dark = isDark();
-    var accent = parseColor(cssVar('--accent')) || [20, 80, 140];
-    var muted = parseColor(cssVar('--muted')) || [107, 107, 107];
-    var white = [255, 255, 255];
-    return {
-      '#': rgb(mix(accent, [0, 0, 0], dark ? 0.3 : 0.55)),
-      a: rgb(accent),
-      b: rgb(mix(accent, white, dark ? 0.5 : 0.4)),
-      w: rgb(mix(white, accent, 0.08)),
-      p: rgb([12, 22, 34]),
-      c: rgb(mix([226, 140, 140], accent, dark ? 0.4 : 0.1)),
-      m: rgb(mix(accent, [0, 0, 0], 0.68)),
-      x: rgb([205, 168, 116]),
-      X: rgb([176, 138, 86]),
-      t: rgb([234, 223, 198]),
-      s: rgb(mix(muted, white, 0.5)),
-      S: rgb(mix(muted, white, 0.25)),
-      z: rgb(muted),
-      d: rgb(mix([140, 198, 242], white, 0.15))
-    };
-  }
-
-  /* ---------------------------------------------------------------- drawing */
-
-  function drawSprite(ctx, rows, x, y, pal, pupilDx, pupilDy) {
-    var shiftX = pupilDx || 0;
-    var shiftY = pupilDy || 0;
-    if (shiftY > 1) shiftY = 1;
-    if (shiftY < -1) shiftY = -1;
-    var pupils = [];
-    for (var r = 0; r < rows.length; r++) {
-      var row = rows[r];
-      for (var c = 0; c < row.length; c++) {
-        var ch = row.charAt(c);
-        if (ch === '.') continue;
-        var color = pal[ch];
-        if (!color) continue;
-        // Pupils shift with the gaze, so they land on the eye whites. They
-        // have to go on top, or the rest of the eye paints over them.
-        if (ch === 'p') {
-          pupils.push([x + c + shiftX, y + r + shiftY]);
-          continue;
-        }
-        ctx.fillStyle = color;
-        ctx.fillRect(x + c, y + r, 1, 1);
-      }
-    }
-    ctx.fillStyle = pal.p;
-    for (var i = 0; i < pupils.length; i++) {
-      ctx.fillRect(pupils[i][0], pupils[i][1], 1, 1);
-    }
-  }
-
-  function drawZ(ctx, x, y, color) {
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, 5, 1);
-    ctx.fillRect(x + 3, y + 1, 1, 1);
-    ctx.fillRect(x + 2, y + 2, 1, 1);
-    ctx.fillRect(x + 1, y + 3, 1, 1);
-    ctx.fillRect(x, y + 4, 5, 1);
-  }
-
-  function drawZzz(ctx, pal, t) {
-    var cyc = 2600;
-    var phase = (t % cyc) / cyc;
-    var y = 3 - Math.round(phase * 3);
-    ctx.globalAlpha = 0.9 - 0.55 * phase;
-    drawZ(ctx, 11, Math.max(0, y), pal.z);
-    ctx.globalAlpha = 1;
-  }
-
-  function drawSmoke(ctx, pal, t, top) {
-    var cyc = 1100;
-    for (var i = 0; i < 3; i++) {
-      var g = ((t % cyc) / cyc + i / 3) % 1;
-      var px = 10 + i * 2;
-      var py = top - 1 - Math.round(g * 5);
-      ctx.fillStyle = g < 0.35 ? pal.S : pal.s;
-      ctx.fillRect(px, py, 2, 1);
-      ctx.fillRect(px + (i % 2), py - 1, 1, 1);
-    }
-  }
-
-  function drawBox(ctx, pal, x, y) {
-    var bx = x + 5;
-    var by = y + 9;
-    drawSprite(ctx, BOX, bx, by, pal);
-    ctx.fillStyle = pal.a;
-    ctx.fillRect(bx - 1, by + 2, 1, 1);
-    ctx.fillRect(bx + 6, by + 2, 1, 1);
-  }
-
-  function drawSweat(ctx, pal, t, x, y) {
-    var phase = t % 2400;
-    if (phase > 700) return;
-    var drop = Math.floor(phase / 200);
-    ctx.fillStyle = pal.d;
-    ctx.fillRect(x + 15, y + 5 + drop, 1, 2);
-  }
-
-  function paint(ctx, t, mood, pal, state) {
-    state = state || {};
-    ctx.clearRect(0, 0, W, H);
-
-    var walking = !!state.walking && (mood === 'idle' || mood === 'deploy');
-    var step = state.step | 0;
-    var bob = 0;
-
-    if (mood === 'sleep') bob = (Math.floor(t / 900) % 2) ? 0 : 1;
-    else if (mood === 'busy') bob = Math.floor(t / 140) % 2;
-    else if (walking) bob = step % 2 ? -1 : 0;
-    else if (mood === 'deploy') bob = (Math.floor(t / 220) % 2) ? -1 : 0;
-    else bob = (Math.floor(t / 520) % 2) ? -1 : 0;
-
-    if (state.hopAt > 0 && t - state.hopAt < 480) bob -= 2;
-
-    var top = BODY_Y + bob;
-
-    if (mood === 'sleep') drawZzz(ctx, pal, t);
-    if (mood === 'busy') drawSmoke(ctx, pal, t, top);
-
-    var rows;
-    if (mood === 'sleep') rows = BODY.sleep;
-    else if (mood === 'busy') rows = BODY.open;
-    else if (walking) rows = BODY_WALK[step % 2];
-    else if ((t % 17000) > 16200) rows = BODY.yawn;
-    else if ((t % 4300) < 130) rows = BODY.blink;
-    else rows = BODY.open;
-
-    drawSprite(ctx, rows, BODY_X, top, pal, state.eyeDx || 0, state.eyeDy || 0);
-
-    // Clinging to a wall: two tiny hands on the wall side.
-    if (state.onWall) {
-      ctx.fillStyle = pal.a;
-      var hx = state.onWall === 'left' ? BODY_X : BODY_X + 15;
-      ctx.fillRect(hx, top + 6, 1, 1);
-      ctx.fillRect(hx, top + 9, 1, 1);
-    }
-
-    if (mood === 'deploy') drawBox(ctx, pal, BODY_X, top);
-    if (mood === 'busy') drawSweat(ctx, pal, t, BODY_X, top);
-  }
-
-  /* ----------------------------------------------------------------- state */
 
   function clockMood() {
     var hour = new Date().getHours();
     return hour >= 1 && hour < 7 ? 'sleep' : 'idle';
   }
 
-  function moodFromStatus(status, nowS) {
-    if (!status || typeof status !== 'object') return clockMood();
-    var fresh = typeof status.ts === 'number' && nowS - status.ts < STALE_S;
-    if (!fresh || !status.mood) return 'idle';
-    if (status.mood === 'idle' || status.mood === 'sleep' ||
-        status.mood === 'busy' || status.mood === 'deploy') {
-      return status.mood;
-    }
-    return 'idle';
+  function freshStatus(status, nowS) {
+    return !!status && typeof status === 'object' &&
+      Number.isFinite(status.ts) && nowS - status.ts >= -60 && nowS - status.ts < STALE_S;
   }
 
-  /* ------------------------------------------------------------------ mount */
+  function moodFromStatus(status, nowS) {
+    if (!freshStatus(status, nowS)) return clockMood();
+    return ['idle', 'sleep', 'busy', 'deploy'].indexOf(status.mood) !== -1
+      ? status.mood : clockMood();
+  }
 
-  function mount(el, opts) {
-    opts = opts || {};
-    var canvas = el.querySelector('canvas');
-    if (!canvas || !canvas.getContext) return null;
-    var ctx = canvas.getContext('2d');
-    if (!ctx) return null;
+  function clamp(n, min, max) { return Math.max(min, Math.min(Math.max(min, max), n)); }
+  function random(min, max) { return min + Math.random() * (max - min); }
 
-    canvas.width = W;
-    canvas.height = H;
-    el.hidden = false;
+  function readPrefs() {
+    var prefs = { collapsed: false, roam: true, seen: false };
+    try {
+      var saved = JSON.parse(global.localStorage.getItem(PREF_KEY));
+      if (saved && typeof saved === 'object') {
+        Object.keys(prefs).forEach(function (key) {
+          if (typeof saved[key] === 'boolean') prefs[key] = saved[key];
+        });
+      }
+    } catch (err) { /* Storage may be disabled. The cat still works. */ }
+    return prefs;
+  }
 
-    function attr(name, fallback) {
-      var v = el.getAttribute('data-' + name);
-      return v === null ? fallback : v;
+  function sequenceFrame(name, time, reduced) {
+    var seq = sequences[name];
+    if (reduced) return seq[0][0];
+    var duration = seq.reduce(function (sum, item) { return sum + item[1]; }, 0);
+    var phase = time % duration;
+    for (var i = 0; i < seq.length; i++) {
+      if (phase < seq[i][1]) return seq[i][0];
+      phase -= seq[i][1];
+    }
+    return seq[0][0];
+  }
+
+  function mount(el, options) {
+    if (mounted.has(el)) return mounted.get(el);
+    var opts = options || {};
+    var btn = el.querySelector('.guardian-btn');
+    var canvas = el.querySelector('.guardian-canvas');
+    var pet = el.querySelector('.guardian-pet');
+    var panel = el.querySelector('.guardian-bubble');
+    var restoreBtn = el.querySelector('.guardian-restore');
+    if (!btn || !canvas || !pet || !panel || !restoreBtn) return null;
+
+    var ctx = canvas.getContext && canvas.getContext('2d');
+    var fallback = el.querySelector('.guardian-fallback');
+    var magic = el.querySelector('.guardian-magic');
+    var message = el.querySelector('.guardian-message');
+    var stats = el.querySelector('.guardian-stats');
+    var roamBtn = el.querySelector('.guardian-roam');
+    var castBtn = el.querySelector('.guardian-cast');
+    var hideBtn = el.querySelector('.guardian-hide');
+    var closeBtn = el.querySelector('.guardian-panel-close');
+    var zh = /^zh\b/i.test(document.documentElement.lang);
+    var txt = copy[zh ? 'zh' : 'en'];
+    var reduceQuery = global.matchMedia('(prefers-reduced-motion: reduce)');
+    var compactQuery = global.matchMedia('(max-width: 640px)');
+    var reduced = reduceQuery.matches;
+    var compact = compactQuery.matches;
+    var prefs = readPrefs();
+    var atlas = new Image();
+    var artRequested = false;
+    var artReady = false;
+    var ready = false;
+    var destroyed = false;
+    var raf = 0;
+    var lastTick = 0;
+    var drawnFrame = -1;
+    var sequenceStart = 0;
+    var castTimer = 0;
+    var wakeTimer = 0;
+    var introTimer = 0;
+    var pollTimer = 0;
+    var fetchTimeout = 0;
+    var fetchController = null;
+    var fetching = false;
+    var lastPoll = 0;
+    var casting = false;
+    var wakeUntil = 0;
+    var spellIndex = 0;
+    var hovered = false;
+    var focused = false;
+    var pointer = null;
+    var suppressClickUntil = 0;
+    var creatureW = 164;
+    var creatureH = 164;
+    var safeBottom = 0;
+    var gap = 16;
+    var homeX = 0;
+    var previousPos = null;
+    var disposers = [];
+    var pos = { x: 0, y: 0 };
+    var state = { status: opts.status || null, mood: 'idle', pose: 'idle', frame: 0, clock: opts.freeze || 0 };
+    var motion = { mode: 'idle', target: 0, pauseUntil: 18000, velocity: 0 };
+
+    function listen(target, type, fn, options) {
+      target.addEventListener(type, fn, options);
+      disposers.push(function () { target.removeEventListener(type, fn, options); });
     }
 
-    var txt = {
-      label: attr('label', 'Site guardian'),
-      stats: attr('stats', '%n visitors today'),
-      load: attr('load', 'load'),
-      moods: {
-        idle: attr('mood-idle', 'idling'),
-        sleep: attr('mood-sleep', 'napping'),
-        busy: attr('mood-busy', 'running hot'),
-        deploy: attr('mood-deploy', 'carrying boxes')
-      }
-    };
+    function savePrefs() {
+      try { global.localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); }
+      catch (err) { /* Private browsing and storage restrictions are harmless. */ }
+    }
 
-    var status = opts.status || null;
-    var mood = opts.mood || attr('mood', '') ||
-      (status ? moodFromStatus(status, Date.now() / 1000) : 'idle');
-    var state = {
-      hopAt: -1,
-      status: status,
-      walking: false,
-      step: 0,
-      eyeDx: 0,
-      eyeDy: 0,
-      onWall: null
-    };
-    var lastT = 0;
-    var anchoredRight = null;
-    var anchoredLow = null;
-
-    var pal = palette();
-    var bubble = el.querySelector('.guardian-bubble');
-    var btn = el.querySelector('.guardian-btn');
-    var hideTimer = 0;
-
-    /* --- roaming, climbing, dragging ------------------------------------ */
-
-    var EDGE = 4;              // px kept clear at the viewport edges
-    var FLOOR_GAP = 12;        // px between the floor and the viewport bottom
-    var WALK_SPEED = 24;       // px per second
-    var CLIMB_SPEED = 40;      // px per second
-    var GRAVITY = 2000;        // px per second squared
-    var clock = 0;             // ms of animated time, advanced by the frame loop
-    var nextLook = 0;
-    var creatureW = (btn && btn.offsetWidth) || 72;
-    var creatureH = (btn && btn.offsetHeight) || 80;
-
-    var pos = { x: 0, y: 0 };
-    var fall = { vy: 0, bounce: 0 };
-    var motion = {
-      mode: 'idle',            // idle | walk | climb | fall | drag
-      surface: 'floor',        // floor | left | right
-      target: 0,
-      pauseUntil: 1400,
-      nextNudge: 0
-    };
-    var pointer = { x: -9999, y: -9999 };
-    var dragging = false;
-    var wasDragged = false;
-    var dragOffset = { x: 0, y: 0 };
+    function attr(name, fallbackValue) {
+      return el.getAttribute('data-' + name) || fallbackValue;
+    }
 
     function viewport() {
-      return { w: global.innerWidth || 1024, h: global.innerHeight || 768 };
+      var visual = global.visualViewport;
+      return visual ? { w: visual.width, h: visual.height, x: visual.offsetLeft, y: visual.offsetTop }
+        : { w: global.innerWidth, h: global.innerHeight, x: 0, y: 0 };
+    }
+    function minX() { return viewport().x + gap; }
+    function minY() { return viewport().y + gap; }
+    function floorY() { var vp = viewport(); return Math.max(minY(), vp.y + vp.h - creatureH - gap - safeBottom); }
+    function maxX() { var vp = viewport(); return Math.max(minX(), vp.x + vp.w - creatureW - gap); }
+
+    function measure() {
+      var vp = viewport();
+      safeBottom = parseFloat(global.getComputedStyle(el).getPropertyValue('--pet-safe-bottom')) || 0;
+      gap = compact ? 12 : 16;
+      el.style.setProperty('--pet-room', Math.max(44, Math.min(vp.w - gap * 2, vp.h - gap * 2 - safeBottom)) + 'px');
+      el.style.setProperty('--pet-viewport-width', vp.w + 'px');
+      creatureW = creatureH = prefs.collapsed ? 44 : (parseFloat(global.getComputedStyle(el).width) || 164);
     }
 
-    function floorY() { return viewport().h - creatureH - FLOOR_GAP; }
-    function wallX(side) { return side === 'left' ? EDGE : viewport().w - creatureW - EDGE; }
-    function rand(min, max) { return min + Math.random() * (max - min); }
+    function facing(direction) { el.style.setProperty('--pet-facing', direction < 0 ? '-1' : '1'); }
+    function faceInward() { var vp = viewport(); facing(pos.x + creatureW / 2 > vp.x + vp.w / 2 ? -1 : 1); }
 
     function place() {
-      if (el.style) {
-        el.style.transform =
-          'translate3d(' + Math.round(pos.x) + 'px,' + Math.round(pos.y) + 'px,0)';
-      }
-      if (!el.classList) return;
-      // Keep the speech bubble on the inside of the viewport.
-      var right = pos.x + creatureW / 2 > viewport().w / 2;
-      if (right !== anchoredRight) {
-        anchoredRight = right;
-        el.classList.toggle('is-right', right);
-      }
-      // High on a wall, the bubble has to go below instead of above.
-      var low = pos.y < 96;
-      if (low !== anchoredLow) {
-        anchoredLow = low;
-        el.classList.toggle('is-low', low);
-      }
-    }
-
-    function hop() { state.hopAt = lastT; }
-
-    // Eyes: follow the pointer when it is close, otherwise look where the
-    // body is heading, otherwise glance around now and then.
-    function eyes() {
-      var cx = pos.x + creatureW / 2;
-      var cy = pos.y + creatureH / 2;
-      var dx = pointer.x - cx;
-      var dy = pointer.y - cy;
-
-      if (mood !== 'sleep' && Math.abs(dx) < 260 && Math.abs(dy) < 260) {
-        state.eyeDx = Math.abs(dx) > 10 ? (dx > 0 ? 1 : -1) : 0;
-        state.eyeDy = Math.abs(dy) > 12 ? (dy > 0 ? 1 : -1) : 0;
-        return;
-      }
-      if (motion.mode === 'walk') {
-        state.eyeDx = motion.target > pos.x ? 1 : -1;
-        state.eyeDy = 0;
-        return;
-      }
-      if (motion.mode === 'climb') {
-        state.eyeDx = 0;
-        state.eyeDy = motion.target > pos.y ? 1 : -1;
-        return;
-      }
-      if (clock > nextLook) {
-        state.eyeDx = [-1, 0, 0, 1][Math.floor(Math.random() * 4)];
-        state.eyeDy = 0;
-        nextLook = clock + 2200 + Math.random() * 3200;
-      }
-    }
-
-    // A small hop when the pointer lingers on top of it.
-    function hoverNudge() {
-      if (reduce || mood === 'sleep' || clock < motion.nextNudge) return;
-      var cx = pos.x + creatureW / 2;
-      var cy = pos.y + creatureH / 2;
-      if (Math.abs(pointer.x - cx) < 52 && Math.abs(pointer.y - cy) < 52) {
-        hop();
-        motion.nextNudge = clock + 4500;
-      }
-    }
-
-    function arrive() {
-      motion.mode = 'idle';
-      state.walking = false;
-      state.step = 0;
-      motion.pauseUntil = clock + rand(1800, 5200);
-    }
-
-    function climbToWall(side) {
-      motion.surface = side;
-      pos.x = wallX(side);
-      motion.mode = 'climb';
-      motion.target = Math.round(rand(12, Math.max(20, floorY() - 60)));
-      place();
-    }
-
-    function nextAction() {
       var vp = viewport();
-
-      if (motion.surface === 'floor') {
-        var atLeft = pos.x <= EDGE + 2;
-        var atRight = pos.x >= vp.w - creatureW - EDGE - 2;
-        var r = Math.random();
-        if (atLeft && r < 0.6) return climbToWall('left');
-        if (atRight && r < 0.6) return climbToWall('right');
-        motion.mode = 'walk';
-        motion.target = Math.round(Math.random() < 0.3
-          ? (Math.random() < 0.5 ? EDGE : vp.w - creatureW - EDGE)
-          : rand(EDGE, vp.w - creatureW - EDGE));
-        return;
+      el.style.transform = 'translate3d(' + Math.round(pos.x) + 'px,' + Math.round(pos.y) + 'px,0)';
+      el.classList.toggle('is-right', pos.x + creatureW / 2 > vp.x + vp.w / 2);
+      el.classList.toggle('is-low', pos.y < vp.y + 80);
+      if (!panel.hidden) {
+        // Clamp to the visual viewport, including zoom and the on-screen keyboard.
+        var width = Math.max(44, Math.min(264, vp.w - 24));
+        panel.style.width = width + 'px';
+        panel.style.maxHeight = Math.max(44, vp.h - 16) + 'px';
+        var left = pos.x + creatureW / 2 > vp.x + vp.w / 2 ? creatureW - width : 0;
+        panel.style.left = clamp(left, vp.x + 12 - pos.x, vp.x + vp.w - width - 12 - pos.x) + 'px';
+        var height = panel.offsetHeight;
+        var top = pos.y - height - 12;
+        if (top < vp.y + 8) top = pos.y + creatureH + 12;
+        panel.style.top = (clamp(top, vp.y + 8, vp.y + vp.h - height - 8) - pos.y) + 'px';
       }
+    }
 
-      // On a wall: climb higher or lower, or come back down to the floor.
-      motion.mode = 'climb';
-      motion.target = Math.round(Math.random() < 0.55
-        ? rand(12, Math.max(20, floorY() - 80))
-        : floorY());
+    function idleFor(ms) {
+      motion.mode = 'idle';
+      motion.velocity = 0;
+      motion.pauseUntil = state.clock + (ms || random(16000, 30000));
+      el.classList.remove('is-falling');
+      faceInward();
+    }
+
+    function effectiveMood() {
+      return state.mood === 'sleep' && performance.now() < wakeUntil ? 'idle' : state.mood;
+    }
+
+    function draw(force) {
+      var pose = casting ? 'cast' : motion.mode === 'walk' ? 'walk' : effectiveMood() === 'sleep' ? 'sleep' : 'idle';
+      if (pose !== state.pose) {
+        state.pose = pose;
+        sequenceStart = state.clock;
+      }
+      var index = sequenceFrame(pose, state.clock - sequenceStart, reduced);
+      state.frame = index;
+      el.dataset.pose = pose;
+      el.dataset.mood = state.mood;
+      el.classList.toggle('is-sleeping', pose === 'sleep');
+      if (!artReady || !ctx || (!force && drawnFrame === index)) return;
+      ctx.clearRect(0, 0, CELL, CELL);
+      ctx.drawImage(atlas, (index % COLS) * CELL, Math.floor(index / COLS) * CELL,
+        CELL, CELL, 0, 0, CELL, CELL);
+      drawnFrame = index;
+    }
+
+    function canWander() {
+      return artReady && prefs.roam && !compact && !reduced && !casting &&
+        !hovered && !focused && panel.hidden &&
+        (effectiveMood() === 'idle' || effectiveMood() === 'deploy');
     }
 
     function advance(dt) {
-      clock += dt;
-      var vp = viewport();
-      state.onWall = motion.surface === 'floor' ? null : motion.surface;
-
-      if (motion.mode === 'drag') {
-        eyes();
-        return;
-      }
-
-      if (pos.x > vp.w - creatureW) pos.x = Math.max(0, vp.w - creatureW);
-
+      state.clock += dt;
+      if (motion.mode === 'drag') return;
       if (motion.mode === 'fall') {
-        fall.vy += GRAVITY * dt / 1000;
-        pos.y += fall.vy * dt / 1000;
-        var ground = floorY();
-        if (pos.y >= ground) {
-          pos.y = ground;
-          if (fall.vy > 320 && fall.bounce < 2) {
-            fall.vy = -fall.vy * 0.26;
-            fall.bounce++;
-          } else {
-            fall.vy = 0;
-            fall.bounce = 0;
-            motion.mode = 'idle';
-            motion.surface = 'floor';
-            motion.pauseUntil = clock + 900;
-          }
-        }
-        eyes();
+        motion.velocity += 1100 * dt / 1000;
+        pos.y += motion.velocity * dt / 1000;
+        if (pos.y >= floorY()) { pos.y = floorY(); idleFor(12000); }
         place();
         return;
       }
-
-      var canRoam = mood === 'idle' || mood === 'deploy';
-      if (!canRoam && (motion.mode === 'walk' || motion.mode === 'climb')) {
-        motion.mode = 'idle';
-        motion.pauseUntil = clock + 1500;
-      }
-
       if (motion.mode === 'walk') {
-        var dx = motion.target - pos.x;
-        var stride = WALK_SPEED * dt / 1000;
-        if (Math.abs(dx) <= stride) {
-          pos.x = motion.target;
-          arrive();
-        } else {
-          pos.x += dx > 0 ? stride : -stride;
-          state.walking = true;
-          state.step = Math.floor(clock / 150) % 2;
-        }
-        eyes();
+        if (!canWander()) { idleFor(); return; }
+        var distance = motion.target - pos.x;
+        var stride = 28 * dt / 1000;
+        if (Math.abs(distance) <= stride) { pos.x = motion.target; idleFor(); }
+        else { facing(distance); pos.x += distance < 0 ? -stride : stride; }
         place();
         return;
       }
-
-      if (motion.mode === 'climb') {
-        var dy = motion.target - pos.y;
-        var climb = CLIMB_SPEED * dt / 1000;
-        if (Math.abs(dy) <= climb) {
-          pos.y = motion.target;
-          if (motion.surface !== 'floor' && pos.y >= floorY() - 0.5) {
-            motion.surface = 'floor';
-            pos.y = floorY();
-          }
-          arrive();
-        } else {
-          pos.y += dy > 0 ? climb : -climb;
-          state.walking = true;
-          state.step = Math.floor(clock / 120) % 2;
-        }
-        eyes();
-        place();
-        return;
+      if (canWander() && state.clock > motion.pauseUntil) {
+        // Short strolls near its chosen spot, rather than crossing the article.
+        motion.target = random(Math.max(minX(), homeX - 180), Math.min(maxX(), homeX + 180));
+        if (Math.abs(motion.target - pos.x) > 32) motion.mode = 'walk';
+        else idleFor();
       }
-
-      // idle
-      state.walking = false;
-      state.step = 0;
-      if (motion.surface === 'floor') pos.y = floorY();
-      eyes();
-      hoverNudge();
-      if (canRoam && clock >= motion.pauseUntil) nextAction();
-      place();
     }
 
-    pos.x = viewport().w - creatureW - EDGE;
-    pos.y = floorY();
-    place();
-
-    function bubbleText() {
-      var lines = [txt.moods[mood] || txt.moods.idle];
-      var s = state.status;
-      if (s && typeof s === 'object') {
-        var parts = [];
-        if (typeof s.visitors === 'number') parts.push(txt.stats.replace('%n', s.visitors));
-        if (typeof s.load === 'number') parts.push(txt.load + ' ' + s.load.toFixed(2));
-        if (parts.length) lines.push(parts.join(' \u00b7 '));
+    function tick(ts) {
+      raf = 0;
+      if (destroyed || document.hidden || prefs.collapsed || reduced || !ready) return;
+      if (!lastTick) lastTick = ts;
+      var dt = ts - lastTick;
+      if (dt >= 32) {
+        lastTick = ts;
+        advance(clamp(dt, 0, 80));
+        draw(false);
       }
-      return lines.join('\n');
-    }
-
-    function closeBubble() {
-      if (!bubble) return;
-      global.clearTimeout(hideTimer);
-      bubble.hidden = true;
-      bubble.textContent = '';
-    }
-
-    function openBubble() {
-      if (!bubble) return;
-      bubble.textContent = bubbleText();
-      bubble.hidden = false;
-      global.clearTimeout(hideTimer);
-      hideTimer = global.setTimeout(closeBubble, 6000);
-    }
-
-    function toggleBubble() {
-      if (!bubble) return;
-      if (bubble.hidden) openBubble();
-      else closeBubble();
-    }
-
-    function applyStatus(next) {
-      state.status = next;
-      var nextMood = moodFromStatus(next, Date.now() / 1000);
-      if (nextMood !== mood) {
-        mood = nextMood;
-        if (bubble && !bubble.hidden) bubble.textContent = bubbleText();
-      }
-      if (reduce) draw();
-    }
-
-    function loadStatus() {
-      if (opts.demo || !global.fetch) return;
-      global.fetch('/guardian/status.json?t=' + Date.now(), { cache: 'no-store' })
-        .then(function (res) { return res.ok ? res.json() : null; })
-        .then(function (data) { applyStatus(data); })
-        .catch(function () { applyStatus(null); });
-    }
-
-    var reduce = !!(global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches);
-    var raf = 0;
-    var start = 0;
-    var lastTs = 0;
-
-    function draw() {
-      paint(ctx, lastT, mood, pal, state);
-    }
-
-    function frame(ts) {
-      if (opts.freeze != null) { lastT = opts.freeze; draw(); return; }
-      if (!start) { start = ts; lastTs = ts; }
-      var dt = ts - lastTs;
-      lastTs = ts;
-      if (dt < 0) dt = 0;
-      if (dt > 80) dt = 80;          // the tab was hidden; do not teleport
-      lastT = ts - start;
-      advance(dt);
-      paint(ctx, lastT, mood, pal, state);
-      raf = global.requestAnimationFrame(frame);
+      raf = global.requestAnimationFrame(tick);
     }
 
     function stop() {
       if (raf) global.cancelAnimationFrame(raf);
       raf = 0;
+      lastTick = 0;
     }
 
-    if (opts.freeze != null) {
-      frame(0);
-    } else if (reduce) {
-      lastT = 0;
-      draw();
-    } else {
-      raf = global.requestAnimationFrame(frame);
+    function start() {
+      if (!raf && !destroyed && ready && !reduced && !prefs.collapsed && !document.hidden && opts.freeze == null) {
+        lastTick = 0;
+        raf = global.requestAnimationFrame(tick);
+      }
+    }
+
+    function activate() {
+      if (destroyed || ready) return;
+      ready = true;
+      el.hidden = false;
+      measure();
+      pos.x = maxX();
+      pos.y = floorY();
+      homeX = pos.x;
+      faceInward();
+      place();
+      draw(true);
+      start();
+      if (!prefs.collapsed && !prefs.seen) {
+        el.classList.add('is-new');
+        introTimer = global.setTimeout(markSeen, 5000);
+      }
+    }
+
+    function loadArt() {
+      if (artRequested) return;
+      artRequested = true;
+      atlas.onload = function () {
+        if (destroyed) return;
+        artReady = true;
+        canvas.hidden = !ctx;
+        if (ctx) fallback.hidden = true;
+        else showFallback();
+        activate();
+        draw(true);
+      };
+      atlas.onerror = showFallback;
+      atlas.decoding = 'async';
+      atlas.fetchPriority = 'low';
+      atlas.src = attr('sprite', '/img/wizard-cat/sprites.webp');
+    }
+
+    function showFallback() {
+      if (destroyed) return;
+      canvas.hidden = true;
+      fallback.hidden = false;
+      fallback.onload = activate;
+      fallback.onerror = function () { if (!prefs.collapsed) el.hidden = true; };
+      fallback.src = attr('idle', '/img/wizard-cat/idle.webp');
+    }
+
+    function markSeen() {
+      global.clearTimeout(introTimer);
+      el.classList.remove('is-new');
+      if (!prefs.seen) { prefs.seen = true; savePrefs(); }
+    }
+
+    function updateStats() {
+      var parts = [];
+      var s = state.status;
+      if (freshStatus(s, Date.now() / 1000)) {
+        if (Number.isFinite(s.visitors) && s.visitors >= 0) parts.push(attr('stats', txt.stats).replace('%n', Math.floor(s.visitors)));
+        if (Number.isFinite(s.load) && s.load >= 0) parts.push(attr('load', txt.load) + ' ' + s.load.toFixed(2));
+      }
+      stats.textContent = parts.join(' · ');
+      stats.hidden = !parts.length;
+    }
+
+    function updateRoamButton() {
+      roamBtn.textContent = prefs.roam ? txt.stay : txt.wander;
+      roamBtn.hidden = compact || reduced;
+    }
+
+    function openPanel() {
+      markSeen();
+      if (!message.textContent) message.textContent = attr('mood-' + state.mood, txt[state.mood]);
+      updateStats();
+      panel.hidden = false;
+      el.classList.add('is-open');
+      btn.setAttribute('aria-expanded', 'true');
+      idleFor();
+      place();
+    }
+
+    function closePanel(refocus) {
+      panel.hidden = true;
+      el.classList.remove('is-open');
+      btn.setAttribute('aria-expanded', 'false');
+      motion.pauseUntil = state.clock + 16000;
+      if (refocus) btn.focus({ preventScroll: true });
+    }
+
+    function finishCast() {
+      casting = false;
+      el.classList.remove('is-casting');
+      draw(true);
+    }
+
+    function cast(showPanel) {
+      if (destroyed || prefs.collapsed || !ready) return;
+      if (motion.mode === 'drag' || motion.mode === 'fall') return;
+      markSeen();
+      idleFor(16000);
+      wakeUntil = performance.now() + 16000;
+      casting = true;
+      el.classList.remove('is-casting');
+      // Restart finite CSS effects on repeat clicks; there are no particle loops.
+      void magic.getBoundingClientRect();
+      el.classList.add('is-casting');
+      message.textContent = txt.spells[spellIndex++ % txt.spells.length];
+      if (showPanel !== false) openPanel();
+      draw(true);
+      global.clearTimeout(castTimer);
+      global.clearTimeout(wakeTimer);
+      castTimer = global.setTimeout(finishCast, reduced ? 1800 : 3400);
+      wakeTimer = global.setTimeout(function () { draw(true); }, 16100);
+    }
+
+    function applyStatus(next) {
+      if (destroyed) return;
+      var oldMood = state.mood;
+      state.status = next;
+      state.mood = opts.mood || moodFromStatus(next, Date.now() / 1000);
+      updateStats();
+      if (oldMood !== state.mood && !casting && !panel.hidden) {
+        message.textContent = attr('mood-' + state.mood, txt[state.mood]);
+      }
+      if (!canWander() && motion.mode === 'walk') idleFor();
+      draw(true);
+    }
+
+    function loadStatus() {
+      if (opts.demo || !global.fetch || fetching || destroyed || prefs.collapsed || document.hidden) return;
+      fetching = true;
+      lastPoll = Date.now();
+      fetchController = global.AbortController ? new AbortController() : null;
+      var controller = fetchController;
+      if (controller) fetchTimeout = global.setTimeout(function () { controller.abort(); }, 8000);
+      global.fetch('/guardian/status.json?t=' + Date.now(), {
+        cache: 'no-store', signal: controller ? controller.signal : undefined
+      }).then(function (res) { return res.ok ? res.json() : null; })
+        .then(applyStatus)
+        .catch(function () { applyStatus(null); })
+        .finally(function () {
+          fetching = false;
+          fetchController = null;
+          global.clearTimeout(fetchTimeout);
+        });
+    }
+
+    function setCollapsed(collapsed, shouldFocus) {
+      if (destroyed) return;
+      if (collapsed && !prefs.collapsed) previousPos = { x: pos.x, y: pos.y };
+      prefs.collapsed = collapsed;
+      closePanel(false);
+      finishCast();
+      pointer = null;
+      el.classList.remove('is-dragging', 'is-falling', 'is-new');
+      pet.hidden = collapsed;
+      restoreBtn.hidden = !collapsed;
+      el.classList.toggle('is-collapsed', collapsed);
+      measure();
+      if (collapsed) {
+        stop();
+        el.hidden = false;
+        pos.x = maxX();
+        pos.y = floorY();
+      } else {
+        pos.x = previousPos ? clamp(previousPos.x, minX(), maxX()) : maxX();
+        pos.y = floorY();
+        homeX = pos.x;
+        idleFor(18000);
+        loadArt();
+        loadStatus();
+        start();
+      }
+      savePrefs();
+      place();
+      if (shouldFocus) (collapsed ? restoreBtn : btn).focus({ preventScroll: true });
     }
 
     function onDown(ev) {
-      if (ev && ev.button != null && ev.button !== 0) return;
-      dragging = true;
-      wasDragged = false;
-      dragOffset.x = (ev && ev.clientX != null ? ev.clientX : 0) - pos.x;
-      dragOffset.y = (ev && ev.clientY != null ? ev.clientY : 0) - pos.y;
-      motion.mode = 'drag';
-      if (el.classList) el.classList.add('is-dragging');
-      // Keep receiving moves if the pointer leaves the element. No
-      // preventDefault: it can swallow the click that opens the bubble.
-      if (btn.setPointerCapture && ev && ev.pointerId != null) {
-        try { btn.setPointerCapture(ev.pointerId); } catch (err) { /* ignore */ }
-      }
+      if (!ev.isPrimary || ev.button !== 0 || pointer) return;
+      suppressClickUntil = 0; // A new gesture must not inherit the previous drag's click guard.
+      pointer = { id: ev.pointerId, startX: ev.clientX, startY: ev.clientY,
+        dx: ev.clientX - pos.x, dy: ev.clientY - pos.y, dragging: false };
+      idleFor();
+      try { btn.setPointerCapture(ev.pointerId); } catch (err) { /* Optional pointer capture. */ }
     }
 
     function onMove(ev) {
-      if (!ev) return;
-      if (ev.clientX != null) {
-        pointer.x = ev.clientX;
-        pointer.y = ev.clientY;
+      if (!pointer || ev.pointerId !== pointer.id) return;
+      var distance = Math.hypot(ev.clientX - pointer.startX, ev.clientY - pointer.startY);
+      if (!pointer.dragging && distance < 6) return;
+      if (!pointer.dragging) {
+        pointer.dragging = true;
+        markSeen();
+        closePanel(false);
+        finishCast();
+        motion.mode = 'drag';
+        el.classList.add('is-dragging');
       }
-      if (!dragging) return;
-      var vp = viewport();
-      var nx = pointer.x - dragOffset.x;
-      var ny = pointer.y - dragOffset.y;
-      nx = Math.max(0, Math.min(vp.w - creatureW, nx));
-      ny = Math.max(0, Math.min(vp.h - creatureH, ny));
-      if (Math.abs(nx - pos.x) + Math.abs(ny - pos.y) > 3) wasDragged = true;
-      pos.x = nx;
-      pos.y = ny;
+      pos.x = clamp(ev.clientX - pointer.dx, minX(), maxX());
+      pos.y = clamp(ev.clientY - pointer.dy, minY(), floorY());
+      faceInward();
       place();
+      draw(false);
     }
 
-    function onUp() {
-      if (!dragging) return;
-      dragging = false;
-      if (el.classList) el.classList.remove('is-dragging');
-      var vp = viewport();
-      if (pos.x < EDGE + 40) {
-        motion.surface = 'left';
-        pos.x = EDGE;
-        pos.y = Math.min(pos.y, floorY());
-        motion.mode = 'idle';
-        motion.pauseUntil = clock + 1200;
-      } else if (pos.x + creatureW > vp.w - EDGE - 40) {
-        motion.surface = 'right';
-        pos.x = vp.w - creatureW - EDGE;
-        pos.y = Math.min(pos.y, floorY());
-        motion.mode = 'idle';
-        motion.pauseUntil = clock + 1200;
-      } else if (reduce) {
-        motion.surface = 'floor';
-        pos.y = floorY();
-        motion.mode = 'idle';
-      } else {
-        // Let go in mid-air and it drops to the floor.
-        motion.surface = 'floor';
+    function onUp(ev) {
+      if (!pointer || ev.pointerId !== pointer.id) return;
+      var dragged = pointer.dragging;
+      pointer = null;
+      try { if (btn.hasPointerCapture(ev.pointerId)) btn.releasePointerCapture(ev.pointerId); }
+      catch (err) { /* The browser may have released capture already. */ }
+      el.classList.remove('is-dragging');
+      if (dragged || ev.type === 'pointercancel') suppressClickUntil = performance.now() + 500;
+      homeX = pos.x;
+      if (dragged && !reduced && pos.y < floorY() - 1) {
         motion.mode = 'fall';
-        fall.vy = 0;
-        fall.bounce = 0;
+        motion.velocity = 0;
+        el.classList.add('is-falling');
+      } else {
+        pos.y = floorY();
+        idleFor(16000);
       }
-      state.onWall = motion.surface === 'floor' ? null : motion.surface;
       place();
+      draw(true);
     }
 
     function onResize() {
-      creatureW = (btn && btn.offsetWidth) || 72;
-      creatureH = (btn && btn.offsetHeight) || 80;
-      var vp = viewport();
-      if (pos.x > vp.w - creatureW) pos.x = Math.max(0, vp.w - creatureW);
-      if (motion.surface === 'left') pos.x = wallX('left');
-      else if (motion.surface === 'right') pos.x = wallX('right');
-      if (pos.y > floorY()) pos.y = floorY();
-      if (motion.surface === 'floor') pos.y = floorY();
+      compact = compactQuery.matches;
+      measure();
+      pos.x = prefs.collapsed ? maxX() : clamp(pos.x, minX(), maxX());
+      pos.y = floorY();
+      homeX = clamp(homeX, minX(), maxX());
+      if (pointer) { pointer = null; suppressClickUntil = performance.now() + 500; }
+      el.classList.remove('is-dragging');
+      idleFor();
+      updateRoamButton();
+      el.querySelector('.guardian-help').textContent = compact ? txt.touchHelp : txt.help;
       place();
+      draw(true);
     }
 
-    if (btn) {
-      btn.setAttribute('aria-label', txt.label);
-      btn.addEventListener('pointerdown', onDown);
-      btn.addEventListener('click', function () {
-        if (wasDragged) { wasDragged = false; return; }
-        hop();
-        if (motion.mode === 'walk' || motion.mode === 'climb') {
-          motion.mode = 'idle';
-          motion.pauseUntil = clock + 2400;
-        }
-        toggleBubble();
-      });
+    function onMotionPreference() {
+      reduced = reduceQuery.matches;
+      if (reduced) stop();
+      onResize();
+      start();
     }
 
-    if (global.addEventListener) {
-      global.addEventListener('pointermove', onMove, { passive: true });
-      global.addEventListener('pointerup', onUp);
-      global.addEventListener('pointercancel', onUp);
-      global.addEventListener('resize', onResize);
-    }
-
-    document.addEventListener('keydown', function (ev) {
-      if (ev.key === 'Escape') closeBubble();
+    btn.setAttribute('aria-label', attr('label', txt.label));
+    panel.setAttribute('aria-label', txt.name);
+    el.querySelector('.guardian-name').textContent = txt.name;
+    el.querySelector('.guardian-hint').replaceChildren(document.createTextNode(txt.hint + '  ✧'));
+    el.querySelector('.guardian-help').textContent = compact ? txt.touchHelp : txt.help;
+    castBtn.replaceChildren(document.createTextNode(txt.cast + '  ✧'));
+    [[hideBtn, txt.hide], [restoreBtn, txt.restore], [closeBtn, txt.close]].forEach(function (item) {
+      item[0].setAttribute('aria-label', item[1]);
+      item[0].title = item[1];
     });
+    updateRoamButton();
+    if (ctx) { canvas.width = canvas.height = CELL; ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; }
 
-    document.addEventListener('visibilitychange', function () {
+    listen(btn, 'pointerdown', onDown);
+    listen(global, 'pointermove', onMove, { passive: true });
+    listen(global, 'pointerup', onUp);
+    listen(global, 'pointercancel', onUp);
+    listen(btn, 'lostpointercapture', function (ev) {
+      if (pointer && pointer.id === ev.pointerId) onUp(ev);
+    });
+    listen(btn, 'click', function (ev) {
+      if (ev.detail !== 0 && performance.now() < suppressClickUntil) return;
+      cast(true);
+    });
+    listen(castBtn, 'click', function () { cast(true); });
+    listen(closeBtn, 'click', function () { closePanel(true); });
+    listen(hideBtn, 'click', function () { markSeen(); setCollapsed(true, true); });
+    listen(restoreBtn, 'click', function () { setCollapsed(false, true); });
+    listen(roamBtn, 'click', function () {
+      prefs.roam = !prefs.roam;
+      savePrefs();
+      updateRoamButton();
+      idleFor();
+    });
+    listen(pet, 'pointerenter', function (ev) { if (ev.pointerType !== 'touch') { hovered = true; if (motion.mode === 'walk') idleFor(); } });
+    listen(pet, 'pointerleave', function () { hovered = false; motion.pauseUntil = state.clock + 16000; });
+    listen(el, 'focusin', function () { focused = true; if (motion.mode === 'walk') idleFor(); });
+    listen(el, 'focusout', function (ev) { focused = el.contains(ev.relatedTarget); });
+    listen(document, 'pointerdown', function (ev) { if (!el.contains(ev.target)) closePanel(false); }, { passive: true });
+    listen(document, 'keydown', function (ev) {
+      if (ev.key === 'Escape' && !panel.hidden) closePanel(el.contains(document.activeElement));
+    });
+    listen(global, 'resize', onResize);
+    if (global.visualViewport) {
+      listen(global.visualViewport, 'resize', onResize);
+      listen(global.visualViewport, 'scroll', onResize);
+    }
+    listen(reduceQuery, 'change', onMotionPreference);
+    listen(document, 'visibilitychange', function () {
+      el.classList.toggle('is-paused', document.hidden);
       if (document.hidden) stop();
-      else if (!reduce && !raf) {
-        start = 0;
-        raf = global.requestAnimationFrame(frame);
-      }
+      else { start(); if (Date.now() - lastPoll > POLL_MS) loadStatus(); }
     });
 
-    var mq = global.matchMedia ? global.matchMedia('(prefers-color-scheme: dark)') : null;
-    if (mq) {
-      var onScheme = function () { pal = palette(); draw(); };
-      if (mq.addEventListener) mq.addEventListener('change', onScheme);
-      else if (mq.addListener) mq.addListener(onScheme);
-    }
-
-    if (opts.status) applyStatus(opts.status);
-    else loadStatus();
-
-    global.setInterval(function () {
-      if (!document.hidden) loadStatus();
-    }, POLL_MS);
-
-    return { setStatus: applyStatus, paint: draw, state: state, pos: pos, motion: motion };
+    var api = {
+      setStatus: applyStatus, paint: function () { draw(true); place(); },
+      cast: cast, hide: function () { setCollapsed(true, false); },
+      show: function () { setCollapsed(false, false); },
+      state: state, pos: pos, motion: motion,
+      destroy: function () {
+        destroyed = true;
+        stop();
+        [castTimer, wakeTimer, introTimer, fetchTimeout].forEach(global.clearTimeout.bind(global));
+        global.clearInterval(pollTimer);
+        if (fetchController) fetchController.abort();
+        disposers.forEach(function (dispose) { dispose(); });
+        mounted.delete(el);
+        el.hidden = true;
+      }
+    };
+    mounted.set(el, api);
+    applyStatus(opts.status || null);
+    setCollapsed(prefs.collapsed, false);
+    pollTimer = global.setInterval(function () { loadStatus(); }, POLL_MS);
+    return api;
   }
 
   function autoMount() {
-    var nodes = document.querySelectorAll('[data-guardian]');
-    for (var i = 0; i < nodes.length; i++) {
-      if (nodes[i].getAttribute('data-demo') !== null) continue;
-      mount(nodes[i]);
-    }
+    document.querySelectorAll('[data-guardian]:not([data-demo])').forEach(function (el) { mount(el); });
   }
 
-  global.Guardian = { mount: mount, paint: paint, palette: palette };
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', autoMount);
-  } else {
-    autoMount();
-  }
+  global.Guardian = { mount: mount, moodFromStatus: moodFromStatus };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoMount, { once: true });
+  else autoMount();
 })(window);

@@ -1,6 +1,6 @@
 # guardian
 
-The pixel creature in the site's bottom corner. Mood is read from
+The wizard cat in the site's bottom corner. Mood is read from
 `/guardian/status.json`, a static file that a systemd timer rewrites once a
 minute. No daemon, no port, no database — the site stays flat files on nginx.
 
@@ -14,18 +14,19 @@ release symlink ─┘        (every 60s)              (nginx, exact location)
 
 | mood     | when                                                      | on screen            |
 |----------|-----------------------------------------------------------|----------------------|
-| `idle`   | default                                                   | blinks, yawns, bobs  |
-| `sleep`  | 01:00–07:00 local                                         | closed eyes, floating `Z` |
-| `busy`   | load per core ≥ 0.7, or ≥ 20 visitors today                | smoke, sweat drop    |
-| `deploy` | less than 120 s since `/var/www/vanblue/current` changed   | carries a box        |
+| `idle`   | default                                                   | blinks, short strolls |
+| `sleep`  | 01:00–07:00 local                                         | curled up, breathing, floating `Z` |
+| `busy`   | load per core ≥ 0.7, or ≥ 20 visitors today                | stays nearby         |
+| `deploy` | less than 120 s since `/var/www/vanblue/current` changed   | awake, short strolls |
 
 Thresholds are env overrides in the unit: `GUARDIAN_BUSY_RATIO`,
 `GUARDIAN_BUSY_VISITORS`, `GUARDIAN_DEPLOY_WINDOW`.
 
-Mood only changes the face. `idle` and `deploy` also wander the floor and climb
-the walls; `busy` and `sleep` stand still. Dragging, the drop physics and the
-pointer-following eyes are all client-side (`static/js/guardian.js`) — nothing
-on this side knows about the mouse.
+`idle` and `deploy` allow short desktop strolls near the cat's chosen spot;
+`busy` and `sleep` stay still. Clicking conjures a little fish, including when
+waking a sleeping cat. Dragging, gentle drop physics, hiding, and reduced-motion
+handling are all client-side (`static/js/guardian.js`) — nothing on this side
+knows about the pointer, and no server or timer changes are needed for the art.
 
 ## Install
 

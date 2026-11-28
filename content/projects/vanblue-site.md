@@ -81,17 +81,20 @@ machine, no laptop in the loop).
 
 ## A creature in the corner
 
-Because the site is flat files, the pixel spirit in the bottom corner cannot ask a server
-how things are going. A systemd timer writes one small JSON file every minute — load
-average, today's unique visitors, and how long ago the release symlink was swapped — and
-nginx serves it like any other static asset. The canvas reads that file every 60 seconds
-and picks a mood: idle, asleep between 1am and 7am, smoking when the box is busy, and
-carrying a box for two minutes after a deploy. Mood only changes the face — the spirit
-walks the floor and climbs the walls when it is idle or hauling a box, and stands still
-when it is busy or asleep. It is also a pet: drag it anywhere, let go and it drops, and
-its eyes follow the cursor. Outside `releases/` on purpose, so a deploy
-never replaces the file it is about. With JavaScript off, or before the timer is installed,
-it falls back to the visitor's clock and keeps blinking.
+The purple-hatted wizard cat in the corner is a small exception to an otherwise quiet
+academic page. Its illustrated blink, breathing and walk frames share one transparent
+WebP atlas. Click it and a mint-green spell turns into a tiny fish; drag it to another
+spot and it lands softly. On desktop it takes short strolls near that spot. On phones
+it stays put, and a moon button lets visitors tuck it away. Reduced-motion preferences
+replace the animation with still poses; hidden tabs stop the animation loop.
+
+The site is still flat files. A systemd timer writes one small JSON snapshot every
+minute — load average, today's unique visitors, and the age of the release symlink —
+and nginx serves it like any other asset. The cat reads that snapshot every 60 seconds,
+naps between 1am and 7am, and stays nearby when the server is busy. The snapshot lives
+outside `releases/`, so a deploy never replaces the file it is about. If it is missing
+or stale, the cat uses the visitor's clock instead. With JavaScript off, the companion
+stays hidden and the page works as usual.
 
 ## Next
 

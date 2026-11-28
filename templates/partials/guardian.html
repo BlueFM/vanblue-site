@@ -1,4 +1,6 @@
 <div class="guardian" data-guardian hidden
+     data-sprite="{{ get_url(path='img/wizard-cat/sprites.webp', cachebust=true) }}"
+     data-idle="{{ get_url(path='img/wizard-cat/idle.webp', cachebust=true) }}"
      data-label="{{ trans(key='guardian_label', lang=lang) }}"
      data-stats="{{ trans(key='guardian_stats', lang=lang) }}"
      data-load="{{ trans(key='guardian_load', lang=lang) }}"
@@ -6,8 +8,57 @@
      data-mood-sleep="{{ trans(key='guardian_mood_sleep', lang=lang) }}"
      data-mood-busy="{{ trans(key='guardian_mood_busy', lang=lang) }}"
      data-mood-deploy="{{ trans(key='guardian_mood_deploy', lang=lang) }}">
-  <button class="guardian-btn" type="button" aria-label="{{ trans(key='guardian_label', lang=lang) }}">
-    <canvas class="guardian-canvas" width="18" height="20" aria-hidden="true"></canvas>
+  <div class="guardian-pet">
+    <span class="guardian-hint" aria-hidden="true">A little magic? <span>✧</span></span>
+    <button class="guardian-btn" type="button"
+            aria-label="{{ trans(key='guardian_label', lang=lang) }}"
+            aria-controls="guardian-bubble" aria-expanded="false" aria-describedby="guardian-help">
+      <span class="guardian-shadow" aria-hidden="true"></span>
+      <span class="guardian-actor" aria-hidden="true">
+        <img class="guardian-fallback" width="384" height="384" alt="" draggable="false" hidden>
+        <canvas class="guardian-canvas" width="384" height="384"></canvas>
+        <svg class="guardian-magic" viewBox="0 0 384 384" fill="none" focusable="false">
+          <path class="guardian-trail guardian-trail--glow" d="M233 189 C275 151 308 194 335 142 S300 99 349 68" />
+          <path class="guardian-trail" d="M233 189 C275 151 308 194 335 142 S300 99 349 68" />
+          <g class="guardian-fish">
+            <g transform="translate(365 49) rotate(-14)">
+              <path d="M-24 0C-13-17 12-17 27 0C12 17-13 17-24 0ZM-24 0L-39-13V13Z" />
+              <path d="M-5-11L-1-19L10-12M-6 12L1 19L10 12M3-9Q-4 0 3 9" />
+              <circle cx="14" cy="-2" r="2" />
+            </g>
+          </g>
+          <g class="guardian-sparks" stroke-linejoin="round">
+            <path d="M310 94L314 105L325 109L314 113L310 124L306 113L295 109L306 105Z" />
+            <path d="M350 12L353 21L362 24L353 27L350 36L347 27L338 24L347 21Z" />
+            <path d="M278 145L280 151L286 153L280 155L278 161L276 155L270 153L276 151Z" />
+            <circle cx="333" cy="75" r="2" />
+            <circle cx="373" cy="90" r="2.5" />
+          </g>
+        </svg>
+      </span>
+      <span class="guardian-zzz" aria-hidden="true"><span>z</span><span>z</span><span>Z</span></span>
+    </button>
+    <button class="guardian-hide guardian-icon-btn" type="button" aria-label="Hide the cat" title="Hide the cat">
+      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m6 6 8 8M14 6l-8 8" /></svg>
+    </button>
+    <div class="guardian-bubble" id="guardian-bubble" role="group" aria-label="The spell cat" hidden>
+      <div class="guardian-eyebrow"><span aria-hidden="true">☾</span><span class="guardian-name">THE SPELL CAT</span><i aria-hidden="true"></i></div>
+      <button class="guardian-panel-close guardian-icon-btn" type="button" aria-label="Close" title="Close">
+        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m6 6 8 8M14 6l-8 8" /></svg>
+      </button>
+      <p class="guardian-message" role="status" aria-live="polite" aria-atomic="true"></p>
+      <p class="guardian-stats" hidden></p>
+      <div class="guardian-actions">
+        <button class="guardian-cast" type="button">Another spell <span aria-hidden="true">✧</span></button>
+        <button class="guardian-roam" type="button">Stay here</button>
+      </div>
+      <p class="guardian-help" id="guardian-help">Click for magic · drag to move</p>
+    </div>
+  </div>
+  <button class="guardian-restore" type="button" aria-label="Bring back the wizard cat" title="Bring back the wizard cat" hidden>
+    <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <path d="M22 7a10 10 0 1 0 3 15A9 9 0 0 1 22 7Z" />
+      <path d="m24 4 1.5 4.5L30 10l-4.5 1.5L24 16l-1.5-4.5L18 10l4.5-1.5Z" />
+    </svg>
   </button>
-  <span class="guardian-bubble" role="status" aria-live="polite" hidden></span>
 </div>
