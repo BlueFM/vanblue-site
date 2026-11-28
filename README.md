@@ -95,14 +95,18 @@ last 5 releases (`KEEP=5`).
 A small, purple-hatted wizard cat sits in the bottom-right corner of every page.
 Its transparent WebP sprite atlas contains the supplied blink, breathing and walk
 frames, plus a two-eared spell-casting pose repaired from the same character's
-original ear artwork. Four finite SVG spells cycle without consecutive repeats:
+original ear artwork. Four finite SVG spells are available from the settings:
 a mint-green fish, golden stardust, a lilac moonshield and an occasional smoky
 mishap. Each has its own shapes, motion, palette and caption; they share one cat
 pose rather than downloading four new animations. No framework, external image
 host, audio or AI call is involved.
 
-- Click (or Enter/Space) for a spell and today's site numbers. Drag to move; a
-  mid-air drop lands gently. Escape or a click outside closes the little card.
+- Click the cat (or Enter/Space) to cast the selected spell. Repeated clicks keep
+  that choice and never open settings. Drag to move; a mid-air drop lands gently.
+- Click the moon to open or close settings, anchored above the moon rather than
+  attached to the cat. Four explicit choices select a spell without casting it;
+  the choice is saved across pages. Escape, outside click or choosing a spell
+  closes the panel; keyboard focus returns to the moon.
 - Blinking keeps one fixed body image and replaces only two aligned, opaque eye
   patches. Blink updates do not clear or redraw the body, so frame-to-frame source
   lighting and WebP differences cannot make the hat, ears or silhouette flash.
@@ -116,10 +120,11 @@ host, audio or AI call is involved.
   16–30 s pauses. Hover, keyboard focus and an open card stop roaming. **Stay
   here** parks it; **Wander a little** lets it roam again.
 - A permanent moon button stays in the bottom-right corner, independent of the
-  cat's position. Click it to hide or show the cat; its label and expanded state
-  follow visibility. There is no close button on the cat. On phones the cat is
-  smaller and stays put. Hide and roam preferences are stored locally and survive
-  navigation. Storage being blocked is harmless.
+  cat's position. Its expanded state follows the settings panel. The panel has a
+  separate hide/show button and remains usable while the cat is hidden. There is
+  no close button on the cat. On phones the cat is smaller and stays put. Spell,
+  hide and roam preferences are stored locally and survive navigation. Storage
+  being blocked is harmless.
 - `prefers-reduced-motion` uses still frames and a static, short-lived spell,
   without roaming or falling animation. Hidden tabs and a hidden cat stop the
   animation loop; status requests pause too. Printing excludes the companion.

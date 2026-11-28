@@ -12,7 +12,7 @@
     <span class="guardian-hint" aria-hidden="true">A little magic? <span>✧</span></span>
     <button class="guardian-btn" type="button"
             aria-label="{{ trans(key='guardian_label', lang=lang) }}"
-            aria-controls="guardian-bubble" aria-expanded="false" aria-describedby="guardian-help">
+            aria-describedby="guardian-help">
       <span class="guardian-shadow" aria-hidden="true"></span>
       <span class="guardian-actor" aria-hidden="true">
         <span class="guardian-art">
@@ -85,23 +85,30 @@
       </span>
       <span class="guardian-zzz" aria-hidden="true"><span>z</span><span>z</span><span>Z</span></span>
     </button>
-    <div class="guardian-bubble" id="guardian-bubble" role="group" aria-label="The spell cat" hidden>
-      <div class="guardian-eyebrow"><span aria-hidden="true">☾</span><span class="guardian-name">THE SPELL CAT</span><i aria-hidden="true"></i></div>
-      <button class="guardian-panel-close guardian-icon-btn" type="button" aria-label="Close" title="Close">
-        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m6 6 8 8M14 6l-8 8" /></svg>
-      </button>
-      <p class="guardian-spell-name" hidden></p>
-      <p class="guardian-message" role="status" aria-live="polite" aria-atomic="true"></p>
-      <p class="guardian-stats" hidden></p>
-      <div class="guardian-actions">
-        <button class="guardian-cast" type="button">Another spell <span aria-hidden="true">✧</span></button>
-        <button class="guardian-roam" type="button">Stay here</button>
-      </div>
-      <p class="guardian-help" id="guardian-help">Click for magic · drag to move</p>
-    </div>
   </div>
-  <button class="guardian-toggle" type="button" aria-label="Hide the cat" title="Hide the cat"
-          aria-controls="guardian-pet" aria-expanded="true">
+  <div class="guardian-bubble" id="guardian-bubble" role="dialog" aria-label="Spell cat settings" hidden>
+    <div class="guardian-eyebrow"><span aria-hidden="true">☾</span><span class="guardian-name">THE SPELL CAT</span><i aria-hidden="true"></i></div>
+    <button class="guardian-panel-close guardian-icon-btn" type="button" aria-label="Close" title="Close">
+      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m6 6 8 8M14 6l-8 8" /></svg>
+    </button>
+    <p class="guardian-spell-name"></p>
+    <div class="guardian-spell-picker" role="group" aria-label="Choose a spell">
+      <button type="button" data-spell-select="fish" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12c4-7 11-7 15 0-4 7-11 7-15 0L2 7v10Z"/><circle cx="17" cy="11" r="0.7"/></svg><span>Little fish</span></button>
+      <button type="button" data-spell-select="stars" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5Z"/></svg><span>Stardust</span></button>
+      <button type="button" data-spell-select="shield" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 8 4v7c0 4-4 7-8 9-4-2-8-5-8-9V6Z"/><path d="M14 7a4 4 0 1 0 2 6 4 4 0 0 1-2-6Z"/></svg><span>Moonshield</span></button>
+      <button type="button" data-spell-select="puff" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a5 5 0 1 1-1-10 6 6 0 0 1 11-2 6 6 0 0 1 1 12Z"/><path d="M9 12c-2-3 4-4 4-1s-3 1-2 4m0 2v.5"/></svg><span>Oops, a puff</span></button>
+    </div>
+    <p class="guardian-message" role="status" aria-live="polite" aria-atomic="true"></p>
+    <p class="guardian-stats" hidden></p>
+    <div class="guardian-actions">
+      <button class="guardian-cast" type="button">Cast spell <span aria-hidden="true">✧</span></button>
+      <button class="guardian-roam" type="button">Stay here</button>
+      <button class="guardian-visibility" type="button" aria-controls="guardian-pet" aria-expanded="true">Hide the cat</button>
+    </div>
+    <p class="guardian-help" id="guardian-help">Click the cat to cast · moon for settings</p>
+  </div>
+  <button class="guardian-toggle" type="button" aria-label="Spell cat settings" title="Spell cat settings"
+          aria-controls="guardian-bubble" aria-expanded="false" aria-haspopup="dialog">
     <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
       <path d="M22 7a10 10 0 1 0 3 15A9 9 0 0 1 22 7Z" />
       <path d="m24 4 1.5 4.5L30 10l-4.5 1.5L24 16l-1.5-4.5L18 10l4.5-1.5Z" />

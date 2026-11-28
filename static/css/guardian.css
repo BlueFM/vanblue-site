@@ -327,7 +327,8 @@
 .guardian-icon-btn:hover { color: var(--pet-ink); background: #f2eaf0; }
 
 .guardian-bubble {
-  position: absolute;
+  position: fixed;
+  z-index: 1;
   width: 264px;
   max-width: calc(100vw - 24px);
   padding: 17px 17px 12px;
@@ -349,7 +350,23 @@
 .guardian-spell-name { margin: 12px 0 -3px; color: var(--spell-ink, #8865a7); font-size: 9px; line-height: 1.5; font-weight: 600; letter-spacing: 0.09em; }
 .guardian-message { margin: 11px 0 10px; color: var(--pet-ink); font-size: 14px; line-height: 1.65; }
 .guardian-stats { margin: 0 0 12px; color: var(--pet-muted); font-size: 10px; line-height: 1.6; font-variant-numeric: tabular-nums; }
-.guardian-actions { display: flex; align-items: center; gap: 7px; }
+.guardian-spell-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 12px; }
+.guardian-spell-picker button {
+  display: flex; align-items: center; justify-content: flex-start; gap: 7px;
+  min-height: 44px; padding: 8px; border: 1px solid var(--pet-line); border-radius: 8px;
+  color: var(--pet-muted); background: transparent; font-size: 10px; line-height: 1.35; text-align: left; cursor: pointer;
+}
+.guardian-spell-picker svg { flex: 0 0 18px; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linejoin: round; stroke-linecap: round; }
+.guardian-spell-picker button:hover { background: #f7f1f4; }
+.guardian-spell-picker [aria-pressed="true"] { color: var(--choice-ink); background: var(--choice-paper); border-color: currentColor; box-shadow: inset 0 0 0 1px currentColor; font-weight: 600; }
+.guardian [data-spell-select="fish"] { --choice-ink: #527b6d; --choice-paper: #edf6f0; }
+.guardian [data-spell-select="stars"] { --choice-ink: #947438; --choice-paper: #fbf5e7; }
+.guardian [data-spell-select="shield"] { --choice-ink: #8860a2; --choice-paper: #f3ecf8; }
+.guardian [data-spell-select="puff"] { --choice-ink: #7c6d86; --choice-paper: #f1edf5; }
+.guardian-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.guardian-actions .guardian-cast { flex: 1; }
+.guardian-actions .guardian-visibility { flex-basis: 100%; background: transparent; color: #7e6c7b; }
+.guardian-actions .guardian-visibility:hover { background: #f7f1f4; }
 
 .guardian-actions button {
   min-height: 34px;

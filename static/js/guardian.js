@@ -47,8 +47,10 @@
       label: 'The spell cat. Click for magic; drag to move.',
       name: 'THE SPELL CAT', hint: 'A little magic?',
       hide: 'Hide the cat', restore: 'Bring back the wizard cat', close: 'Close',
-      cast: 'Another spell', stay: 'Stay here', wander: 'Wander a little',
-      help: 'Click for magic · drag to move', touchHelp: 'Tap for magic · drag to move',
+      settings: 'Spell cat settings', selected: 'Selected: ', choose: 'Choose a spell',
+      cast: 'Cast spell', stay: 'Stay here', wander: 'Wander a little',
+      help: 'Click the cat to cast · drag to move · moon for settings',
+      touchHelp: 'Tap the cat to cast · drag to move · moon for settings',
       spells: {
         fish: ['LITTLE FISH', 'Mew… one little fish, and a little extra luck.'],
         stars: ['STARDUST', 'Stars, assemble! A bright idea is on its way.'],
@@ -65,8 +67,10 @@
       label: '念咒猫。点我施法，拖动可以换个位置。',
       name: '巫师的念咒猫', hint: '要来一点魔法吗？',
       hide: '收起猫咪', restore: '请念咒猫回来', close: '关闭',
-      cast: '再变一个', stay: '乖乖待着', wander: '去散散步',
-      help: '点我施法 · 拖动换个位置', touchHelp: '轻点施法 · 拖动换个位置',
+      settings: '念咒猫设置', selected: '已选择：', choose: '选择魔法',
+      cast: '施放一次', stay: '乖乖待着', wander: '去散散步',
+      help: '点击猫咪施放所选魔法 · 拖动移动 · 月亮打开设置',
+      touchHelp: '轻点猫咪施放所选魔法 · 拖动移动 · 月亮打开设置',
       spells: {
         fish: ['变小鱼', '喵呜……变出一条小鱼，再加一点点好运。'],
         stars: ['星星雨', '星星集合！愿你的下一个灵感闪闪发亮。'],
@@ -101,13 +105,14 @@
   function random(min, max) { return min + Math.random() * (max - min); }
 
   function readPrefs() {
-    var prefs = { collapsed: false, roam: true, seen: false };
+    var prefs = { collapsed: false, roam: true, seen: false, spell: 'fish' };
     try {
       var saved = JSON.parse(global.localStorage.getItem(PREF_KEY));
       if (saved && typeof saved === 'object') {
         Object.keys(prefs).forEach(function (key) {
-          if (typeof saved[key] === 'boolean') prefs[key] = saved[key];
+          if (typeof prefs[key] === 'boolean' && typeof saved[key] === 'boolean') prefs[key] = saved[key];
         });
+        if (SPELL_IDS.indexOf(saved.spell) !== -1) prefs.spell = saved.spell;
       }
     } catch (err) { /* Storage may be disabled. The cat still works. */ }
     return prefs;
@@ -145,6 +150,8 @@
     var stats = el.querySelector('.guardian-stats');
     var roamBtn = el.querySelector('.guardian-roam');
     var castBtn = el.querySelector('.guardian-cast');
+    var visibilityBtn = el.querySelector('.guardian-visibility');
+    var spellChoices = el.querySelectorAll('[data-spell-select]');
     var closeBtn = el.querySelector('.guardian-panel-close');
     var zh = /^zh\b/i.test(document.documentElement.lang);
     var txt = copy[zh ? 'zh' : 'en'];
@@ -172,7 +179,6 @@
     var lastPoll = 0;
     var casting = false;
     var wakeUntil = 0;
-    var spellIndex = 0;
     var idleBag = [];
     var splitPart = null;
     var hovered = false;
@@ -189,7 +195,7 @@
     var previousPos = null;
     var disposers = [];
     var pos = { x: 0, y: 0 };
-    var state = { status: opts.status || null, mood: 'idle', pose: 'idle', spell: null, frame: 0, clock: opts.freeze || 0,
+    var state = { status: opts.status || null, mood: 'idle', pose: 'idle', spell: null, selectedSpell: prefs.spell, frame: 0, clock: opts.freeze || 0,
       idleAction: null, lastIdleAction: null, idleStartedAt: 0, idleUntil: 0, nextIdleAt: random(2000, 4000) };
     var motion = { mode: 'idle', target: 0, pauseUntil: 18000, velocity: 0 };
 
@@ -243,16 +249,13 @@
       el.classList.toggle('is-right', pos.x + creatureW / 2 > vp.x + vp.w / 2);
       el.classList.toggle('is-low', pos.y < vp.y + 80);
       if (!panel.hidden) {
-        // Clamp to the visual viewport, including zoom and the on-screen keyboard.
+        // The settings belong to the fixed moon, not the movable or hidden pet.
         var width = Math.max(44, Math.min(264, vp.w - 24));
         panel.style.width = width + 'px';
-        panel.style.maxHeight = Math.max(44, vp.h - 16) + 'px';
-        var left = pos.x + creatureW / 2 > vp.x + vp.w / 2 ? creatureW - width : 0;
-        panel.style.left = clamp(left, vp.x + 12 - pos.x, vp.x + vp.w - width - 12 - pos.x) + 'px';
+        panel.style.maxHeight = Math.max(44, dockY - vp.y - 20) + 'px';
+        panel.style.left = clamp(dockX + DOCK_SIZE - width, vp.x + 12, vp.x + vp.w - width - 12) + 'px';
         var height = panel.offsetHeight;
-        var top = pos.y - height - 12;
-        if (top < vp.y + 8) top = pos.y + creatureH + 12;
-        panel.style.top = (clamp(top, vp.y + 8, vp.y + vp.h - height - 8) - pos.y) + 'px';
+        panel.style.top = clamp(dockY - height - 12, vp.y + 8, vp.y + vp.h - height - 8) + 'px';
       }
     }
 
@@ -526,23 +529,44 @@
       roamBtn.hidden = compact || reduced;
     }
 
+    function selectSpell(id, persist) {
+      if (destroyed || SPELL_IDS.indexOf(id) === -1) return false;
+      state.selectedSpell = prefs.spell = id;
+      el.dataset.selectedSpell = id;
+      btn.setAttribute('aria-label', attr('label', txt.label) + ' ' + txt.selected + txt.spells[id][0]);
+      toggleBtn.setAttribute('aria-label', txt.settings + ' · ' + txt.selected + txt.spells[id][0]);
+      spellChoices.forEach(function (choice) {
+        choice.setAttribute('aria-pressed', String(choice.dataset.spellSelect === id));
+      });
+      spellName.textContent = txt.selected + txt.spells[id][0];
+      spellName.hidden = false;
+      message.textContent = txt.spells[id][1];
+      if (persist !== false) savePrefs();
+      return true;
+    }
+
     function openPanel() {
+      if (destroyed) return;
       markSeen();
-      if (!message.textContent) message.textContent = attr('mood-' + state.mood, txt[state.mood]);
+      finishIdle(false);
+      idleFor();
       updateStats();
       panel.hidden = false;
       el.classList.add('is-open');
-      btn.setAttribute('aria-expanded', 'true');
-      idleFor();
+      toggleBtn.setAttribute('aria-expanded', 'true');
+      draw(true);
       place();
+      var selected = panel.querySelector('[aria-pressed="true"]');
+      selected.focus({ preventScroll: true });
+      selected.scrollIntoView({ block: 'nearest' });
     }
 
     function closePanel(refocus) {
       panel.hidden = true;
       el.classList.remove('is-open');
-      btn.setAttribute('aria-expanded', 'false');
+      toggleBtn.setAttribute('aria-expanded', 'false');
       motion.pauseUntil = state.clock + 16000;
-      if (refocus) btn.focus({ preventScroll: true });
+      if (refocus) toggleBtn.focus({ preventScroll: true });
     }
 
     function finishCast() {
@@ -551,7 +575,7 @@
       draw(true);
     }
 
-    function cast(showPanel) {
+    function cast() {
       if (destroyed || prefs.collapsed || !ready) return;
       if (motion.mode === 'drag' || motion.mode === 'fall') return;
       finishIdle(false);
@@ -560,19 +584,16 @@
       wakeUntil = performance.now() + 16000;
       casting = true;
       el.classList.remove('is-casting');
-      // Cycle all four distinct effects, including across rapid repeat clicks.
-      var index = spellIndex;
-      var spell = SPELL_IDS[index];
-      spellIndex = (spellIndex + 1) % SPELL_IDS.length;
+      // Casting never changes the user's choice or opens settings.
+      var spell = state.selectedSpell;
       state.spell = spell;
       el.dataset.spell = spell;
-      spellName.textContent = (index + 1) + ' / ' + SPELL_IDS.length + ' · ' + txt.spells[spell][0];
+      spellName.textContent = txt.selected + txt.spells[spell][0];
       spellName.hidden = false;
       message.textContent = txt.spells[spell][1];
       // Restart finite CSS effects on repeat clicks; there are no particle loops.
       void magic.getBoundingClientRect();
       el.classList.add('is-casting');
-      if (showPanel !== false) openPanel();
       draw(true);
       global.clearTimeout(castTimer);
       global.clearTimeout(wakeTimer);
@@ -587,7 +608,6 @@
       state.mood = opts.mood || moodFromStatus(next, Date.now() / 1000);
       updateStats();
       if (oldMood !== state.mood && !casting && !panel.hidden) {
-        spellName.hidden = true;
         message.textContent = attr('mood-' + state.mood, txt[state.mood]);
       }
       if (!canWander() && motion.mode === 'walk') idleFor();
@@ -617,7 +637,6 @@
       if (destroyed) return;
       if (collapsed && !prefs.collapsed) previousPos = { x: pos.x, y: pos.y };
       prefs.collapsed = collapsed;
-      closePanel(false);
       finishIdle(false);
       finishCast();
       pointer = null;
@@ -626,9 +645,8 @@
       pet.hidden = collapsed;
       el.classList.toggle('is-collapsed', collapsed);
       var label = collapsed ? txt.restore : txt.hide;
-      toggleBtn.setAttribute('aria-label', label);
-      toggleBtn.setAttribute('aria-expanded', String(!collapsed));
-      toggleBtn.title = label;
+      visibilityBtn.textContent = label;
+      visibilityBtn.setAttribute('aria-expanded', String(!collapsed));
       measure();
       if (collapsed) {
         stop();
@@ -719,7 +737,10 @@
     }
 
     btn.setAttribute('aria-label', attr('label', txt.label));
-    panel.setAttribute('aria-label', txt.name);
+    panel.setAttribute('aria-label', txt.settings);
+    toggleBtn.setAttribute('aria-label', txt.settings);
+    toggleBtn.title = txt.settings;
+    el.querySelector('.guardian-spell-picker').setAttribute('aria-label', txt.choose);
     el.querySelector('.guardian-name').textContent = txt.name;
     el.querySelector('.guardian-hint').replaceChildren(document.createTextNode(txt.hint + '  ✧'));
     el.querySelector('.guardian-help').textContent = compact ? txt.touchHelp : txt.help;
@@ -727,6 +748,7 @@
     closeBtn.setAttribute('aria-label', txt.close);
     closeBtn.title = txt.close;
     updateRoamButton();
+    selectSpell(prefs.spell, false);
     if (ctx) { canvas.width = canvas.height = CELL; ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; }
     if (detailCtx) { detail.width = detail.height = CELL; detailCtx.imageSmoothingEnabled = true; detailCtx.imageSmoothingQuality = 'high'; }
 
@@ -739,11 +761,19 @@
     });
     listen(btn, 'click', function (ev) {
       if (ev.detail !== 0 && performance.now() < suppressClickUntil) return;
-      cast(true);
+      cast();
     });
-    listen(castBtn, 'click', function () { cast(true); });
+    listen(castBtn, 'click', function () { closePanel(true); cast(); });
     listen(closeBtn, 'click', function () { closePanel(true); });
-    listen(toggleBtn, 'click', function () { markSeen(); setCollapsed(!prefs.collapsed, true); });
+    listen(toggleBtn, 'click', function () { if (panel.hidden) openPanel(); else closePanel(true); });
+    listen(toggleBtn, 'keydown', function (ev) {
+      if (ev.key === 'ArrowUp' || ev.key === 'ArrowDown') { ev.preventDefault(); openPanel(); }
+    });
+    listen(visibilityBtn, 'click', function () { setCollapsed(!prefs.collapsed, false); });
+    spellChoices.forEach(function (choice) {
+      choice.querySelector('span').textContent = txt.spells[choice.dataset.spellSelect][0];
+      listen(choice, 'click', function () { selectSpell(choice.dataset.spellSelect); closePanel(true); });
+    });
     listen(roamBtn, 'click', function () {
       prefs.roam = !prefs.roam;
       savePrefs();
@@ -754,7 +784,9 @@
     listen(pet, 'pointerleave', function () { hovered = false; motion.pauseUntil = state.clock + 16000; });
     listen(el, 'focusin', function () { focused = true; finishIdle(true); if (motion.mode === 'walk') idleFor(); });
     listen(el, 'focusout', function (ev) { focused = el.contains(ev.relatedTarget); });
-    listen(document, 'pointerdown', function (ev) { if (!el.contains(ev.target)) closePanel(false); }, { passive: true });
+    listen(document, 'pointerdown', function (ev) {
+      if (!panel.contains(ev.target) && !toggleBtn.contains(ev.target)) closePanel(false);
+    }, { passive: true });
     listen(document, 'keydown', function (ev) {
       if (ev.key === 'Escape' && !panel.hidden) closePanel(el.contains(document.activeElement));
     });
@@ -772,7 +804,7 @@
 
     var api = {
       setStatus: applyStatus, paint: function () { draw(true); place(); },
-      cast: cast, hide: function () { setCollapsed(true, false); },
+      cast: cast, selectSpell: selectSpell, hide: function () { setCollapsed(true, false); },
       show: function () { setCollapsed(false, false); },
       idle: beginIdle, stopIdle: function () { finishIdle(true); },
       state: state, pos: pos, motion: motion,

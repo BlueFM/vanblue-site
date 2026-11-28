@@ -84,11 +84,13 @@ machine, no laptop in the loop).
 The purple-hatted wizard cat in the corner is a small exception to an otherwise quiet
 academic page. Its illustrated blink, breathing and walk frames share one transparent
 WebP atlas, including a casting pose whose two ears use the original character's
-artwork. Click it to cycle through a mint-green fish, golden stardust, a lilac
-moonshield and a small smoky mishap. Each spell has different vector effects, not
+artwork. Click it to cast the selected spell: a mint-green fish, golden stardust,
+a lilac moonshield or a small smoky mishap. Each spell has different vector effects, not
 just a different caption. Drag the cat to another spot and it lands softly. On
 desktop it takes short strolls nearby; on phones it stays put. A fixed moon button
-shows or hides it. Between spells it occasionally tilts its head, swishes its tail,
+opens a floating settings panel for spell selection and hiding or showing the cat.
+Casting never opens that panel or changes the selected spell. Between spells it
+occasionally tilts its head, swishes its tail,
 stretches or dozes; these gestures reuse pieces of the same drawing. Blinks update
 only the eyes, not the body. Reduced-motion preferences replace movement with static
 spells; hidden tabs stop the animation loop.
