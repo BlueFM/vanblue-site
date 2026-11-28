@@ -13,6 +13,7 @@ Without that optional reference, cell 10 deliberately reuses idle-open.
 
 Contract: static RGBA WebP, 4 columns x 3 rows, 384 px cells; index 11 is empty.
 All frames in an action share one union crop, one scale and one translation.
+Idle half/closed eyes are aligned and feathered onto the unchanged open body.
 Diagnostics and provenance go outside the repository, in ../.tmp by default.
 Reproducible encoded bytes require the same Pillow/libwebp versions.
 """
@@ -25,6 +26,7 @@ import io
 import json
 import sys
 from pathlib import Path, PurePosixPath
+from statistics import median
 from zipfile import ZipFile
 
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps, __version__, features
@@ -45,6 +47,8 @@ LABELS = (
     "sleep peak", "walk lift", "walk contact", "walk swing", "walk passing",
     "cast", "empty",
 )
+# Opaque 384-cell rectangles shared with the canvas renderer, before mirroring.
+BLINK_EYE_ROIS = ((163, 147, 64, 34), (240, 135, 40, 36))
 
 
 def sha256(path: Path) -> str:
@@ -313,6 +317,72 @@ def place_action(frames: list[Image.Image]) -> tuple[list[Image.Image], dict]:
                    "baseline_exclusive": BASELINE}
 
 
+def stabilize_blink(frames: list[Image.Image]) -> tuple[list[Image.Image], dict]:
+    # Preserve the original shared placement and the open tile byte-for-byte.
+    # Only transplant real half/closed eye pixels; never replay their repainted
+    # hat, fur, body or alpha silhouette as part of a blink.
+    base, results, patches = frames[0], [frames[0]], []
+    shapes = (
+        ((166, 152), (176, 149), (192, 150), (208, 153), (221, 158), (220, 167),
+         (214, 174), (204, 178), (192, 178), (181, 174), (173, 168), (168, 158)),
+        ((244, 150), (252, 144), (264, 138), (276, 137), (278, 144), (276, 157),
+         (270, 166), (261, 170), (254, 169), (247, 164), (244, 158)),
+    )
+    # Target center, source center, horizontal scale. Closed lids contract and
+    # drift laterally in the originals; align their canthi to the open eyes.
+    alignments = (((193.8, 194.1, 1.0), (260.0, 260.9, 1.0)),
+                  ((193.8, 194.8, 1.07), (260.0, 262.5, 1.08)))
+    for state, source in enumerate(frames[1:]):
+        result = base.copy()
+        for eye, ((x, y, width, height), shape) in enumerate(zip(BLINK_EYE_ROIS, shapes)):
+            target_center, source_center, scale = alignments[state][eye]
+            inverse = (1 / scale, 0, source_center - target_center / scale, 0, 1, 0)
+            aligned = source.transform(source.size, Image.Transform.AFFINE, inverse, Image.Resampling.BICUBIC)
+            crop = (x, y, x + width, y + height)
+            reference, patch = base.crop(crop).convert("RGB"), aligned.crop(crop).convert("RGB")
+            assert base.getchannel("A").crop(crop).getextrema() == (255, 255), "Eye ROI must be opaque"
+            target, pixels = reference.load(), patch.load()
+            deltas = [[], [], []]
+            for py in range(height):
+                for px in range(width):
+                    first, second = target[px, py], pixels[px, py]
+                    if all(70 < color[0] < 165 and 40 < color[1] < 135
+                           and color[0] - color[1] < 65 for color in (first, second)):
+                        for channel in range(3):
+                            deltas[channel].append(first[channel] - second[channel])
+            offsets = [median(values) for values in deltas]
+            for py in range(height):
+                for px in range(width):
+                    color = pixels[px, py]
+                    # Match fur illumination, not the gold iris or dark lid ink.
+                    weight = max(0, min(1, (color[0] - 45) / 25)) * max(0, min(1, (160 - color[0]) / 25))
+                    pixels[px, py] = tuple(max(0, min(255, round(value + delta * weight)))
+                                           for value, delta in zip(color, offsets))
+            mask = Image.new("L", (width * 3, height * 3))
+            ImageDraw.Draw(mask).polygon(
+                [(round((px - x) * 3), round((py - y) * 3)) for px, py in shape], fill=255)
+            mask = mask.resize((width, height), Image.Resampling.LANCZOS)
+            mask = mask.filter(ImageFilter.MaxFilter(5)).filter(ImageFilter.GaussianBlur(1.0))
+            opacity = mask.load()
+            for py in range(height):
+                for px in range(width):
+                    # Fade inside the agreed ROI, never beyond its rectangle.
+                    edge = min(px, py, width - 1 - px, height - 1 - py)
+                    alpha = round(opacity[px, py] * min(1, edge / 2))
+                    if eye == 1:
+                        # The nose is very close to the right eye: keep it fixed.
+                        alpha = round(alpha * max(0, min(1, max((x + px - 247) / 2, (165 - y - py) / 2))))
+                    opacity[px, py] = alpha
+            result.paste(Image.composite(patch, reference, mask), (x, y))
+            patches.append({"frame": state + 1, "eye": eye, "fur_rgb_offsets": offsets,
+                            "fur_sample_count": len(deltas[0]),
+                            "horizontal_alignment": alignments[state][eye]})
+        result.putalpha(base.getchannel("A"))
+        results.append(result)
+    return results, {"fixed_body_frame": 0, "eye_rois_xywh": BLINK_EYE_ROIS,
+                     "alpha_matches_open": True, "patches": patches}
+
+
 def write_contact_sheets(atlas: Image.Image, directory: Path) -> None:
     for theme in ("checker", "white", "dark"):
         sheet = Image.new("RGB", (CELL * COLUMNS, (CELL + 28) * ROWS), "#ffffff")
@@ -352,6 +422,8 @@ def main() -> None:
     tiles, placement = [], {}
     for action, _ in GROUPS:
         prepared, placement[action] = place_action(groups[action])
+        if action == "idle-blink":
+            prepared, blink_report = stabilize_blink(prepared)
         tiles.extend(prepared)
     cast_report = {"fallback_to_idle": True}
     if args.cast_image:
@@ -396,7 +468,7 @@ def main() -> None:
     report = {"pillow": __version__, "libwebp": features.version("webp"),
               "source_zip_sha256": sha256(args.source_zip), "quality": args.quality,
               "grid": [COLUMNS, ROWS], "cell": [CELL, CELL], "indices": dict(enumerate(LABELS)),
-              "placement": placement, "source_cleanup": cleanup, "cast": cast_report,
+              "placement": placement, "source_cleanup": cleanup, "cast": cast_report, "blink": blink_report,
               "outputs": outputs, "total_bytes": total,
               "encoded_alpha_matches_preencode": True,
               "tile_alpha_bboxes": [decoded.crop(((i % 4) * CELL, (i // 4) * CELL,

@@ -64,12 +64,52 @@
   pointer-events: none;
 }
 
-.guardian-canvas,
-.guardian-fallback {
+.guardian-art {
+  position: absolute;
+  inset: 0;
   display: block;
-  width: 100%;
-  height: 100%;
+  transform-origin: center 95%;
   filter: drop-shadow(0 3px 3px rgb(62 36 59 / 8%));
+}
+
+.guardian-canvas,
+.guardian-fallback,
+.guardian-detail { display: block; width: 100%; height: 100%; }
+.guardian-detail { position: absolute; inset: 0; }
+
+.guardian[data-idle-action="look"] .guardian-detail { animation: guardian-look var(--idle-duration) ease-in-out both; }
+.guardian[data-idle-action="tail"] .guardian-detail { animation: guardian-tail var(--idle-duration) ease-in-out both; }
+.guardian[data-idle-action="stretch"] .guardian-art { animation: guardian-stretch var(--idle-duration) ease-in-out both; }
+.guardian[data-idle-action="shake"] .guardian-art { animation: guardian-shake var(--idle-duration) ease-in-out both; }
+.guardian[data-idle-action="doze"] .guardian-art { animation: guardian-nap var(--idle-duration) ease-in-out both; }
+
+@keyframes guardian-look {
+  0%, 100% { transform: rotate(0); }
+  25%, 42% { transform: rotate(calc(-1 * var(--idle-angle))); }
+  70%, 80% { transform: rotate(calc(var(--idle-angle) / 2)); }
+}
+
+@keyframes guardian-tail {
+  0%, 100% { transform: rotate(0); }
+  18%, 60% { transform: rotate(calc(-1 * var(--idle-angle))); }
+  40%, 80% { transform: rotate(var(--idle-angle)); }
+}
+
+@keyframes guardian-stretch {
+  0%, 100% { transform: scale(1); }
+  28% { transform: scale(1.025, 0.98); }
+  55%, 70% { transform: scale(0.98, 1.04); }
+}
+
+@keyframes guardian-shake {
+  0%, 100% { transform: rotate(0); }
+  18%, 50%, 82% { transform: rotate(-1.4deg); }
+  34%, 66% { transform: rotate(1.4deg); }
+}
+
+@keyframes guardian-nap {
+  0%, 38%, 76%, 100% { transform: scaleY(1); }
+  18%, 58%, 90% { transform: scaleY(1.018); }
 }
 
 .guardian-shadow {

@@ -103,6 +103,15 @@ host, audio or AI call is involved.
 
 - Click (or Enter/Space) for a spell and today's site numbers. Drag to move; a
   mid-air drop lands gently. Escape or a click outside closes the little card.
+- Blinking keeps one fixed body image and replaces only two aligned, opaque eye
+  patches. Blink updates do not clear or redraw the body, so frame-to-frame source
+  lighting and WebP differences cannot make the hat, ears or silhouette flash.
+- Quiet idle gestures use a shuffled seven-action bag: slow blink, double blink,
+  curious head tilt, tail swish, stretch, shake and a brief doze. There are no
+  consecutive repeats, no automatic cards and no extra image downloads. Head and
+  tail gestures move clipped pieces of the same drawing; the eyes follow the
+  moving head. The first gesture waits 6.5–11 s, then pauses are 13–26 s on desktop
+  or 18–32 s on phones. Spells, dragging, hiding and keyboard focus interrupt them.
 - On desktop, short strolls stay within 180 px of the cat's chosen spot, with
   16–30 s pauses. Hover, keyboard focus and an open card stop roaming. **Stay
   here** parks it; **Wander a little** lets it roam again.

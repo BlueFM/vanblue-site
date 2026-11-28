@@ -88,8 +88,10 @@ artwork. Click it to cycle through a mint-green fish, golden stardust, a lilac
 moonshield and a small smoky mishap. Each spell has different vector effects, not
 just a different caption. Drag the cat to another spot and it lands softly. On
 desktop it takes short strolls nearby; on phones it stays put. A fixed moon button
-shows or hides it. Reduced-motion preferences replace movement with static spells;
-hidden tabs stop the animation loop.
+shows or hides it. Between spells it occasionally tilts its head, swishes its tail,
+stretches or dozes; these gestures reuse pieces of the same drawing. Blinks update
+only the eyes, not the body. Reduced-motion preferences replace movement with static
+spells; hidden tabs stop the animation loop.
 
 The site is still flat files. A systemd timer writes one small JSON snapshot every
 minute — load average, today's unique visitors, and the age of the release symlink —

@@ -7,10 +7,34 @@
 
   var CELL = 384;
   var COLS = 4;
+  // Opaque eye patches in the stabilized atlas; keep in sync with prepare-wizard-cat.py.
+  var BLINK_RECTS = [[163, 147, 64, 34], [240, 135, 40, 36]];
   var POLL_MS = 60000;
   var STALE_S = 600;
   var PREF_KEY = 'vanblue:spell-cat:v1';
   var SPELL_IDS = ['fish', 'stars', 'shield', 'puff'];
+  var IDLE_ACTIONS = {
+    'slow-blink': { duration: 1300, eyes: [[0, 200], [1, 140], [2, 420], [1, 140], [0, 400]] },
+    'double-blink': { duration: 1250, eyes: [[0, 120], [1, 70], [2, 90], [1, 70], [0, 150], [1, 70], [2, 90], [1, 70], [0, 520]] },
+    look: { duration: 3600, part: 'head' },
+    tail: { duration: 2800, part: 'tail' },
+    stretch: { duration: 2400 },
+    shake: { duration: 1100 },
+    doze: { duration: 4800, frame: 3 }
+  };
+  // Masks follow transparent gaps; the attachment points overlap by six pixels.
+  var IDLE_PARTS = {
+    head: {
+      pivot: [226, 217], angle: 3,
+      cut: [[48,0],[350,0],[350,205],[280,205],[261,210],[247,210],[239,213],[229,214],[220,211],[210,208],[192,206],[177,206],[168,209],[133,207],[48,204]],
+      part: [[48,0],[350,0],[350,205],[280,205],[261,216],[247,216],[239,219],[229,220],[220,217],[210,214],[192,212],[177,212],[168,209],[133,207],[48,204]]
+    },
+    tail: {
+      pivot: [146, 332], angle: 5,
+      cut: [[48,209],[155,209],[158,239],[156,253],[150,266],[139,278],[130,291],[126,307],[129,320],[130,332],[133,343],[140,352],[149,357],[149,363],[48,363]],
+      part: [[48,209],[155,209],[158,239],[156,253],[150,266],[139,278],[130,291],[126,307],[135,320],[136,332],[139,343],[146,352],[155,357],[155,363],[48,363]]
+    }
+  };
   var mounted = new WeakMap();
   var sequences = {
     idle: [[0, 2400], [1, 70], [2, 100], [1, 70]],
@@ -90,7 +114,7 @@
   }
 
   function sequenceFrame(name, time, reduced) {
-    var seq = sequences[name];
+    var seq = typeof name === 'string' ? sequences[name] : name;
     if (reduced) return seq[0][0];
     var duration = seq.reduce(function (sum, item) { return sum + item[1]; }, 0);
     var phase = time % duration;
@@ -114,6 +138,8 @@
     var ctx = canvas.getContext && canvas.getContext('2d');
     var fallback = el.querySelector('.guardian-fallback');
     var magic = el.querySelector('.guardian-magic');
+    var detail = el.querySelector('.guardian-detail');
+    var detailCtx = detail && detail.getContext('2d');
     var message = el.querySelector('.guardian-message');
     var spellName = el.querySelector('.guardian-spell-name');
     var stats = el.querySelector('.guardian-stats');
@@ -147,6 +173,8 @@
     var casting = false;
     var wakeUntil = 0;
     var spellIndex = 0;
+    var idleBag = [];
+    var splitPart = null;
     var hovered = false;
     var focused = false;
     var pointer = null;
@@ -161,7 +189,8 @@
     var previousPos = null;
     var disposers = [];
     var pos = { x: 0, y: 0 };
-    var state = { status: opts.status || null, mood: 'idle', pose: 'idle', spell: null, frame: 0, clock: opts.freeze || 0 };
+    var state = { status: opts.status || null, mood: 'idle', pose: 'idle', spell: null, frame: 0, clock: opts.freeze || 0,
+      idleAction: null, lastIdleAction: null, idleStartedAt: 0, idleUntil: 0, nextIdleAt: random(6500, 11000) };
     var motion = { mode: 'idle', target: 0, pauseUntil: 18000, velocity: 0 };
 
     function listen(target, type, fn, options) {
@@ -235,36 +264,145 @@
       faceInward();
     }
 
+    function canIdle() {
+      return !destroyed && artReady && ctx && ready && !casting && !reduced && !prefs.collapsed && !document.hidden &&
+        !state.idleAction && !pointer && !hovered && !(focused && el.querySelector(':focus-visible')) &&
+        panel.hidden && motion.mode === 'idle' && effectiveMood() !== 'sleep';
+    }
+
+    function pickIdle() {
+      if (!idleBag.length) {
+        idleBag = Object.keys(IDLE_ACTIONS);
+        for (var i = idleBag.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var item = idleBag[i]; idleBag[i] = idleBag[j]; idleBag[j] = item;
+        }
+      }
+      if (idleBag[0] === state.lastIdleAction && idleBag.length > 1) {
+        var first = idleBag[0]; idleBag[0] = idleBag[1]; idleBag[1] = first;
+      }
+      return idleBag.shift();
+    }
+
+    function finishIdle(redraw) {
+      if (!state.idleAction) return;
+      state.idleAction = null;
+      splitPart = null;
+      delete el.dataset.idleAction;
+      if (detail) detail.hidden = true;
+      state.nextIdleAt = state.clock + random(compact ? 18000 : 13000, compact ? 32000 : 26000);
+      motion.pauseUntil = state.clock + random(16000, 30000);
+      sequenceStart = state.clock;
+      drawnFrame = -1;
+      if (redraw !== false) draw(true);
+    }
+
+    function beginIdle(name) {
+      if (!canIdle()) return false;
+      var id = name || pickIdle();
+      var action = Object.prototype.hasOwnProperty.call(IDLE_ACTIONS, id) && IDLE_ACTIONS[id];
+      if (!action || (action.part && !detailCtx)) return false;
+      state.idleAction = state.lastIdleAction = id;
+      state.idleStartedAt = state.clock;
+      state.idleUntil = state.clock + action.duration;
+      motion.pauseUntil = state.idleUntil + 16000;
+      el.style.setProperty('--idle-duration', action.duration + 'ms');
+      el.dataset.idleAction = id;
+      draw(true);
+      return true;
+    }
+
+    function polygon(context, points) {
+      context.beginPath();
+      points.forEach(function (point, index) {
+        if (index) context.lineTo(point[0], point[1]);
+        else context.moveTo(point[0], point[1]);
+      });
+      context.closePath();
+    }
+
+    function splitIdlePart(name) {
+      var part = IDLE_PARTS[name];
+      detailCtx.clearRect(0, 0, CELL, CELL);
+      detailCtx.save();
+      polygon(detailCtx, part.part);
+      detailCtx.clip();
+      detailCtx.drawImage(canvas, 0, 0);
+      detailCtx.restore();
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-out';
+      polygon(ctx, part.cut);
+      ctx.fill();
+      ctx.restore();
+      detail.style.transformOrigin = part.pivot[0] / CELL * 100 + '% ' + part.pivot[1] / CELL * 100 + '%';
+      detail.style.setProperty('--idle-angle', (compact ? part.angle * 0.8 : part.angle) + 'deg');
+      detail.hidden = false;
+      splitPart = name;
+    }
+
     function effectiveMood() {
       return state.mood === 'sleep' && performance.now() < wakeUntil ? 'idle' : state.mood;
     }
 
     function draw(force) {
-      var pose = casting ? 'cast' : motion.mode === 'walk' ? 'walk' : effectiveMood() === 'sleep' ? 'sleep' : 'idle';
+      if (state.idleAction && (casting || effectiveMood() === 'sleep')) finishIdle(false);
+      var action = IDLE_ACTIONS[state.idleAction];
+      var nap = action && action.frame === 3;
+      var pose = casting ? 'cast' : motion.mode === 'walk' ? 'walk' : nap || effectiveMood() === 'sleep' ? 'sleep' : 'idle';
       if (pose !== state.pose) {
         state.pose = pose;
         sequenceStart = state.clock;
       }
-      var index = sequenceFrame(pose, state.clock - sequenceStart, reduced);
+      var blink = pose === 'idle' && action && action.eyes;
+      var index = nap ? 3 : sequenceFrame(blink || pose, state.clock - (blink ? state.idleStartedAt : sequenceStart), reduced);
       state.frame = index;
       el.dataset.pose = pose;
       el.dataset.mood = state.mood;
       el.classList.toggle('is-sleeping', pose === 'sleep');
       if (!artReady || !ctx || (!force && drawnFrame === index)) return;
-      ctx.clearRect(0, 0, CELL, CELL);
-      ctx.drawImage(atlas, (index % COLS) * CELL, Math.floor(index / COLS) * CELL,
-        CELL, CELL, 0, 0, CELL, CELL);
+      if (pose === 'idle') {
+        // Retain one body image: even WebP quantization must not flicker outside the eyes.
+        var reset = force || drawnFrame < 0 || drawnFrame > 2;
+        if (reset) {
+          splitPart = null;
+          if (detail) detail.hidden = true;
+          ctx.clearRect(0, 0, CELL, CELL);
+          ctx.drawImage(atlas, 0, 0, CELL, CELL, 0, 0, CELL, CELL);
+        }
+        var eyeContext = splitPart === 'head' ? detailCtx : ctx;
+        BLINK_RECTS.forEach(function (rect) {
+          var x = rect[0], y = rect[1], width = rect[2], height = rect[3];
+          // Clip explicitly: GPU texture filtering must not bleed beyond either eye patch.
+          eyeContext.save();
+          eyeContext.beginPath();
+          eyeContext.rect(x, y, width, height);
+          eyeContext.clip();
+          eyeContext.drawImage(atlas, index * CELL + x, y, width, height, x, y, width, height);
+          eyeContext.restore();
+        });
+        if (reset && action && action.part) splitIdlePart(action.part);
+      } else {
+        splitPart = null;
+        if (detail) detail.hidden = true;
+        ctx.clearRect(0, 0, CELL, CELL);
+        ctx.drawImage(atlas, (index % COLS) * CELL, Math.floor(index / COLS) * CELL,
+          CELL, CELL, 0, 0, CELL, CELL);
+      }
       drawnFrame = index;
     }
 
     function canWander() {
-      return artReady && prefs.roam && !compact && !reduced && !casting &&
+      return artReady && prefs.roam && !compact && !reduced && !casting && !state.idleAction &&
         !hovered && !focused && panel.hidden &&
         (effectiveMood() === 'idle' || effectiveMood() === 'deploy');
     }
 
     function advance(dt) {
       state.clock += dt;
+      if (state.idleAction) {
+        if (state.clock >= state.idleUntil || motion.mode !== 'idle' || effectiveMood() === 'sleep') finishIdle(false);
+        else return;
+      }
       if (motion.mode === 'drag') return;
       if (motion.mode === 'fall') {
         motion.velocity += 1100 * dt / 1000;
@@ -282,6 +420,7 @@
         place();
         return;
       }
+      if (canIdle() && state.clock >= state.nextIdleAt) { beginIdle(); return; }
       if (canWander() && state.clock > motion.pauseUntil) {
         // Short strolls near its chosen spot, rather than crossing the article.
         motion.target = random(Math.max(minX(), homeX - 180), Math.min(maxX(), homeX + 180));
@@ -415,6 +554,7 @@
     function cast(showPanel) {
       if (destroyed || prefs.collapsed || !ready) return;
       if (motion.mode === 'drag' || motion.mode === 'fall') return;
+      finishIdle(false);
       markSeen();
       idleFor(16000);
       wakeUntil = performance.now() + 16000;
@@ -478,6 +618,7 @@
       if (collapsed && !prefs.collapsed) previousPos = { x: pos.x, y: pos.y };
       prefs.collapsed = collapsed;
       closePanel(false);
+      finishIdle(false);
       finishCast();
       pointer = null;
       el.classList.remove('is-dragging', 'is-falling', 'is-new');
@@ -507,6 +648,7 @@
 
     function onDown(ev) {
       if (!ev.isPrimary || ev.button !== 0 || pointer) return;
+      finishIdle(true);
       suppressClickUntil = 0; // A new gesture must not inherit the previous drag's click guard.
       pointer = { id: ev.pointerId, startX: ev.clientX, startY: ev.clientY,
         dx: ev.clientX - pos.x, dy: ev.clientY - pos.y, dragging: false };
@@ -571,7 +713,7 @@
 
     function onMotionPreference() {
       reduced = reduceQuery.matches;
-      if (reduced) stop();
+      if (reduced) { finishIdle(false); stop(); }
       onResize();
       start();
     }
@@ -586,6 +728,7 @@
     closeBtn.title = txt.close;
     updateRoamButton();
     if (ctx) { canvas.width = canvas.height = CELL; ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; }
+    if (detailCtx) { detail.width = detail.height = CELL; detailCtx.imageSmoothingEnabled = true; detailCtx.imageSmoothingQuality = 'high'; }
 
     listen(btn, 'pointerdown', onDown);
     listen(global, 'pointermove', onMove, { passive: true });
@@ -609,7 +752,7 @@
     });
     listen(pet, 'pointerenter', function (ev) { if (ev.pointerType !== 'touch') { hovered = true; if (motion.mode === 'walk') idleFor(); } });
     listen(pet, 'pointerleave', function () { hovered = false; motion.pauseUntil = state.clock + 16000; });
-    listen(el, 'focusin', function () { focused = true; if (motion.mode === 'walk') idleFor(); });
+    listen(el, 'focusin', function () { focused = true; finishIdle(true); if (motion.mode === 'walk') idleFor(); });
     listen(el, 'focusout', function (ev) { focused = el.contains(ev.relatedTarget); });
     listen(document, 'pointerdown', function (ev) { if (!el.contains(ev.target)) closePanel(false); }, { passive: true });
     listen(document, 'keydown', function (ev) {
@@ -631,8 +774,10 @@
       setStatus: applyStatus, paint: function () { draw(true); place(); },
       cast: cast, hide: function () { setCollapsed(true, false); },
       show: function () { setCollapsed(false, false); },
+      idle: beginIdle, stopIdle: function () { finishIdle(true); },
       state: state, pos: pos, motion: motion,
       destroy: function () {
+        finishIdle(false);
         destroyed = true;
         stop();
         [castTimer, wakeTimer, introTimer, fetchTimeout].forEach(global.clearTimeout.bind(global));
