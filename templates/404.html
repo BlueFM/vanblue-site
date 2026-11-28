@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block title %}{{ trans(key="not_found_title", lang=lang) }} — {{ config.title }}{% endblock title %}
 {% block content %}
-<h1 class="page__title">404</h1>
-<p>{{ trans(key="not_found_body", lang=lang) }} <a href="{{ get_url(path='@/_index.md') }}">{{ trans(key="back_home", lang=lang) }}</a></p>
+<p class="folio-kicker">404 / Lost in the margins</p>
+<h1 class="page__title">{{ trans(key="not_found_title", lang=lang) }}</h1>
+<img class="not-found-art" src="{{ get_url(path='img/moonlit/book-and-quill.svg') }}" alt="" width="180" height="126">
+<p class="not-found-copy">{{ trans(key="not_found_body", lang=lang) }} There is still plenty to discover on the reading desk.</p>
+<a class="ink-button" href="{{ get_url(path='@/_index.md') }}">{{ trans(key="back_home", lang=lang) }} <span aria-hidden="true">↗</span></a>
 {% endblock content %}

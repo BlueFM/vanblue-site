@@ -1,0 +1,459 @@
+{
+  "startedAt": "2026-11-28T13:48:35.591Z",
+  "source": {
+    "path": "D:\\ds-harness-workspace\\website\\vanblue-site\\public\\index.html",
+    "sha256": "d15c27fed5a08c6875b928e01f3cbf904b8f95048085dcf549744f5147618c63",
+    "modifiedAt": "2026-11-28T13:48:25.227Z",
+    "javascriptEnabled": false,
+    "cleanInitialGuardian": true,
+    "stylesheets": [
+      "/css/style.css",
+      "/css/guardian.css",
+      "/css/moonlit.css"
+    ],
+    "scripts": [
+      "/js/guardian.js",
+      "/js/grimoire.js",
+      "/js/ddl-when.js"
+    ],
+    "jsonLDPreserved": true,
+    "mailAndHashLinksPreserved": true,
+    "bootstrapPrecedesGuardian": true,
+    "sourceErrors": []
+  },
+  "output": {
+    "path": "D:\\ds-harness-workspace\\website\\vanblue-site\\design\\offline-home.html",
+    "bytes": 561779,
+    "sha256": "a88cf9416d22cc5d8713a7c17ce342442953c506f1b32ab82d5a20ef28b8c072",
+    "fontLicenseIncluded": true
+  },
+  "checks": [
+    {
+      "name": "export clean production home and all local dependencies",
+      "pass": true,
+      "details": {
+        "bytes": 561779,
+        "stylesheets": 3,
+        "scripts": 3,
+        "cleanInitialGuardian": true
+      }
+    },
+    {
+      "name": "offline-desktop: real file load, APIs, font and images",
+      "pass": true,
+      "details": {
+        "url": "file:///D:/ds-harness-workspace/website/vanblue-site/design/offline-home.html",
+        "font": {
+          "status": "loaded",
+          "faces": [
+            {
+              "family": "Fraunces",
+              "status": "loaded"
+            }
+          ],
+          "available": true
+        },
+        "images": [
+          {
+            "embedded": true,
+            "complete": true,
+            "width": 150,
+            "alt": ""
+          },
+          {
+            "embedded": true,
+            "complete": true,
+            "width": 150,
+            "alt": ""
+          },
+          {
+            "embedded": true,
+            "complete": true,
+            "width": 500,
+            "alt": ""
+          },
+          {
+            "embedded": true,
+            "complete": true,
+            "width": 214,
+            "alt": ""
+          }
+        ]
+      }
+    },
+    {
+      "name": "offline-desktop: metadata and live-link contracts",
+      "pass": true,
+      "details": {
+        "title": "Shunbao Zhang — Offline preview",
+        "noindex": true,
+        "fontLicenseCharacters": 4391,
+        "jsonLDBlocks": 1,
+        "liveLinksSafe": true,
+        "nativeFetch": true
+      }
+    },
+    {
+      "name": "offline-desktop: actual Guardian artwork and demo state",
+      "pass": true,
+      "details": {
+        "sameInstance": true,
+        "mood": "idle",
+        "status": null,
+        "spriteEmbedded": true,
+        "idleEmbedded": true,
+        "statsHidden": true
+      }
+    },
+    {
+      "name": "offline-desktop: desktop navigation is visible",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "offline-desktop: moon settings toggle and selected stars cast",
+      "pass": true,
+      "details": {
+        "selected": "stars",
+        "cast": "stars",
+        "casting": true,
+        "panelHidden": true,
+        "selectedButtons": [
+          "stars"
+        ]
+      }
+    },
+    {
+      "name": "offline-desktop: constellation and five margin notes are opt-in",
+      "pass": true,
+      "details": {
+        "notes": [
+          "Small steps, steady gradients.",
+          "A cup of tea makes room for a question.",
+          "Curiosity is welcome in the margins.",
+          "Even a wandering thought may find a path.",
+          "One gentle step, then another.",
+          "Small steps, steady gradients."
+        ],
+        "constellationCleared": true
+      }
+    },
+    {
+      "name": "offline-desktop: nine finite stars, repeat cleanup and lumos",
+      "pass": true,
+      "details": {
+        "maximumParticles": 9,
+        "repeatedCount": 9,
+        "finiteCleanup": true,
+        "lumos": true,
+        "guardianSelectionPreserved": true
+      }
+    },
+    {
+      "name": "offline-desktop: reduced-motion static feedback",
+      "pass": true,
+      "details": {
+        "particles": 0,
+        "staticStatus": true
+      }
+    },
+    {
+      "name": "offline-desktop: no whole-document horizontal overflow",
+      "pass": true,
+      "details": {
+        "width": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pass": true
+      }
+    },
+    {
+      "name": "offline-desktop: zero HTTP(S) requests and browser errors",
+      "pass": true,
+      "details": {
+        "httpRequests": 0,
+        "consoleErrors": 0,
+        "pageErrors": 0,
+        "schemes": {
+          "file:": 1,
+          "data:": 7
+        }
+      }
+    },
+    {
+      "name": "offline-mobile: real file load, APIs, font and images",
+      "pass": true,
+      "details": {
+        "url": "file:///D:/ds-harness-workspace/website/vanblue-site/design/offline-home.html",
+        "font": {
+          "status": "loaded",
+          "faces": [
+            {
+              "family": "Fraunces",
+              "status": "loaded"
+            }
+          ],
+          "available": true
+        },
+        "images": [
+          {
+            "embedded": true,
+            "complete": true,
+            "width": 150,
+            "alt": ""
+          },
+          {
+            "embedded": true,
+            "complete": true,
+            "width": 150,
+            "alt": ""
+          },
+          {
+            "embedded": true,
+            "complete": true,
+            "width": 500,
+            "alt": ""
+          },
+          {
+            "embedded": true,
+            "complete": true,
+            "width": 214,
+            "alt": ""
+          }
+        ]
+      }
+    },
+    {
+      "name": "offline-mobile: metadata and live-link contracts",
+      "pass": true,
+      "details": {
+        "title": "Shunbao Zhang — Offline preview",
+        "noindex": true,
+        "fontLicenseCharacters": 4391,
+        "jsonLDBlocks": 1,
+        "liveLinksSafe": true,
+        "nativeFetch": true
+      }
+    },
+    {
+      "name": "offline-mobile: actual Guardian artwork and demo state",
+      "pass": true,
+      "details": {
+        "sameInstance": true,
+        "mood": "idle",
+        "status": null,
+        "spriteEmbedded": true,
+        "idleEmbedded": true,
+        "statsHidden": true
+      }
+    },
+    {
+      "name": "offline-mobile: 390px menu starts collapsed and opens natively",
+      "pass": true,
+      "details": {
+        "initial": {
+          "width": 390,
+          "hidden": true,
+          "toggleHidden": false,
+          "expanded": "false"
+        },
+        "openedWithoutOverflow": {
+          "width": 390,
+          "documentWidth": 390,
+          "bodyWidth": 390,
+          "pass": true
+        },
+        "escapeRestoresFocus": true
+      }
+    },
+    {
+      "name": "offline-mobile: no whole-document horizontal overflow",
+      "pass": true,
+      "details": {
+        "width": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pass": true
+      }
+    },
+    {
+      "name": "offline-mobile: zero HTTP(S) requests and browser errors",
+      "pass": true,
+      "details": {
+        "httpRequests": 0,
+        "consoleErrors": 0,
+        "pageErrors": 0,
+        "schemes": {
+          "file:": 1,
+          "data:": 7
+        }
+      }
+    }
+  ],
+  "runs": [
+    {
+      "label": "offline-desktop",
+      "viewport": {
+        "width": 1440,
+        "height": 1000,
+        "deviceScaleFactor": 1,
+        "isMobile": false,
+        "hasTouch": false
+      },
+      "url": "file:///D:/ds-harness-workspace/website/vanblue-site/design/offline-home.html",
+      "forbiddenHTTP": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "interceptionErrors": [],
+      "requestSchemes": {
+        "file:": 1,
+        "data:": 7
+      }
+    },
+    {
+      "label": "offline-mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 2,
+        "isMobile": true,
+        "hasTouch": true
+      },
+      "url": "file:///D:/ds-harness-workspace/website/vanblue-site/design/offline-home.html",
+      "forbiddenHTTP": [],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "interceptionErrors": [],
+      "requestSchemes": {
+        "file:": 1,
+        "data:": 7
+      }
+    }
+  ],
+  "cleanup": [
+    {
+      "context": "source-javascript-disabled",
+      "closed": true
+    },
+    {
+      "context": "offline-desktop",
+      "closed": true
+    },
+    {
+      "context": "offline-mobile",
+      "closed": true
+    },
+    {
+      "browser": true,
+      "pid": 47156,
+      "closed": true,
+      "forced": false
+    }
+  ],
+  "failures": [],
+  "browser": {
+    "executablePath": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+    "version": "Chrome/158.0.8127.37",
+    "realChrome": true
+  },
+  "assets": [
+    {
+      "path": "public/css/guardian.css",
+      "bytes": 16401,
+      "mime": "text/css",
+      "sha256": "657456e91c949239db05f670729a844b93ec10a66fe67ae353a9235d70b27f79"
+    },
+    {
+      "path": "public/css/moonlit.css",
+      "bytes": 34827,
+      "mime": "text/css",
+      "sha256": "6cfada376ec59271e3080029ae3bda08a2184f31e6662d8b31830f606a5c07a7"
+    },
+    {
+      "path": "public/css/style.css",
+      "bytes": 28523,
+      "mime": "text/css",
+      "sha256": "8d617751b2af7adc3e64b196483b3dcdb28fed84c010238ec07862b5f9d59b90"
+    },
+    {
+      "path": "public/favicon.svg",
+      "bytes": 602,
+      "mime": "image/svg+xml",
+      "sha256": "d9f8731b85ca27101de77e1c54e45aeee1c881725a27998f4c50d9ac098123fd"
+    },
+    {
+      "path": "public/fonts/fraunces-600-latin.woff2",
+      "bytes": 35120,
+      "mime": "font/woff2",
+      "sha256": "170a928c701ef00e4b91105f870dd2c764b9ddb0c725cda6e71de576a8e72a00"
+    },
+    {
+      "path": "public/img/avatar-cat.jpg",
+      "bytes": 36574,
+      "mime": "image/jpeg",
+      "sha256": "bd8b9705e34c522bf6a18a37b3e1e327109b88e3efafb8fed57ae353457d3140"
+    },
+    {
+      "path": "public/img/moonlit/astrolabe.svg",
+      "bytes": 1434,
+      "mime": "image/svg+xml",
+      "sha256": "4635ac4f28fb26ca3417c2bb938a430d84ee60c8824d48157affae8fff2fef43"
+    },
+    {
+      "path": "public/img/moonlit/book-and-quill.svg",
+      "bytes": 641,
+      "mime": "image/svg+xml",
+      "sha256": "b94116a09d30599a018a7dc2a01804c2f9d15fc18cc24129777cb2a095eed755"
+    },
+    {
+      "path": "public/img/moonlit/night-map.svg",
+      "bytes": 1715,
+      "mime": "image/svg+xml",
+      "sha256": "c432952a6f30b4f56db1706ce549bd5f582f1ec077d0be5de2a1ffd3be11b30f"
+    },
+    {
+      "path": "public/img/wizard-cat/idle.webp",
+      "bytes": 19674,
+      "mime": "image/webp",
+      "sha256": "a26e7320754d9d90601f95bbdc721707bcc45a0e90bf2a4ee6baec8476ba8d72"
+    },
+    {
+      "path": "public/img/wizard-cat/sprites.webp",
+      "bytes": 203594,
+      "mime": "image/webp",
+      "sha256": "8c2d1595b47a8ad1e17ecfe9c0023847ec049d2fbc8423708c4a8bcf8fba48d1"
+    },
+    {
+      "path": "public/index.html",
+      "bytes": 27325,
+      "mime": "text/html",
+      "sha256": "d15c27fed5a08c6875b928e01f3cbf904b8f95048085dcf549744f5147618c63"
+    },
+    {
+      "path": "public/js/ddl-when.js",
+      "bytes": 657,
+      "mime": "text/javascript",
+      "sha256": "3eb27cba73ecc94e634058ba36fb89a3511e05f4b4487f0b26916d657b4fc0e5"
+    },
+    {
+      "path": "public/js/grimoire.js",
+      "bytes": 13611,
+      "mime": "text/javascript",
+      "sha256": "2f908f0f4e18c26c7ee2b7dd52ffbdf4ba3737b363f5f32c8af1912a7c503418"
+    },
+    {
+      "path": "public/js/guardian.js",
+      "bytes": 34280,
+      "mime": "text/javascript",
+      "sha256": "4911517c5d35bbfd3458072c8d5f1fef732493018a4d99be145b76ec23a40e73"
+    },
+    {
+      "path": "static/fonts/Fraunces-OFL.txt",
+      "bytes": 4391,
+      "mime": "text/plain",
+      "sha256": "bdf4c22802eaf804f998195871c6b8938aac2ac14b2d78a8bd66a6f1eced833b"
+    }
+  ],
+  "finishedAt": "2026-11-28T13:48:46.343Z",
+  "ok": true
+}

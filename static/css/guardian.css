@@ -128,7 +128,7 @@
 .guardian.is-dragging .guardian-shadow,
 .guardian.is-falling .guardian-shadow { opacity: 0; }
 
-.guardian[data-spell="fish"] { --spell-glow: #9bef88; --spell-ink: #63884e; }
+.guardian[data-spell="fish"] { --spell-glow: #68d6ac; --spell-ink: #205c47; }
 .guardian[data-spell="stars"] { --spell-glow: #f0cf79; --spell-ink: #9b742e; }
 .guardian[data-spell="shield"] { --spell-glow: #c4a5f2; --spell-ink: #8865a7; }
 .guardian[data-spell="puff"] { --spell-glow: #d3c6dc; --spell-ink: #84718f; }
@@ -150,19 +150,21 @@
 .guardian[data-spell="puff"] [data-effect="puff"] { display: inline; }
 
 .guardian-trail {
-  stroke: #e6ffce;
-  stroke-width: 3;
+  stroke: #2b8c69;
+  stroke-width: 3.8;
   stroke-linecap: round;
   stroke-dasharray: 320;
   stroke-dashoffset: 320;
 }
 
-.guardian-trail--glow { stroke: #9bea89; stroke-width: 10; opacity: 0.3; }
-.guardian-fish { transform-origin: 365px 49px; }
-.guardian-fish path { fill: #c9ffa8; fill-opacity: 0.6; stroke: #edffe2; stroke-width: 2.4; }
-.guardian-fish path + path { fill: none; stroke-width: 1.8; }
-.guardian-fish circle { fill: #fff; }
-.guardian-sparks { stroke: #d9ffc3; stroke-width: 2.4; fill: #eaffdc; fill-opacity: 0.75; }
+.guardian-trail--glow { stroke: #8fe1b6; stroke-width: 10; opacity: 0.45; }
+/* An opaque emerald body and dark contour remain legible on white paper.
+   The fine pale halo separates the same silhouette from the night sky. */
+.guardian-fish { transform-origin: 365px 49px; filter: drop-shadow(0 0 1.5px #fff8e5) drop-shadow(0 3px 4px #1a2c3333); }
+.guardian-fish path { fill: #58c69d; fill-opacity: 1; stroke: #205c47; stroke-width: 4; stroke-linejoin: round; }
+.guardian-fish path + path { fill: none; stroke-width: 2.8; }
+.guardian-fish circle { fill: #173c2f; stroke: #eff9e3; stroke-width: 1.2; }
+.guardian-sparks { stroke: #287755; stroke-width: 2.8; fill: #8fe1b6; fill-opacity: 1; }
 
 .guardian-star-arc { stroke: #ffe6a4; stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 320; stroke-dashoffset: 320; }
 .guardian-star { fill: #fff0b6; stroke: #edce78; stroke-width: 2.2; stroke-linejoin: round; }

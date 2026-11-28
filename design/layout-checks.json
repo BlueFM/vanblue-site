@@ -1,0 +1,17 @@
+{
+  "routes": 19,
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "dpr": 2
+    }
+  ],
+  "checkedResources": 39,
+  "issues": [],
+  "errors": []
+}

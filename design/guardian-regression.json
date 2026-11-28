@@ -1,0 +1,29 @@
+{
+  "commit": "50858e9",
+  "live": false,
+  "checks": [
+    "desktop: repeated cat clicks cast the selected fish, never cycle or open settings",
+    "desktop: all four choices select without casting, persist locally, then repeat the chosen real effect",
+    "desktop: moon toggles only settings; separate hide/show stays usable while hidden, including after navigation",
+    "keyboard: Enter/Space/ArrowUp open settings, selection is accessible, Escape returns focus to the moon, cat keyboard casting never opens the panel",
+    "desktop: floating panel stays moon-anchored after dragging and high placement; narrow/short viewports remain clamped and scrollable",
+    "mobile: repeated cat clicks cast the selected fish, never cycle or open settings",
+    "mobile: all four choices select without casting, persist locally, then repeat the chosen real effect",
+    "mobile: moon toggles only settings; separate hide/show stays usable while hidden, including after navigation",
+    "mobile: floating panel stays moon-anchored after dragging and high placement; narrow/short viewports remain clamped and scrollable",
+    "reduced motion, blocked storage and still-image fallback preserve manual spell selection and quiet casting"
+  ],
+  "reports": [
+    {
+      "mobile": false,
+      "selected": "shield",
+      "checks": true
+    },
+    {
+      "mobile": true,
+      "selected": "puff",
+      "checks": true
+    }
+  ],
+  "errors": []
+}

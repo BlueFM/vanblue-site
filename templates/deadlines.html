@@ -13,7 +13,8 @@
 {% set now_ts = now(timestamp=true) %}
 
 <h1 class="page__title">{{ page.title }}</h1>
-<div class="prose page-intro">{{ page.content | safe }}</div>
+<p class="tool-lead">Browse AI and related conference deadlines in your time zone.</p>
+<details class="tool-intro"><summary>About the calendar &amp; time zones</summary><div class="prose page-intro">{{ page.content | safe }}</div></details>
 
 <p class="ddl-meta">{{ ccf.count }} deadlines across {{ ccf.venues }} venues · synced {{ ccf.updated }} · <a href="{{ ccf.source }}">CCFDDL</a> (MIT)</p>
 
@@ -29,7 +30,7 @@
     <label class="ddl-past"><input type="checkbox" id="ddl-past"> past deadlines</label>
   </div>
 
-  <p class="ddl-count" id="ddl-count"></p>
+  <p class="ddl-count" id="ddl-count" aria-live="polite" aria-atomic="true"></p>
 
   <table class="ddl-table">
     <thead>

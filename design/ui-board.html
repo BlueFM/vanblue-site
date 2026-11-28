@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Moonlit Grimoire — UI design board</title>
+  <link rel="icon" href="../static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../static/css/style.css">
+  <link rel="stylesheet" href="../static/css/moonlit.css">
+  <script src="../static/js/grimoire.js" defer></script>
+</head>
+<body class="moonlit is-home design-board">
+<div class="night-sky" aria-hidden="true"></div>
+<main class="board-shell">
+  <header class="board-title">
+    <p>vanblue.online · Visual system / 01</p>
+    <h1>Moonlit Grimoire</h1>
+    <p class="board-subtitle">A researcher's field notes, bound in moonlight. A complete editorial system for a personal academic website: midnight plum outside, warm paper inside, with a little wonder kept in the margins.</p>
+  </header>
+  <section class="hero-page" aria-labelledby="hero-name">
+    <div class="hero-copy">
+      <p class="folio-kicker">Field notes / Optimization &amp; learning</p>
+      <h2 class="hero-name" id="hero-name">Shunbao Zhang</h2>
+      <p class="hero-role">MSc student, Software Engineering<span>Lanzhou University · School of Artificial Intelligence</span></p>
+      <p class="hero-tagline">I work on why deep networks generalize and stay robust. My current focus is neurodynamics-inspired optimizers that reshape the loss landscape toward flat minima.</p>
+      <div class="hero-actions"><a class="ink-button" href="#components">View publications <span aria-hidden="true">↗</span></a><a class="quiet-button" href="#pages">Curriculum Vitae</a></div>
+      <p class="hero-footnote">Lanzhou, China · Curiosity, kept in the margins.</p>
+    </div>
+    <div class="exlibris">
+      <p class="exlibris-label">Ex libris</p>
+      <img class="exlibris-map" src="../static/img/moonlit/astrolabe.svg" alt="" width="400" height="400">
+      <button class="exlibris-seal" type="button" aria-label="Reveal a small constellation"><img src="../static/img/avatar-cat.jpg" alt="" width="128" height="128"></button>
+      <p class="exlibris-caption">A curious mind.<span>Some margins have secrets.</span></p>
+    </div>
+  </section>
+  <section class="board-panel" aria-labelledby="palette-title">
+    <p class="folio-kicker">01 / Color &amp; atmosphere</p><h2 id="palette-title">Ink, paper &amp; a little alchemy.</h2>
+    <div class="board-swatches">
+      <div class="board-swatch" style="--swatch:#201828"><i></i><strong>Midnight plum</strong><code>#201828</code></div>
+      <div class="board-swatch" style="--swatch:#F4ECDD"><i></i><strong>Warm paper</strong><code>#F4ECDD</code></div>
+      <div class="board-swatch" style="--swatch:#382C3F"><i></i><strong>Research ink</strong><code>#382C3F</code></div>
+      <div class="board-swatch" style="--swatch:#65417F"><i></i><strong>Amethyst ink</strong><code>#65417F</code></div>
+      <div class="board-swatch" style="--swatch:#B7955E"><i></i><strong>Old gold</strong><code>#B7955E</code></div>
+      <div class="board-swatch" style="--swatch:#58C69D"><i></i><strong>Emerald fish</strong><code>#58C69D</code></div>
+      <div class="board-swatch" style="--swatch:#205C47"><i></i><strong>Fish outline</strong><code>#205C47</code></div>
+    </div>
+    <p class="board-caption" style="margin-top:18px;margin-bottom:0">Gold decorates. Dark ink carries the reading. The fish gets a solid emerald body and a deep outline, rather than disappearing into white.</p>
+  </section>
+  <section class="board-panel" id="components" aria-labelledby="components-title">
+    <p class="folio-kicker">02 / Type &amp; components</p><h2 id="components-title">Personality in the headings. Clarity everywhere else.</h2>
+    <div class="board-columns">
+      <div class="board-scale"><h3>The shape of a good question.</h3><p>Research is a collection of careful questions. Formal work stays easy to scan; a quiet reading surface gives longer ideas room to unfold.</p><p class="board-caption" style="font-family:var(--sans);font-size:11px">DISPLAY / FRAUNCES 600 · BODY / SYSTEM SANS · READING / GEORGIA<br>Self-hosted type. No remote font service.</p></div>
+      <div>
+        <p class="board-caption">PRIMARY · SECONDARY · KEYBOARD FOCUS</p>
+        <div class="board-components"><a href="#pages" class="ink-button">Read the paper ↗</a><a href="#pages" class="quiet-button">View code</a><a href="#pages" class="quiet-button demo-focus">Focus state</a></div>
+        <p class="board-caption" style="margin-top:22px">RESEARCH THREADS · NON-INTERACTIVE TAGS</p>
+        <ul class="chips"><li class="chip">Loss-landscape shaping</li><li class="chip">Generalization</li><li class="chip">Robustness</li></ul>
+        <p class="board-caption" style="margin-top:22px">OPTIONAL, FINITE DELIGHT</p>
+        <div class="board-components"><button class="star-button" type="button" data-starlight aria-label="Light a little starlight" style="background:#30233c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5Z"/></svg></button><span class="board-caption">Tap a star. No autoplay. No cursor trail.</span></div>
+      </div>
+    </div>
+  </section>
+  <section class="board-panel" id="pages" aria-labelledby="pages-title">
+    <p class="folio-kicker">03 / One book, many kinds of pages</p><h2 id="pages-title">A whole website, not just a cover.</h2>
+    <div class="board-inventory">
+      <div><span>I / PUBLICATIONS</span>Numbered bibliography<br>Authors, venue, status<br>PDF · DOI · Code</div>
+      <div><span>II / RESEARCH</span>Readable chapters<br>Linked papers &amp; stories<br>Clear academic hierarchy</div>
+      <div><span>III / FIELD NOTES</span>Articles &amp; projects<br>Dates, figures, code<br>A calm reading measure</div>
+      <div><span>IV / WORKBENCH</span>CCF calendar &amp; Lab<br>Existing tools intact<br>Responsive controls</div>
+      <div><span>V / THE MARGINS</span>One spell cat<br>Three optional secrets<br>Keyboard &amp; touch parity</div>
+    </div>
+    <p class="board-caption" style="margin-top:20px;margin-bottom:0">Mobile: single-column reading, a compact bookplate, a direct Index menu, and 44px controls. Reduced motion: static feedback. Print: white paper, black ink, no decorations.</p>
+  </section>
+  <p style="margin-top:26px;color:#c6b4ce;font-size:11px">Design direction · Moonlit Grimoire / 2026 · Original line art, existing personal content, SIL-licensed type.</p>
+</main>
+<div class="starfall" aria-hidden="true"></div>
+<p class="grimoire-status" id="grimoire-status" role="status" aria-live="polite" aria-atomic="true"></p>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{
+  "baseCommit": "50858e9b40eae85fb65331b1714c1ca0a41fd537",
+  "branch": "feat/moonlit-grimoire",
+  "assets": {
+    "css/style.css": {
+      "bytes": 28523,
+      "sha256": "8d617751b2af7adc3e64b196483b3dcdb28fed84c010238ec07862b5f9d59b90"
+    },
+    "css/guardian.css": {
+      "bytes": 16401,
+      "sha256": "657456e91c949239db05f670729a844b93ec10a66fe67ae353a9235d70b27f79"
+    },
+    "css/moonlit.css": {
+      "bytes": 34827,
+      "sha256": "6cfada376ec59271e3080029ae3bda08a2184f31e6662d8b31830f606a5c07a7"
+    },
+    "js/guardian.js": {
+      "bytes": 34280,
+      "sha256": "4911517c5d35bbfd3458072c8d5f1fef732493018a4d99be145b76ec23a40e73"
+    },
+    "js/grimoire.js": {
+      "bytes": 13611,
+      "sha256": "2f908f0f4e18c26c7ee2b7dd52ffbdf4ba3737b363f5f32c8af1912a7c503418"
+    },
+    "js/lab.js": {
+      "bytes": 15036,
+      "sha256": "457fa6839d0cb523d004b3ca2343f3c5586e7ff8c40b0e0f8d75914f12db5b59"
+    },
+    "js/deadlines.js": {
+      "bytes": 6948,
+      "sha256": "1fab3d6af298e384dca9e2e6b997d9819446cf7066eb398f25d2d0c90fd14ac5"
+    },
+    "fonts/fraunces-600-latin.woff2": {
+      "bytes": 35120,
+      "sha256": "170a928c701ef00e4b91105f870dd2c764b9ddb0c725cda6e71de576a8e72a00"
+    },
+    "img/wizard-cat/sprites.webp": {
+      "bytes": 203594,
+      "sha256": "8c2d1595b47a8ad1e17ecfe9c0023847ec049d2fbc8423708c4a8bcf8fba48d1"
+    },
+    "img/wizard-cat/idle.webp": {
+      "bytes": 19674,
+      "sha256": "a26e7320754d9d90601f95bbdc721707bcc45a0e90bf2a4ee6baec8476ba8d72"
+    },
+    "img/moonlit/astrolabe.svg": {
+      "bytes": 1434,
+      "sha256": "4635ac4f28fb26ca3417c2bb938a430d84ee60c8824d48157affae8fff2fef43"
+    },
+    "img/moonlit/night-map.svg": {
+      "bytes": 1715,
+      "sha256": "c432952a6f30b4f56db1706ce549bd5f582f1ec077d0be5de2a1ffd3be11b30f"
+    },
+    "img/moonlit/book-and-quill.svg": {
+      "bytes": 641,
+      "sha256": "b94116a09d30599a018a7dc2a01804c2f9d15fc18cc24129777cb2a095eed755"
+    },
+    "img/moonlit/og-cover.png": {
+      "bytes": 163774,
+      "sha256": "b3b500435bb5751707d65a6d05378d35aa75b526aa8bbc6063735b81755a3092"
+    }
+  }
+}

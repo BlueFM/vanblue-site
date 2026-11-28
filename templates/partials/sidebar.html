@@ -1,4 +1,5 @@
-<aside class="sidebar">
+<aside class="sidebar" aria-label="About the researcher">
+  <div class="sidebar__folio"><span>Ex libris / Field notes</span><img src="{{ get_url(path='img/moonlit/book-and-quill.svg') }}" alt="" width="24" height="24"></div>
   <div class="author__avatar">
     <a href="{{ get_url(path='@/_index.md') }}" tabindex="-1">
       <img src="{{ config.extra.photo }}" alt="{{ trans(key='author', lang=lang) }}" width="175" height="175">
@@ -59,24 +60,5 @@
     {% endif %}
   </ul>
 
-  {% set ccf = load_data(path="data/ccf-upcoming.json") %}
-  {% set now_ts = now(timestamp=true) %}
-  {% set_global next_count = 0 %}
-  {% for e in ccf.entries %}{% if e.ts > now_ts %}{% set_global next_count = next_count + 1 %}{% endif %}{% endfor %}
-  {% if next_count > 0 %}
-  <div class="sidebar-card">
-    <h2 class="sidebar-card__title">{{ trans(key="deadlines_heading", lang=lang) }}</h2>
-    <ul class="sidebar-ddl">
-      {% set_global shown = 0 %}
-      {% for e in ccf.entries %}{% if e.ts > now_ts and shown < 3 %}
-        {% set_global shown = shown + 1 %}
-        <li>
-          <a href="{{ get_url(path='@/ccf-deadlines.md') }}#{{ e.id }}">{{ e.venue }} {{ e.year }}</a>
-          <span class="ddl-when" data-ts="{{ e.ts }}">{{ e.date_short }}</span>
-        </li>
-      {% endif %}{% endfor %}
-    </ul>
-    <a class="sidebar-card__more" href="{{ get_url(path='@/ccf-deadlines.md') }}">{{ trans(key="all_deadlines", lang=lang) }} →</a>
-  </div>
-  {% endif %}
+  {% include "partials/deadline_marginalia.html" %}
 </aside>

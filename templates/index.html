@@ -1,121 +1,140 @@
 {% extends "base.html" %}
 
 {% block content %}
-{# the name already sits in the sidebar; keep an h1 for the outline, not for the eye #}
-<h1 class="visually-hidden">{{ trans(key="author", lang=lang) }}</h1>
-
-{% if section.extra.bio %}
-<div class="page__lead">{{ section.extra.bio | markdown | safe }}</div>
-{% endif %}
-
-{% if section.extra.interests %}
-<div class="interests">
-  <span class="interests__label">{{ trans(key="interests_heading", lang=lang) }}</span>
-  <ul class="chips">
-    {% for item in section.extra.interests %}<li class="chip">{{ item }}</li>{% endfor %}
-  </ul>
-</div>
-{% endif %}
-
-{% if section.content %}
-<section id="news">
-  <h2>{{ trans(key="news_heading", lang=lang) }}</h2>
-  <div class="news">{{ section.content | safe }}</div>
-</section>
-{% endif %}
-
-{% set papers = get_section(path="papers/_index.md") %}
-<section id="selected-work">
-  <h2>{{ trans(key="selected_work", lang=lang) }}</h2>
-  <div class="selected-work-grid">
-    {% for paper in papers.pages %}{% if loop.index <= 4 %}
-    <article class="selected-work-item">
-      <div class="selected-work-meta">{% if paper.extra.venue %}{{ paper.extra.venue }}{% endif %}{% if paper.date %} · {{ paper.date | date(format="%Y") }}{% endif %}</div>
-      <h3><a href="{{ paper.permalink }}">{{ paper.title }}</a></h3>
-      {% if paper.description %}<p>{{ paper.description }}</p>{% endif %}
-      <div class="selected-work-links">
-        {% if paper.extra.pdf %}<a href="{{ paper.extra.pdf }}">{{ trans(key="pdf", lang=lang) }}</a>{% endif %}
-        {% if paper.extra.doi %}<a href="https://doi.org/{{ paper.extra.doi }}">{{ trans(key="doi", lang=lang) }}</a>{% endif %}
-        {% if paper.extra.code %}<a href="{{ paper.extra.code }}">{{ trans(key="code", lang=lang) }}</a>{% endif %}
-        {% if paper.extra.paper %}<a href="{{ paper.extra.paper }}">{{ trans(key="paper_link", lang=lang) }}</a>{% endif %}
-      </div>
-    </article>
-    {% endif %}{% endfor %}
+<section class="hero-page" aria-labelledby="home-name">
+  <div class="hero-copy">
+    <p class="folio-kicker">Field notes / Optimization &amp; learning</p>
+    <h1 class="hero-name" id="home-name">{{ trans(key="author", lang=lang) }}</h1>
+    <p class="hero-role">{{ trans(key="role", lang=lang) }}<span>{{ trans(key="affiliation", lang=lang) }}</span></p>
+    <p class="hero-tagline">{{ trans(key="tagline", lang=lang) }}</p>
+    <div class="hero-actions">
+      <a class="ink-button" href="{{ get_url(path='@/papers/_index.md') }}">View publications <span aria-hidden="true">↗</span></a>
+      <a class="quiet-button" href="{{ get_url(path='@/cv.md') }}">{{ trans(key="hero_cv", lang=lang) }}</a>
+    </div>
+    <p class="hero-footnote"><span>{{ trans(key="location", lang=lang) }}</span><span aria-hidden="true">·</span><a href="mailto:{{ config.extra.email }}">Say hello ↗</a></p>
   </div>
+  {% include "partials/exlibris.html" %}
 </section>
+
+<div class="home-desk">
+  <div class="home-primary">
+    {% set papers = get_section(path="papers/_index.md") %}
+    <section class="folio-section" id="selected-work" aria-labelledby="work-heading">
+      <p class="folio-kicker">I / The bibliography</p>
+      <div class="folio-title-row"><h2 id="work-heading">{{ trans(key="selected_pubs", lang=lang) }}</h2><a href="{{ get_url(path='@/papers/_index.md') }}">All publications →</a></div>
+      <div class="work-index">
+        {% for paper in papers.pages %}{% if loop.index <= 4 %}
+        <article class="work-row">
+          <span class="work-number" aria-hidden="true">0{{ loop.index }}</span>
+          <div>
+            <div class="work-meta">
+              {% if paper.extra.venue %}<span>{{ paper.extra.venue }}</span>{% endif %}
+              {% if paper.date %}<span>{{ paper.date | date(format="%Y") }}</span>{% endif %}
+              {% if paper.extra.status %}<span class="work-status">{{ paper.extra.status }}</span>{% endif %}
+            </div>
+            <h3><a href="{{ paper.permalink }}">{{ paper.title }}</a></h3>
+            {% if paper.description %}<p>{{ paper.description }}</p>{% endif %}
+            <div class="work-links">
+              {% if paper.extra.pdf %}<a href="{{ paper.extra.pdf }}">{{ trans(key="pdf", lang=lang) }}</a>{% endif %}
+              {% if paper.extra.doi %}<a href="https://doi.org/{{ paper.extra.doi }}">{{ trans(key="doi", lang=lang) }}</a>{% endif %}
+              {% if paper.extra.code %}<a href="{{ paper.extra.code }}">{{ trans(key="code", lang=lang) }}</a>{% endif %}
+              {% if paper.extra.paper %}<a href="{{ paper.extra.paper }}">{{ trans(key="paper_link", lang=lang) }}</a>{% endif %}
+              {% if paper.extra.project %}<a href="{{ paper.extra.project }}">{{ trans(key="project", lang=lang) }}</a>{% endif %}
+            </div>
+          </div>
+        </article>
+        {% endif %}{% endfor %}
+      </div>
+    </section>
+    {% if section.extra.bio %}
+    <section class="folio-section" id="about" aria-labelledby="about-heading">
+      <p class="folio-kicker">II / About the work</p>
+      <h2 id="about-heading">On landscapes &amp; learning.</h2>
+      <div class="about-copy">{{ section.extra.bio | markdown | safe }}</div>
+    </section>
+    {% endif %}
+  </div>
+  <aside class="home-marginalia" aria-label="Research marginalia">
+    {% if section.extra.interests %}
+    <section class="marginal-card" aria-labelledby="threads-heading">
+      <p class="folio-kicker">Threads to follow</p><h2 id="threads-heading">{{ trans(key="interests_heading", lang=lang) }}</h2>
+      <ul class="chips">{% for item in section.extra.interests %}<li class="chip">{{ item }}</li>{% endfor %}</ul>
+    </section>
+    {% endif %}
+    <section class="marginal-card" aria-label="Upcoming conferences">
+      <p class="folio-kicker">The almanac</p>
+      {% include "partials/deadline_marginalia.html" %}
+    </section>
+    {% if section.content %}
+    <section class="marginal-card" id="news" aria-labelledby="news-heading">
+      <p class="folio-kicker">Recent entries</p><h2 id="news-heading">{{ trans(key="news_heading", lang=lang) }}</h2>
+      <div class="news">{{ section.content | safe }}</div>
+    </section>
+    {% endif %}
+    <div class="marginal-card marginal-card--night">
+      <p class="folio-kicker">The margin's keeper</p>
+      <p>The little wizard keeps watch nearby. Click the cat for your chosen spell; open the moon for settings.</p>
+    </div>
+  </aside>
+</div>
 
 {% set research = get_section(path="research/_index.md") %}
 {% if research.pages | length > 0 %}
-<section id="research-stories">
-  <h2>{{ trans(key="research_stories", lang=lang) }}</h2>
+<section class="folio-section chapter-wide" id="research-stories" aria-labelledby="stories-heading">
+  <p class="folio-kicker">III / Behind the papers</p><h2 id="stories-heading">{{ trans(key="research_stories", lang=lang) }}</h2>
   {% if section.extra.stories_intro %}<p class="section-intro">{{ section.extra.stories_intro }}</p>{% endif %}
-  <p class="story-more"><a class="story-link" href="{{ get_url(path='@/lab.md') }}">Play with the loss landscape →</a></p>
+  <p class="story-more"><a href="{{ get_url(path='@/lab.md') }}">Open the loss-landscape workbench →</a></p>
   {% for story in research.pages %}
   <details class="research-story">
-    <summary>{{ trans(key="read_story", lang=lang) }}{{ story.title }}</summary>
+    <summary>{{ story.title }}</summary>
     <div class="prose">{{ story.content | safe }}</div>
   </details>
   {% endfor %}
 </section>
 {% endif %}
 
-{% if section.extra.experience %}
-<section id="experience">
-  <h2>{{ trans(key="experience_heading", lang=lang) }}</h2>
-  <ul class="experience">
-    {% for item in section.extra.experience %}
-    <li><em>{{ item.period }}</em> {{ item.text }}</li>
-    {% endfor %}
-  </ul>
-</section>
-{% endif %}
-
-{% set projects = get_section(path="projects/_index.md") %}
-{% if projects.pages | length > 0 %}
-<section id="projects">
-  <h2>{{ trans(key="nav_projects", lang=lang) }}</h2>
-  <ul class="link-list">
-    {% for item in projects.pages %}{% if loop.index <= 3 %}
-    <li>
-      <div class="item-head">
-        <a class="item-title" href="{{ item.permalink }}">{{ item.title }}</a>
-        {% if item.date %}<span class="item-year">{{ item.date | date(format="%Y") }}</span>{% endif %}
-      </div>
-      {% if item.description %}<p class="item-desc">{{ item.description }}</p>{% endif %}
-      <div class="item-links">
-        {% if item.extra.live %}<a href="{{ item.extra.live }}" rel="noopener">{{ trans(key="live_site", lang=lang) }}</a>{% endif %}
-        {% if item.extra.repo %}<a href="{{ item.extra.repo }}" rel="noopener">{{ trans(key="repo", lang=lang) }}</a>{% endif %}
-      </div>
-    </li>
-    {% endif %}{% endfor %}
-  </ul>
-</section>
-{% endif %}
+<div class="home-twin">
+  {% set projects = get_section(path="projects/_index.md") %}
+  {% if projects.pages | length > 0 %}
+  <section class="folio-section" id="projects" aria-labelledby="projects-heading">
+    <p class="folio-kicker">IV / Things made</p><h2 id="projects-heading">{{ trans(key="nav_projects", lang=lang) }}</h2>
+    <ul class="link-list">
+      {% for item in projects.pages %}{% if loop.index <= 3 %}
+      <li>
+        <div class="item-head"><a class="item-title" href="{{ item.permalink }}">{{ item.title }}</a>{% if item.date %}<span class="item-year">{{ item.date | date(format="%Y") }}</span>{% endif %}</div>
+        {% if item.description %}<p class="item-desc">{{ item.description }}</p>{% endif %}
+        <div class="item-links">{% if item.extra.live %}<a href="{{ item.extra.live }}" rel="noopener">{{ trans(key="live_site", lang=lang) }}</a>{% endif %}{% if item.extra.repo %}<a href="{{ item.extra.repo }}" rel="noopener">{{ trans(key="repo", lang=lang) }}</a>{% endif %}</div>
+      </li>
+      {% endif %}{% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+  {% if section.extra.experience %}
+  <section class="folio-section" id="experience" aria-labelledby="experience-heading">
+    <p class="folio-kicker">V / The path so far</p><h2 id="experience-heading">{{ trans(key="experience_heading", lang=lang) }}</h2>
+    <ul class="experience">{% for item in section.extra.experience %}<li><em>{{ item.period | replace(from=",", to="") }}</em>{{ item.text }}</li>{% endfor %}</ul>
+  </section>
+  {% endif %}
+</div>
 
 {% set share = get_section(path="share/_index.md") %}
 {% if share.pages | length > 0 %}
-<section id="beyond">
-  <h2>{{ trans(key="nav_share", lang=lang) }}</h2>
+<section class="folio-section chapter-wide" id="beyond" aria-labelledby="beyond-heading">
+  <p class="folio-kicker">VI / On the reading desk</p><h2 id="beyond-heading">{{ trans(key="nav_share", lang=lang) }}</h2>
   <ul class="link-list">
     {% for item in share.pages %}{% if loop.index <= 2 %}
     <li>
-      <div class="item-head">
-        <a class="item-title" href="{{ item.permalink }}">{{ item.title }}</a>
-        {% if item.date %}<span class="item-year">{{ item.date | date(format="%Y") }}</span>{% endif %}
-      </div>
+      <div class="item-head"><a class="item-title" href="{{ item.permalink }}">{{ item.title }}</a>{% if item.date %}<span class="item-year">{{ item.date | date(format="%Y") }}</span>{% endif %}</div>
       {% if item.description %}<p class="item-desc">{{ item.description }}</p>{% endif %}
-      <div class="item-links">
-        {% if item.extra.url %}<a href="{{ item.extra.url }}" rel="noopener">{{ trans(key="visit_site", lang=lang) }}</a>{% endif %}
-      </div>
+      <div class="item-links">{% if item.extra.url %}<a href="{{ item.extra.url }}" rel="noopener">{{ trans(key="visit_site", lang=lang) }}</a>{% endif %}</div>
     </li>
     {% endif %}{% endfor %}
   </ul>
 </section>
 {% endif %}
 
-<section id="contact">
-  <h2>{{ trans(key="contact_heading", lang=lang) }}</h2>
-  <p>{{ trans(key="contact_note", lang=lang) }}</p>
-  <p><a href="mailto:{{ config.extra.email }}">{{ config.extra.email }}</a></p>
+<section class="folio-section chapter-wide contact-paper" id="contact" aria-labelledby="contact-heading">
+  <div><p class="folio-kicker">VII / Correspondence</p><h2 id="contact-heading">{{ trans(key="contact_heading", lang=lang) }}</h2><p>{{ trans(key="contact_note", lang=lang) }}</p></div>
+  <a class="quiet-button" href="mailto:{{ config.extra.email }}">{{ config.extra.email }} <span aria-hidden="true">↗</span></a>
 </section>
 {% endblock content %}

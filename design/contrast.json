@@ -1,0 +1,38 @@
+[
+  {
+    "foreground": "--ink",
+    "background": "--paper",
+    "ratio": 11.18,
+    "minimum": 7
+  },
+  {
+    "foreground": "--muted",
+    "background": "--paper",
+    "ratio": 4.96,
+    "minimum": 4.5
+  },
+  {
+    "foreground": "--link",
+    "background": "--paper",
+    "ratio": 6.84,
+    "minimum": 4.5
+  },
+  {
+    "foreground": "--paper-light",
+    "background": "--link",
+    "ratio": 7.66,
+    "minimum": 4.5
+  },
+  {
+    "foreground": "--gold-ink",
+    "background": "--paper",
+    "ratio": 4.9,
+    "minimum": 4.5
+  },
+  {
+    "foreground": "--mint",
+    "background": "--sky",
+    "ratio": 8.16,
+    "minimum": 3
+  }
+]

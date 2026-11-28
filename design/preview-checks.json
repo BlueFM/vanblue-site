@@ -1,0 +1,9 @@
+{
+  "mode": "preview",
+  "checks": [
+    "7 routes at desktop and mobile: theme, headings, navigation, IDs, images, contrast and no document overflow",
+    "39 local links and resources exist"
+  ],
+  "errors": [],
+  "at": "2026-11-28T13:20:57.167Z"
+}

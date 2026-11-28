@@ -15,19 +15,34 @@ no Node or Ruby toolchain. Built with Zola, served by nginx as flat files.
 
 ## Theme
 
-Narrow profile card on the left, one column of prose on the right, sticky
-masthead above — the AcademicPages look (Trebuchet MS, 15px, `#494e52` on white,
-links `#224b8d`) written as a single plain stylesheet, no Sass or JS build step.
+**Moonlit Grimoire** pairs the spell cat with a midnight-plum sky, warm reading
+paper, original celestial line art and a self-hosted Fraunces heading face.
+The cover-like home page has a celestial bookplate, a numbered bibliography,
+research chapters and marginalia. Inner pages retain direct academic navigation,
+readable prose and the original research tools. No Sass or JS build step.
 
-    static/css/style.css             the whole theme, top to bottom in page order
-    templates/partials/sidebar.html  profile card, link list, inline SVG icons
+    static/css/style.css                  content and tool primitives
+    static/css/moonlit.css                design tokens, layout and theme
+    static/js/grimoire.js                 mobile navigation and optional discoveries
+    templates/partials/sidebar.html      inner-page researcher bookplate
+    templates/partials/exlibris.html      home-page celestial seal
+    static/img/moonlit/                   original SVG decorations and share cover
+    static/fonts/                        local heading font, provenance and OFL
+    design/                              UI board and browser previews
+    docs/moonlit-ui.md                    complete UI specification
+    docs/magic-style-research.md          cited references and evidence boundaries
+
+The three optional discoveries are visitor-triggered: the home-page seal,
+rotating footer marginalia, and the footer star / `lumos` typed outside editable
+controls. They do not change the cat's selected spell or settings. Reduced-motion
+preferences, hidden tabs, blocked storage, keyboard navigation and print are
+handled independently of the existing Guardian module.
 
 The home page is assembled from content rather than typed by hand:
 
 - `content/_index.md` `[extra]` holds the bio, the research-interest chips, the
   Research Stories intro and the `[[extra.experience]]` list. The Markdown body is
-  the News list and is empty on purpose; put a list back there and the section
-  returns.
+  the News list; clearing it hides the News section without changing templates.
 - Selected Work, Research Stories, Projects and Recommendations are pulled from
   `content/papers/`, `content/research/`, `content/projects/` and
   `content/share/` — adding a page there is enough for it to appear.
@@ -36,9 +51,10 @@ The home page is assembled from content rather than typed by hand:
 
 ## Share card
 
-`python tools/make-og.py` redraws `static/img/og-cover.jpg`, the 1200×630 image
-used by `og:image` on every page. The strings are at the top of that file; it
-needs Pillow and the Trebuchet MS fonts that ship with Windows.
+`static/img/moonlit/og-cover.png` is the new 1200×630 share image. Its editable
+HTML source is `design/og-cover.html`; render that page at 1200×630 to update it.
+It uses the same local font and original line art as the live theme. The legacy
+`tools/make-og.py` remains available for the previous classic cover only.
 
 ## Lab
 

@@ -4,21 +4,29 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {% set_global doc_title = config.title %}
+{% set_global top = "" %}
+{% set_global is_home = false %}
 {% if page is defined and page %}
   {% set_global doc_title = page.title %}
+  {% set_global top = page.components | first | default(value="") %}
 {% elif section is defined and section %}
-  {% if section.extra.is_home | default(value=false) %}{% set_global doc_title = trans(key="author", lang=lang) %}{% else %}{% set_global doc_title = section.title %}{% endif %}
+  {% if section.extra.is_home | default(value=false) %}
+    {% set_global doc_title = trans(key="author", lang=lang) %}
+    {% set_global is_home = true %}
+  {% else %}{% set_global doc_title = section.title %}{% endif %}
+  {% if section.components | length > 0 %}{% set_global top = section.components | first | default(value="") %}{% endif %}
 {% endif %}
 <title>{% block title %}{{ config.title }}{% endblock title %}</title>
 <meta name="description" content="{% block description %}{{ config.description }}{% endblock description %}">
 <meta name="author" content="{{ trans(key='author', lang=lang) }}">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#201828">
 <link rel="icon" href="{{ get_url(path='favicon.svg') }}" type="image/svg+xml">
+<link rel="preload" href="{{ get_url(path='fonts/fraunces-600-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="{{ get_url(path='css/style.css', cachebust=true) }}">
 <link rel="stylesheet" href="{{ get_url(path='css/guardian.css', cachebust=true) }}">
+<link rel="stylesheet" href="{{ get_url(path='css/moonlit.css', cachebust=true) }}">
 <link rel="canonical" href="{{ current_url | default(value=config.base_url) }}">
 <link rel="alternate" type="application/atom+xml" title="{{ config.title }}" href="{{ config.base_url }}/atom.xml">
-
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="{{ config.title }}">
 <meta property="og:locale" content="{% if lang == 'zh' %}zh_CN{% else %}en_US{% endif %}">
@@ -30,7 +38,6 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="{{ trans(key='author', lang=lang) }} — {{ trans(key='affiliation', lang=lang) }}">
 <meta name="twitter:card" content="summary_large_image">
-
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -48,48 +55,65 @@
 </script>
 {% block head %}{% endblock head %}
 </head>
-<body>
+<body class="moonlit{% if is_home %} is-home{% endif %}">
+<a class="skip-link" href="#content">Skip to content</a>
+<div class="night-sky" aria-hidden="true"></div>
 <header class="masthead">
   <div class="masthead__inner">
-    <a class="masthead__brand" href="{{ get_url(path='@/_index.md') }}">{{ trans(key="site_brand", lang=lang) }}</a>
-    {% set_global top = "" %}
-    {% if page is defined and page %}
-      {% set_global top = page.components | first | default(value="") %}
-    {% elif section is defined and section and section.components | length > 0 %}
-      {% set_global top = section.components | first | default(value="") %}
-    {% endif %}
-    <nav class="masthead__nav" aria-label="Main">
-    <ul class="masthead__menu">
-      <li><a{% if top == "" %} class="is-active"{% endif %} href="{{ get_url(path='@/_index.md') }}">{{ trans(key="nav_home", lang=lang) }}</a></li>
-      <li><a{% if top == "papers" %} class="is-active"{% endif %} href="{{ get_url(path='@/papers/_index.md') }}">{{ trans(key="nav_papers", lang=lang) }}</a></li>
-      <li><a{% if top == "research" %} class="is-active"{% endif %} href="{{ get_url(path='@/research/_index.md') }}">{{ trans(key="nav_research", lang=lang) }}</a></li>
-      <li><a{% if top == "projects" %} class="is-active"{% endif %} href="{{ get_url(path='@/projects/_index.md') }}">{{ trans(key="nav_projects", lang=lang) }}</a></li>
-      <li><a{% if top == "blog" %} class="is-active"{% endif %} href="{{ get_url(path='@/blog/_index.md') }}">{{ trans(key="nav_blog", lang=lang) }}</a></li>
-      <li><a{% if top == "share" %} class="is-active"{% endif %} href="{{ get_url(path='@/share/_index.md') }}">{{ trans(key="nav_share", lang=lang) }}</a></li>
-    </ul>
+    <a class="masthead__brand" href="{{ get_url(path='@/_index.md') }}">
+      <img class="brand-sigil" src="{{ get_url(path='favicon.svg') }}" alt="" width="32" height="38">
+      <span><span class="brand-name">{{ trans(key="site_brand", lang=lang) }}</span><span class="brand-caption">A researcher's grimoire</span></span>
+    </a>
+    <button class="book-nav-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" hidden>Index <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14"/></svg></button>
+    <nav class="masthead__nav" id="site-navigation" aria-label="Main">
+      <ul class="masthead__menu">
+        <li><a{% if is_home %} class="is-active" aria-current="true"{% endif %} href="{{ get_url(path='@/_index.md') }}">{{ trans(key="nav_home", lang=lang) }}</a></li>
+        <li><a{% if top == "papers" %} class="is-active" aria-current="true"{% endif %} href="{{ get_url(path='@/papers/_index.md') }}">{{ trans(key="nav_papers", lang=lang) }}</a></li>
+        <li><a{% if top == "research" %} class="is-active" aria-current="true"{% endif %} href="{{ get_url(path='@/research/_index.md') }}">{{ trans(key="nav_research", lang=lang) }}</a></li>
+        <li><a{% if top == "projects" %} class="is-active" aria-current="true"{% endif %} href="{{ get_url(path='@/projects/_index.md') }}">{{ trans(key="nav_projects", lang=lang) }}</a></li>
+        <li><a{% if top == "blog" %} class="is-active" aria-current="true"{% endif %} href="{{ get_url(path='@/blog/_index.md') }}">{{ trans(key="nav_blog", lang=lang) }}</a></li>
+        <li><a{% if top == "share" %} class="is-active" aria-current="true"{% endif %} href="{{ get_url(path='@/share/_index.md') }}">{{ trans(key="nav_share", lang=lang) }}</a></li>
+      </ul>
     </nav>
   </div>
 </header>
-
 <div id="main">
-{% include "partials/sidebar.html" %}
-<main class="page">
-  {% block content %}{% endblock content %}
-</main>
+  <main class="page" id="content" tabindex="-1">
+    {% if not is_home %}<div class="page__folio" aria-hidden="true"><span>Moonlit field notes</span><span>{% if top %}{{ top }}{% else %}In the margins{% endif %}</span></div>{% endif %}
+    {% block content %}{% endblock content %}
+  </main>
+  {% if not is_home %}{% include "partials/sidebar.html" %}{% endif %}
 </div>
-
 <footer class="page__footer">
   <div class="page__footer-inner">
-    <span>&copy; {{ now() | date(format="%Y") }} {{ trans(key="author", lang=lang) }}</span>
-    <a href="mailto:{{ config.extra.email }}">{{ trans(key="footer_email", lang=lang) }}</a>
-    <a href="{{ config.extra.github }}">GitHub</a>
-    {% if config.extra.scholar %}<a href="{{ config.extra.scholar }}">{{ trans(key="footer_scholar", lang=lang) }}</a>{% endif %}
-    <a href="{{ config.base_url }}/{% if lang != config.default_language %}{{ lang }}/{% endif %}atom.xml">{{ trans(key="footer_rss", lang=lang) }}</a>
-    {% if config.extra.icp %}<a class="icp" href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">{{ config.extra.icp }}</a>{% endif %}
+    <div class="footer-top">
+      <div class="footer-inscription">
+        <img class="footer-book" src="{{ get_url(path='img/moonlit/book-and-quill.svg') }}" alt="" width="94" height="70" loading="lazy">
+        <div><h2>Written in the margins.</h2><p>A quiet corner for research, curious questions, and a little magic. Built with Zola; kept company by a spell cat.</p></div>
+      </div>
+      <div class="margin-note">
+        <button type="button">A note from the margins <span aria-hidden="true">↻</span></button>
+        <p class="margin-note-text">Small steps, steady gradients.</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; {{ now() | date(format="%Y") }} {{ trans(key="author", lang=lang) }}</span>
+      <div class="footer-links">
+        <a href="mailto:{{ config.extra.email }}">{{ trans(key="footer_email", lang=lang) }}</a>
+        {% if config.extra.github %}<a href="{{ config.extra.github }}">GitHub</a>{% endif %}
+        {% if config.extra.scholar %}<a href="{{ config.extra.scholar }}">{{ trans(key="footer_scholar", lang=lang) }}</a>{% endif %}
+        <a href="{{ config.base_url }}/{% if lang != config.default_language %}{{ lang }}/{% endif %}atom.xml">{{ trans(key="footer_rss", lang=lang) }}</a>
+        {% if config.extra.icp %}<a class="icp" href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">{{ config.extra.icp }}</a>{% endif %}
+      </div>
+      <button class="star-button" type="button" data-starlight aria-label="Light a little starlight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5Z"/></svg></button>
+    </div>
   </div>
 </footer>
+<div class="starfall" aria-hidden="true"></div>
+<p class="grimoire-status" id="grimoire-status" role="status" aria-live="polite" aria-atomic="true"></p>
 {% include "partials/guardian.html" %}
 <script src="{{ get_url(path='js/guardian.js', cachebust=true) }}" defer></script>
+<script src="{{ get_url(path='js/grimoire.js', cachebust=true) }}" defer></script>
 <script src="{{ get_url(path='js/ddl-when.js', cachebust=true) }}" defer></script>
 </body>
 </html>

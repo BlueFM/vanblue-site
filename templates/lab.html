@@ -9,7 +9,8 @@
 
 {% block content %}
 <h1 class="page__title">{{ page.title }}</h1>
-<div class="prose page-intro">{{ page.content | safe }}</div>
+<p class="tool-lead">Compare four optimization rules on the same loss landscape.</p>
+<details class="tool-intro"><summary>How to use this workbench</summary><div class="prose page-intro">{{ page.content | safe }}</div></details>
 
 <figure class="lab-figure">
   <div class="lab-canvas-wrap">
@@ -51,6 +52,7 @@
   </figcaption>
 </figure>
 
+<div class="lab-stats-wrap" role="region" aria-label="Optimizer results; scroll horizontally on narrow screens" tabindex="0">
 <table class="lab-stats">
   <caption class="visually-hidden">Loss and curvature where each method comes to rest</caption>
   <thead>
@@ -64,6 +66,7 @@
   </thead>
   <tbody id="lab-stats"></tbody>
 </table>
+</div>
 
 <details class="lab-math">
   <summary>The maths</summary>

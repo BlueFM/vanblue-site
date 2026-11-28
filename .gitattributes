@@ -3,3 +3,6 @@
 *.png binary
 *.jpg binary
 *.pdf binary
+# Preserve generated HTML and the upstream font license without reformatting.
+design/offline-home.html whitespace=-blank-at-eol
+static/fonts/Fraunces-OFL.txt whitespace=-blank-at-eol

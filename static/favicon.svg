@@ -1,5 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="#14508c"/>
-  <text x="32" y="43" font-family="Georgia, 'Times New Roman', serif" font-size="30"
-        font-weight="600" fill="#fdfdfc" text-anchor="middle">SZ</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect x="1" y="1" width="62" height="62" rx="14" fill="#201828" stroke="#B7955E" stroke-width="1.5"/>
+  <path d="m16 24 16 27 16-27" stroke="#C7ACDA" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="16" cy="24" r="2.5" fill="#E1C78F"/><circle cx="32" cy="51" r="2.5" fill="#E1C78F"/><circle cx="48" cy="24" r="2.5" fill="#E1C78F"/>
+  <path d="M35 17a9 9 0 1 1-8-12 7 7 0 0 0 8 12Z" fill="#D9BC7E"/>
+  <path d="m47 8 1.5 4.5L53 14l-4.5 1.5L47 20l-1.5-4.5L41 14l4.5-1.5Z" fill="#D9BC7E"/>
 </svg>

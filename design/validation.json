@@ -1,0 +1,17 @@
+{
+  "mode": "site",
+  "checks": [
+    "19 routes at desktop and mobile: theme, headings, navigation, IDs, images, contrast and no document overflow",
+    "39 local links and resources exist",
+    "three optional discoveries, finite/repeated effects, lumos, real hidden-tab cleanup, init/destroy, isolated storage and print",
+    "mobile native keyboard menu, focus restoration, outside close and actual navigation",
+    "reduced-motion static feedback and blocked-storage fallback",
+    "CCF rank/search/empty/past filters, URL state, editable-key exclusion and MIT attribution",
+    "Lab painted canvas, four methods, actual trajectory toggle, play/reset/speed and start-point drag",
+    "no-JavaScript navigation, content and CCF fallback table",
+    "additional 320/375/640/840/841/900/1024/1920 responsive and narrow tool/article checks",
+    "real fish effect captured on white, paper and night: opaque emerald fill, 4px dark SVG contour"
+  ],
+  "errors": [],
+  "at": "2026-11-28T13:49:31.218Z"
+}
