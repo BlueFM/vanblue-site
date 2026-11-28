@@ -190,7 +190,7 @@
     var disposers = [];
     var pos = { x: 0, y: 0 };
     var state = { status: opts.status || null, mood: 'idle', pose: 'idle', spell: null, frame: 0, clock: opts.freeze || 0,
-      idleAction: null, lastIdleAction: null, idleStartedAt: 0, idleUntil: 0, nextIdleAt: random(6500, 11000) };
+      idleAction: null, lastIdleAction: null, idleStartedAt: 0, idleUntil: 0, nextIdleAt: random(2000, 4000) };
     var motion = { mode: 'idle', target: 0, pauseUntil: 18000, velocity: 0 };
 
     function listen(target, type, fn, options) {
@@ -290,7 +290,7 @@
       splitPart = null;
       delete el.dataset.idleAction;
       if (detail) detail.hidden = true;
-      state.nextIdleAt = state.clock + random(compact ? 18000 : 13000, compact ? 32000 : 26000);
+      state.nextIdleAt = state.clock + random(compact ? 7000 : 5000, compact ? 12000 : 10000);
       motion.pauseUntil = state.clock + random(16000, 30000);
       sequenceStart = state.clock;
       drawnFrame = -1;

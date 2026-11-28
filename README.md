@@ -110,8 +110,8 @@ host, audio or AI call is involved.
   curious head tilt, tail swish, stretch, shake and a brief doze. There are no
   consecutive repeats, no automatic cards and no extra image downloads. Head and
   tail gestures move clipped pieces of the same drawing; the eyes follow the
-  moving head. The first gesture waits 6.5–11 s, then pauses are 13–26 s on desktop
-  or 18–32 s on phones. Spells, dragging, hiding and keyboard focus interrupt them.
+  moving head. The first gesture waits 2–4 s, then pauses are 5–10 s on desktop
+  or 7–12 s on phones. Spells, dragging, hiding and keyboard focus interrupt them.
 - On desktop, short strolls stay within 180 px of the cat's chosen spot, with
   16–30 s pauses. Hover, keyboard focus and an open card stop roaming. **Stay
   here** parks it; **Wander a little** lets it roam again.
