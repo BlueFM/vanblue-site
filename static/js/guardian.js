@@ -254,7 +254,7 @@
         panel.style.width = width + 'px';
         panel.style.maxHeight = Math.max(44, dockY - vp.y - 20) + 'px';
         panel.style.left = clamp(dockX + DOCK_SIZE - width, vp.x + 12, vp.x + vp.w - width - 12) + 'px';
-        var height = panel.offsetHeight;
+        var height = panel.getBoundingClientRect().height;
         panel.style.top = clamp(dockY - height - 12, vp.y + 8, vp.y + vp.h - height - 8) + 'px';
       }
     }
@@ -612,6 +612,7 @@
       }
       if (!canWander() && motion.mode === 'walk') idleFor();
       draw(true);
+      if (!panel.hidden) place();
     }
 
     function loadStatus() {
