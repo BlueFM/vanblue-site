@@ -8,7 +8,7 @@
      data-mood-sleep="{{ trans(key='guardian_mood_sleep', lang=lang) }}"
      data-mood-busy="{{ trans(key='guardian_mood_busy', lang=lang) }}"
      data-mood-deploy="{{ trans(key='guardian_mood_deploy', lang=lang) }}">
-  <div class="guardian-pet">
+  <div class="guardian-pet" id="guardian-pet">
     <span class="guardian-hint" aria-hidden="true">A little magic? <span>✧</span></span>
     <button class="guardian-btn" type="button"
             aria-label="{{ trans(key='guardian_label', lang=lang) }}"
@@ -38,9 +38,6 @@
       </span>
       <span class="guardian-zzz" aria-hidden="true"><span>z</span><span>z</span><span>Z</span></span>
     </button>
-    <button class="guardian-hide guardian-icon-btn" type="button" aria-label="Hide the cat" title="Hide the cat">
-      <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m6 6 8 8M14 6l-8 8" /></svg>
-    </button>
     <div class="guardian-bubble" id="guardian-bubble" role="group" aria-label="The spell cat" hidden>
       <div class="guardian-eyebrow"><span aria-hidden="true">☾</span><span class="guardian-name">THE SPELL CAT</span><i aria-hidden="true"></i></div>
       <button class="guardian-panel-close guardian-icon-btn" type="button" aria-label="Close" title="Close">
@@ -55,7 +52,8 @@
       <p class="guardian-help" id="guardian-help">Click for magic · drag to move</p>
     </div>
   </div>
-  <button class="guardian-restore" type="button" aria-label="Bring back the wizard cat" title="Bring back the wizard cat" hidden>
+  <button class="guardian-toggle" type="button" aria-label="Hide the cat" title="Hide the cat"
+          aria-controls="guardian-pet" aria-expanded="true">
     <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
       <path d="M22 7a10 10 0 1 0 3 15A9 9 0 0 1 22 7Z" />
       <path d="m24 4 1.5 4.5L30 10l-4.5 1.5L24 16l-1.5-4.5L18 10l4.5-1.5Z" />

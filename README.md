@@ -102,9 +102,11 @@ when clicked. No framework, external image host, audio or AI call is involved.
 - On desktop, short strolls stay within 180 px of the cat's chosen spot, with
   16–30 s pauses. Hover, keyboard focus and an open card stop roaming. **Stay
   here** parks it; **Wander a little** lets it roam again.
-- On phones it is smaller and stays put. The close control hides it in a small
-  moon button; click the moon to bring it back. Hide and roam preferences are
-  stored locally and survive navigation. Storage being blocked is harmless.
+- A permanent moon button stays in the bottom-right corner, independent of the
+  cat's position. Click it to hide or show the cat; its label and expanded state
+  follow visibility. There is no close button on the cat. On phones the cat is
+  smaller and stays put. Hide and roam preferences are stored locally and survive
+  navigation. Storage being blocked is harmless.
 - `prefers-reduced-motion` uses still frames and a static, short-lived spell,
   without roaming or falling animation. Hidden tabs and a hidden cat stop the
   animation loop; status requests pause too. Printing excludes the companion.

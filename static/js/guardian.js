@@ -107,8 +107,8 @@
     var canvas = el.querySelector('.guardian-canvas');
     var pet = el.querySelector('.guardian-pet');
     var panel = el.querySelector('.guardian-bubble');
-    var restoreBtn = el.querySelector('.guardian-restore');
-    if (!btn || !canvas || !pet || !panel || !restoreBtn) return null;
+    var toggleBtn = el.querySelector('.guardian-toggle');
+    if (!btn || !canvas || !pet || !panel || !toggleBtn) return null;
 
     var ctx = canvas.getContext && canvas.getContext('2d');
     var fallback = el.querySelector('.guardian-fallback');
@@ -117,7 +117,6 @@
     var stats = el.querySelector('.guardian-stats');
     var roamBtn = el.querySelector('.guardian-roam');
     var castBtn = el.querySelector('.guardian-cast');
-    var hideBtn = el.querySelector('.guardian-hide');
     var closeBtn = el.querySelector('.guardian-panel-close');
     var zh = /^zh\b/i.test(document.documentElement.lang);
     var txt = copy[zh ? 'zh' : 'en'];
@@ -150,6 +149,8 @@
     var focused = false;
     var pointer = null;
     var suppressClickUntil = 0;
+    var DOCK_SIZE = 44;
+    var DOCK_SPACING = 12;
     var creatureW = 164;
     var creatureH = 164;
     var safeBottom = 0;
@@ -183,15 +184,19 @@
     function minX() { return viewport().x + gap; }
     function minY() { return viewport().y + gap; }
     function floorY() { var vp = viewport(); return Math.max(minY(), vp.y + vp.h - creatureH - gap - safeBottom); }
-    function maxX() { var vp = viewport(); return Math.max(minX(), vp.x + vp.w - creatureW - gap); }
+    function maxX() {
+      var vp = viewport();
+      return Math.max(minX(), vp.x + vp.w - creatureW - gap - DOCK_SIZE - DOCK_SPACING);
+    }
 
     function measure() {
       var vp = viewport();
       safeBottom = parseFloat(global.getComputedStyle(el).getPropertyValue('--pet-safe-bottom')) || 0;
       gap = compact ? 12 : 16;
-      el.style.setProperty('--pet-room', Math.max(44, Math.min(vp.w - gap * 2, vp.h - gap * 2 - safeBottom)) + 'px');
+      var room = Math.min(vp.w - gap * 2 - DOCK_SIZE - DOCK_SPACING, vp.h - gap * 2 - safeBottom);
+      el.style.setProperty('--pet-room', Math.max(44, room) + 'px');
       el.style.setProperty('--pet-viewport-width', vp.w + 'px');
-      creatureW = creatureH = prefs.collapsed ? 44 : (parseFloat(global.getComputedStyle(el).width) || 164);
+      creatureW = creatureH = parseFloat(global.getComputedStyle(pet).width) || (compact ? 108 : 164);
     }
 
     function facing(direction) { el.style.setProperty('--pet-facing', direction < 0 ? '-1' : '1'); }
@@ -199,7 +204,11 @@
 
     function place() {
       var vp = viewport();
-      el.style.transform = 'translate3d(' + Math.round(pos.x) + 'px,' + Math.round(pos.y) + 'px,0)';
+      // Only the pet moves; the moon stays pinned to the visible bottom-right corner.
+      pet.style.transform = 'translate3d(' + Math.round(pos.x) + 'px,' + Math.round(pos.y) + 'px,0)';
+      var dockX = Math.max(vp.x + gap, vp.x + vp.w - DOCK_SIZE - gap);
+      var dockY = Math.max(vp.y + gap, vp.y + vp.h - DOCK_SIZE - gap - safeBottom);
+      toggleBtn.style.transform = 'translate3d(' + Math.round(dockX) + 'px,' + Math.round(dockY) + 'px,0)';
       el.classList.toggle('is-right', pos.x + creatureW / 2 > vp.x + vp.w / 2);
       el.classList.toggle('is-low', pos.y < vp.y + 80);
       if (!panel.hidden) {
@@ -346,7 +355,11 @@
       canvas.hidden = true;
       fallback.hidden = false;
       fallback.onload = activate;
-      fallback.onerror = function () { if (!prefs.collapsed) el.hidden = true; };
+      fallback.onerror = function () {
+        if (destroyed) return;
+        artRequested = false;
+        setCollapsed(true, false); // Keep the moon available so a later click can retry.
+      };
       fallback.src = attr('idle', '/img/wizard-cat/idle.webp');
     }
 
@@ -457,15 +470,16 @@
       finishCast();
       pointer = null;
       el.classList.remove('is-dragging', 'is-falling', 'is-new');
+      el.hidden = false;
       pet.hidden = collapsed;
-      restoreBtn.hidden = !collapsed;
       el.classList.toggle('is-collapsed', collapsed);
+      var label = collapsed ? txt.restore : txt.hide;
+      toggleBtn.setAttribute('aria-label', label);
+      toggleBtn.setAttribute('aria-expanded', String(!collapsed));
+      toggleBtn.title = label;
       measure();
       if (collapsed) {
         stop();
-        el.hidden = false;
-        pos.x = maxX();
-        pos.y = floorY();
       } else {
         pos.x = previousPos ? clamp(previousPos.x, minX(), maxX()) : maxX();
         pos.y = floorY();
@@ -477,7 +491,7 @@
       }
       savePrefs();
       place();
-      if (shouldFocus) (collapsed ? restoreBtn : btn).focus({ preventScroll: true });
+      if (shouldFocus) toggleBtn.focus({ preventScroll: true });
     }
 
     function onDown(ev) {
@@ -557,10 +571,8 @@
     el.querySelector('.guardian-hint').replaceChildren(document.createTextNode(txt.hint + '  ✧'));
     el.querySelector('.guardian-help').textContent = compact ? txt.touchHelp : txt.help;
     castBtn.replaceChildren(document.createTextNode(txt.cast + '  ✧'));
-    [[hideBtn, txt.hide], [restoreBtn, txt.restore], [closeBtn, txt.close]].forEach(function (item) {
-      item[0].setAttribute('aria-label', item[1]);
-      item[0].title = item[1];
-    });
+    closeBtn.setAttribute('aria-label', txt.close);
+    closeBtn.title = txt.close;
     updateRoamButton();
     if (ctx) { canvas.width = canvas.height = CELL; ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; }
 
@@ -577,8 +589,7 @@
     });
     listen(castBtn, 'click', function () { cast(true); });
     listen(closeBtn, 'click', function () { closePanel(true); });
-    listen(hideBtn, 'click', function () { markSeen(); setCollapsed(true, true); });
-    listen(restoreBtn, 'click', function () { setCollapsed(false, true); });
+    listen(toggleBtn, 'click', function () { markSeen(); setCollapsed(!prefs.collapsed, true); });
     listen(roamBtn, 'click', function () {
       prefs.roam = !prefs.roam;
       savePrefs();
